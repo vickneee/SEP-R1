@@ -7,5 +7,25 @@
 - Riku Toivanen
 
 
-TODO:
-WHATS BEEN USED - TECH STACK ETC...
+## Technology Stack
+
+### Development Tools
+- **Version Control:** Git with GitHub
+- **Framework:** Next.js 15
+- **Styling** TailwindCSS, shadcn UI (lucide-react)
+- **Backend as a Service:** Supabase (PostgreSQL Database, Authentication, S3 Storage Bucket)
+
+### Design Tools
+- **UI/UX Design:** Figma
+
+### Testing Tools
+- **Automated Testing Framework:** Playwright Unit and E2E Testing
+- **Testing Coverage:** Playwright Test Coverage Extension
+
+### CI/CD
+- Docker
+- Github Actions
+- Vercel
+
+### Project Management
+- **Project Management Software:** Jira
