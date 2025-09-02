@@ -5,3 +5,7 @@
 - Victoria Vavulina
 - Riku Kaartoaho
 - Riku Toivanen
+
+
+TODO:
+WHATS BEEN USED - TECH STACK ETC...
