@@ -38,8 +38,8 @@ function AvailableBooks() {
                         </CarouselItem>
                     ))}
                 </CarouselContent>
-                <CarouselPrevious className="text-orange-600"/>
-                <CarouselNext className="text-orange-600"/>
+                <CarouselPrevious className="text-orange-600 hover:shadow-lg transition-shadow duration-300 cursor-pointer"/>
+                <CarouselNext className="text-orange-600 hover:cursor-pointer"/>
             </Carousel>
         </div>
         </div>
