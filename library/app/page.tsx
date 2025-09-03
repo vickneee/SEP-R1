@@ -1,11 +1,11 @@
 import Footer from "@/app/components/sections/footer/Footer";
+import Hero from "@/app/components/sections/hero/page";
 
 export default function Home() {
     return (
         <div className="font-sans items-center justify-items-center min-h-screen">
             <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-                <h1 className="text-2xl font-bold text-center">
-                    Welcome to LibraryHub </h1>
+                <Hero/>
             </main>
             <Footer/>
         </div>
