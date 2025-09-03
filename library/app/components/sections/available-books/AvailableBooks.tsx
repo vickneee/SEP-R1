@@ -23,7 +23,7 @@ function AvailableBooks() {
                     {books.map((book, index) => (
                         <CarouselItem key={index} className="pl-1 md:basis-1/2 lg:basis-1/3">
                             <div className="p-4">
-                                <Card className="h-full hover:shadow-lg transition-shadow hover:translate-0.25 duration-300 cursor-pointer">
+                                <Card className="h-full hover:shadow-lg transition-shadow duration-300 cursor-pointer border-gray-100">
                                     <CardContent className="flex aspect-square items-center justify-center">
                                         <Image src={`/book-covers/book${index + 1}.jpg`} alt={`Book Cover ${book.title}`} width={200} height={250} className="object-cover rounded-md"/>
                                     </CardContent>
@@ -40,7 +40,7 @@ function AvailableBooks() {
                     ))}
                 </CarouselContent>
                 <CarouselPrevious className="text-orange-600 hover:shadow-lg transition-shadow duration-300 cursor-pointer"/>
-                <CarouselNext className="text-orange-600 hover:cursor-pointer"/>
+                <CarouselNext className="text-orange-600 hover:shadow-lg transition-shadow duration-300 cursor-pointer"/>
             </Carousel>
         </div>
         </div>
