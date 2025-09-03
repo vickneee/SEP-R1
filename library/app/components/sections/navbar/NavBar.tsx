@@ -1,7 +1,8 @@
 'use client'
 
 import bookIcon from '../../../../public/bookIcon.png';
-import SearchIcon from '../../../components/icons/SearchIcon'
+import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+
 import Link from "next/link";
 import Button from "@/app/components/ui/Button";
 
@@ -24,7 +25,7 @@ function NavBar() {
                     <label htmlFor="search" className="sr-only">Search</label>
                     <div className="relative text-gray-400 focus-within:text-gray-600 w-[300px]">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
-                            <SearchIcon className="h-5 w-5" aria-hidden="true"/>
+                            <MagnifyingGlassIcon className="h-5 w-5" />
                         </div>
                         <input id="search" name="search"
                                className="block w-full border border-gray-300 rounded-md py-2 pl-10 pr-4 leading-5 bg-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-orange-400 focus:border-orange-600 sm:text-sm"
