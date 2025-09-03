@@ -13,8 +13,8 @@ import {books} from "@/data/books";
 
 function AvailableBooks() {
     return (
-        <div className="w-full h-[700px] px-4 sm:px-8 md:px-16 lg:px-24 py-12">
-            <h2 className="text-orange-500 text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 flex justify-center">
+        <div className="w-full h-[750px] sm:px-8 md:px-16 py-12">
+            <h2 className="mt-12 text-orange-500 text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 flex justify-center">
                 Available Books
             </h2>
             <div className="flex justify-center mt-10 overflow-hidden">
