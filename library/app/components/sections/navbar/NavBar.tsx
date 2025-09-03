@@ -34,13 +34,13 @@ function NavBar() {
                 </div>
 
                 <div className="flex row-auto items-center-safe space-x-12">
-                    <Link href="/" className="hover:underline">
+                    <Link href="/" className="hover:underline hover:text-orange-500">
                         Home
                     </Link>
-                    <Link href="/my-books" className="hover:underline">
+                    <Link href="/my-books" className="hover:underline hover:text-orange-500">
                         My Books
                     </Link>
-                    <Link href="/history" className="hover:underline">
+                    <Link href="/history" className="hover:underline hover:text-orange-500">
                         History
                     </Link>
                     <div className="ml-4 flex-shrink-0">

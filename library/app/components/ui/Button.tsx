@@ -11,7 +11,7 @@ function Button ({ children, onClick }: ButtonProps) {
   return (
     <button
       onClick={onClick}
-      className="px-4 py-2 bg-[#552A1B] text-white rounded hover:bg-[#E46A07] transition-colors duration-300 hover:cursor-pointer"
+      className="px-4 py-2 bg-[#552A1B] rounded-sm text-orange-500 border-orange-500 hover:bg-orange-500 hover:text-white transition-colors duration-300 hover:cursor-pointer"
     >
       {children}
     </button>
