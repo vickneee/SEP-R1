@@ -12,7 +12,7 @@ function Hero() {
             alt="Bookshelf background"
             width={1200}
             height={600}
-            className="w-full h-full object-cover blur-sm"
+            className="w-full h-full object-cover blur-sm opacity-85"
         />
         <div className="absolute inset-0 bg-black opacity-50"></div>
       </div>
