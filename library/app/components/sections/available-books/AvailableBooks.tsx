@@ -14,8 +14,9 @@ import {books} from "@/data/books";
 function AvailableBooks() {
     return (
         <div className="w-full h-[700px] px-4 sm:px-8 md:px-16 lg:px-24 py-12">
-            <h1 className="text-orange-500 font-bold text-3xl flex justify-center">Available Books</h1>
-
+            <h2 className="text-orange-500 text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 flex justify-center">
+                Available Books
+            </h2>
             <div className="flex justify-center mt-10 overflow-hidden">
             <Carousel className="w-full max-w-1/2 sm:max-w-1/2 lg:max-w-3xl xl:max-w-4xl 2xl:max-w-5xl">
                 <CarouselContent className="-ml-1">
