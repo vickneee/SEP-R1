@@ -1,6 +1,7 @@
 import Footer from "@/app/components/sections/footer/Footer";
 import Hero from "@/app/components/sections/hero/Hero";
 import AvailableBooks from "@/app/components/sections/available-books/AvailableBooks";
+import About from "@/app/components/sections/about/About";
 
 export default function Home() {
     return (
@@ -8,6 +9,7 @@ export default function Home() {
             <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
                 <Hero/>
                 <AvailableBooks />
+                <About />
             </main>
             <Footer/>
         </div>
