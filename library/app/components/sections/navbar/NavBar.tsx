@@ -17,7 +17,7 @@ function NavBar() {
                         <img src={bookIcon.src} alt="LibraryHub Logo" className="h-8 w-8"/>
                     </Link>
                     <Link href="/">
-                        <span className="ml-2 text-2xl font-bold text-orange-600">LibraryHub</span>
+                        <span className="ml-2 text-2xl font-bold text-orange-500">LibraryHub</span>
                     </Link>
                 </div>
                 {/* Search Bar */}
@@ -28,7 +28,7 @@ function NavBar() {
                             <MagnifyingGlassIcon className="h-5 w-5" />
                         </div>
                         <input id="search" name="search"
-                               className="block w-full border border-gray-300 rounded-md py-2 pl-10 pr-4 leading-5 bg-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-orange-400 focus:border-orange-600 sm:text-sm"
+                               className="block w-full border border-gray-300 rounded-md py-2 pl-10 pr-4 leading-5 bg-white placeholder-gray-400 focus:ring-1 focus:ring-orange-500 focus:outline-none focus:border-orange-500 sm:text-sm"
                                placeholder="Search book, authors, or subjects..." type="search"/>
                     </div>
                 </div>

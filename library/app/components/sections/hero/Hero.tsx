@@ -21,7 +21,7 @@ function Hero() {
         <h1 className="text-4xl md:text-6xl font-bold drop-shadow-md text-gray-200">
             Discover Your Next
             <br />
-            <span className="text-orange-600">Great Read </span>
+            <span className="text-orange-500">Great Read </span>
         </h1>
           <p className="text-gray-200 md:text-lg max-w-116 mx-auto mb-6 mt-2 drop-shadow-md">
               Browse thousands of books, reserve your favorites, and manage your reading journey all in one place.
