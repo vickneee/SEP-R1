@@ -1,1 +1,6 @@
 /.idea
+
+# VS Code - ignore personal settings
+.vscode/settings.json
+.vscode/launch.json
+!.vscode/settings.default.json
