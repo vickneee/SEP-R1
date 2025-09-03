@@ -1,5 +1,7 @@
 "use client";
 import Link from "next/link";
+import { useActionState } from "react";
+import { signinAction } from "@/app/(auth)/signin/auth-actions";
 
 import {
   CardTitle,
@@ -12,6 +14,7 @@ import {
 
 import { Label } from "@/app/components/ui/label";
 import { Input } from "@/app/components/ui/input";
+import { ZodErrors } from "@/app/components/custom/ZodErrors";
 
 const styles = {
   container: "w-full max-w-4xl px-4",
@@ -28,10 +31,18 @@ const styles = {
   link: "ml-2 font-bold text-[#E46A07]",
 };
 
+const INITIAL_STATE = {
+  data: null,
+  zodErrors: null,
+  message: null,
+};
+
 export function SigninForm() {
+  const [formState, formAction] = useActionState(signinAction, INITIAL_STATE);
+  console.log(formState, "client");
   return (
     <div className={styles.container}>
-      <form>
+      <form action={formAction}>
         <Card>
           <CardHeader className={styles.header}>
             <CardTitle className={styles.title}>Sign In</CardTitle>
@@ -50,6 +61,7 @@ export function SigninForm() {
                 type="text"
                 placeholder="username or email"
               />
+              <ZodErrors error={formState?.zodErrors?.email} />
             </div>
             <div className={styles.fieldGroup}>
               <Label className={styles.label} htmlFor="password">
@@ -61,10 +73,13 @@ export function SigninForm() {
                 type="password"
                 placeholder="password"
               />
+              <ZodErrors error={formState?.zodErrors?.password} />
             </div>
           </CardContent>
           <CardFooter className={styles.footer}>
-            <button className={styles.button}>Sign In</button>
+            <button type="submit" className={styles.button}>
+              Sign In
+            </button>
           </CardFooter>
         </Card>
         <div className={styles.prompt}>

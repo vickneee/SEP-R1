@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
-import { useFormState } from "react-dom";
-import { registerUserAction } from "@/app/data/actions/auth-actions";
+import { useActionState } from "react";
+import { registerUserAction } from "@/app/(auth)/signup/auth-actions";
 
 import {
   CardTitle,
@@ -38,7 +38,7 @@ const INITIAL_STATE = {
 };
 
 export function SignupForm() {
-  const [formState, formAction] = useFormState(
+  const [formState, formAction] = useActionState(
     registerUserAction,
     INITIAL_STATE
   );
