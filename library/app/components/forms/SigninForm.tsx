@@ -56,10 +56,10 @@ export function SigninForm() {
                 Email
               </Label>
               <Input
-                id="identifier"
-                name="identifier"
-                type="text"
-                placeholder="username or email"
+                id="email"
+                name="email"
+                type="email"
+                placeholder="name@example.com"
               />
               <ZodErrors error={formState?.zodErrors?.email} />
             </div>

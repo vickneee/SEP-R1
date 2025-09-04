@@ -56,16 +56,28 @@ export function SignupForm() {
           </CardHeader>
           <CardContent className={styles.content}>
             <div className={styles.fieldGroup}>
-              <Label className={styles.label} htmlFor="username">
-                Username
+              <Label className={styles.label} htmlFor="first_name">
+                First Name
               </Label>
               <Input
-                id="username"
-                name="username"
+                id="first_name"
+                name="first_name"
                 type="text"
-                placeholder="username"
+                placeholder="John"
               />
-              <ZodErrors error={formState?.zodErrors?.username} />
+              <ZodErrors error={formState?.zodErrors?.first_name} />
+            </div>
+            <div className={styles.fieldGroup}>
+              <Label className={styles.label} htmlFor="last_name">
+                Last Name
+              </Label>
+              <Input
+                id="last_name"
+                name="last_name"
+                type="text"
+                placeholder="Doe"
+              />
+              <ZodErrors error={formState?.zodErrors?.last_name} />
             </div>
             <div className={styles.fieldGroup}>
               <Label className={styles.label} htmlFor="email">
