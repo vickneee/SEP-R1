@@ -8,7 +8,7 @@ function Footer() {
                     mind. </p>
             </div>
             <div className="flex flex-col md:flex-row items-center justify-center gap-4">
-                <p className="text-sm mr-0 md:mr-4 mb-2 md:mb-0 text-white">© 2025 | LibraryHub</p>
+                <p className="text-sm mr-0 md:mr-4 mb-2 md:mb-0 text-gray-200">© 2025 | LibraryHub</p>
                 <p className="text-white text-sm">Made with 🧡</p>
             </div>
         </footer>
