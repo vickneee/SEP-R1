@@ -45,7 +45,6 @@ function AvailableBooks() {
                     </Carousel>
                 </div>
             </div>
-        </section>
     );
 }
 
