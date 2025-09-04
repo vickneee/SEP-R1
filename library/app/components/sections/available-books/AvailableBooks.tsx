@@ -34,16 +34,18 @@ function AvailableBooks() {
                                         {book.author}
                                     </CardContent>
                                 </Card>
-
-                            </div>
-                        </CarouselItem>
-                    ))}
-                </CarouselContent>
-                <CarouselPrevious className="text-orange-600 hover:shadow-lg transition-shadow duration-300 cursor-pointer"/>
-                <CarouselNext className="text-orange-600 hover:shadow-lg transition-shadow duration-300 cursor-pointer"/>
-            </Carousel>
-        </div>
-        </div>
+                                    </div>
+                                </CarouselItem>
+                            ))}
+                        </CarouselContent>
+                        <CarouselPrevious
+                            className="text-orange-600 hover:shadow-lg transition-shadow duration-300 cursor-pointer"/>
+                        <CarouselNext
+                            className="text-orange-600 hover:shadow-lg transition-shadow duration-300 cursor-pointer"/>
+                    </Carousel>
+                </div>
+            </div>
+        </section>
     );
 }
 
