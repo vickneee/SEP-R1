@@ -47,7 +47,7 @@ function NavBar() {
                             History
                         </Link>
                         <div className="ml-4 flex-shrink-0">
-                            <Link href="/sign-in" passHref>
+                            <Link href="/signin" passHref>
                                 <Button>Sign In</Button>
                             </Link>
                         </div>

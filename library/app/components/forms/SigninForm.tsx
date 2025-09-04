@@ -84,7 +84,7 @@ export function SigninForm() {
         </Card>
         <div className={styles.prompt}>
           Don&apos;t have an account?
-          <Link className={styles.link} href="signup">
+          <Link className={styles.link} href="/signup">
             Sign Up
           </Link>
         </div>
