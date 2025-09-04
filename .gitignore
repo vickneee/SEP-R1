@@ -4,3 +4,5 @@
 .vscode/settings.json
 .vscode/launch.json
 !.vscode/settings.default.json
+
+.claude
