@@ -26,15 +26,21 @@ const styles = {
   label: "text-xl",
   footer: "text-2xl flex flex-col",
   button:
-    "px-6 spx-4 py-2 bg-[#552A1B] text-white rounded hover:bg-[#E46A07] transition-colors duration-300",
+    "px-6 px-4 py-2 bg-[#552A1B] text-white rounded hover:bg-[#E46A07] transition-colors duration-300",
   prompt: "mt-4 text-center text-xl",
   link: "ml-2 font-bold text-[#E46A07]",
 };
 
-const INITIAL_STATE = {
+const INITIAL_STATE: FormState = {
   data: null,
   zodErrors: null,
   message: null,
+};
+
+type FormState = {
+  data: unknown;
+  zodErrors: Record<string, string[]> | null;
+  message: string | null;
 };
 
 export function SignupForm() {

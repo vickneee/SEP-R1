@@ -11,7 +11,8 @@ DROP POLICY IF EXISTS "Only librarians can insert users" ON users;
 CREATE POLICY "Allow user profile creation" ON users
     FOR INSERT WITH CHECK (
         auth.uid() = user_id OR 
-        auth.role() = 'service_role'
+        auth.role() = 'service_role' OR
+        current_user = 'postgres'
     );
 
 -- Fix the debug function type mismatch issue

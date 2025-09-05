@@ -2,14 +2,24 @@
 -- This migration creates all the necessary tables for a library management system
 
 -- Create enum types
-CREATE TYPE user_role AS ENUM ('customer', 'librarian');
-CREATE TYPE reservation_status AS ENUM ('active', 'returned', 'overdue', 'cancelled');
-CREATE TYPE penalty_status AS ENUM ('pending', 'paid', 'waived');
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'user_role') THEN
+        CREATE TYPE user_role AS ENUM ('customer', 'librarian');
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'reservation_status') THEN
+        CREATE TYPE reservation_status AS ENUM ('active', 'returned', 'overdue', 'cancelled');
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'penalty_status') THEN
+        CREATE TYPE penalty_status AS ENUM ('pending', 'paid', 'waived');
+    END IF;
+END $$;
 
 -- USERS table
 -- Extends Supabase auth.users with additional profile information
-CREATE TABLE users (
+CREATE TABLE IF NOT EXISTS users (
     user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+    email TEXT NOT NULL,
     first_name TEXT NOT NULL,
     last_name TEXT NOT NULL,
     role user_role NOT NULL DEFAULT 'customer',
@@ -20,7 +30,7 @@ CREATE TABLE users (
 
 -- BOOKS table
 -- Catalog of all books in the library
-CREATE TABLE books (
+CREATE TABLE IF NOT EXISTS books (
     book_id SERIAL PRIMARY KEY,
     isbn TEXT UNIQUE NOT NULL,
     title TEXT NOT NULL,
@@ -37,7 +47,7 @@ CREATE TABLE books (
 
 -- RESERVATIONS table
 -- Tracks book reservations and loans
-CREATE TABLE reservations (
+CREATE TABLE IF NOT EXISTS reservations (
     reservation_id SERIAL PRIMARY KEY,
     user_id UUID NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
     book_id INTEGER NOT NULL REFERENCES books(book_id) ON DELETE CASCADE,
@@ -51,7 +61,7 @@ CREATE TABLE reservations (
 
 -- PENALTIES table
 -- Tracks fines and penalties for users
-CREATE TABLE penalties (
+CREATE TABLE IF NOT EXISTS penalties (
     penalty_id SERIAL PRIMARY KEY,
     user_id UUID NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
     reservation_id INTEGER REFERENCES reservations(reservation_id) ON DELETE SET NULL,
@@ -62,16 +72,16 @@ CREATE TABLE penalties (
 );
 
 -- Indexes for better performance
-CREATE INDEX idx_users_role ON users(role);
-CREATE INDEX idx_books_isbn ON books(isbn);
-CREATE INDEX idx_books_category ON books(category);
-CREATE INDEX idx_books_available ON books(available_copies) WHERE available_copies > 0;
-CREATE INDEX idx_reservations_user_id ON reservations(user_id);
-CREATE INDEX idx_reservations_book_id ON reservations(book_id);
-CREATE INDEX idx_reservations_status ON reservations(status);
-CREATE INDEX idx_reservations_due_date ON reservations(due_date);
-CREATE INDEX idx_penalties_user_id ON penalties(user_id);
-CREATE INDEX idx_penalties_status ON penalties(status);
+CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
+CREATE INDEX IF NOT EXISTS idx_books_isbn ON books(isbn);
+CREATE INDEX IF NOT EXISTS idx_books_category ON books(category);
+CREATE INDEX IF NOT EXISTS idx_books_available ON books(available_copies) WHERE available_copies > 0;
+CREATE INDEX IF NOT EXISTS idx_reservations_user_id ON reservations(user_id);
+CREATE INDEX IF NOT EXISTS idx_reservations_book_id ON reservations(book_id);
+CREATE INDEX IF NOT EXISTS idx_reservations_status ON reservations(status);
+CREATE INDEX IF NOT EXISTS idx_reservations_due_date ON reservations(due_date);
+CREATE INDEX IF NOT EXISTS idx_penalties_user_id ON penalties(user_id);
+CREATE INDEX IF NOT EXISTS idx_penalties_status ON penalties(status);
 
 -- Function to update book availability when reservations change
 CREATE OR REPLACE FUNCTION update_book_availability()
@@ -118,6 +128,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Trigger to automatically update book availability
+DROP TRIGGER IF EXISTS trigger_update_book_availability ON reservations;
 CREATE TRIGGER trigger_update_book_availability
     AFTER INSERT OR UPDATE OR DELETE ON reservations
     FOR EACH ROW EXECUTE FUNCTION update_book_availability();
@@ -132,6 +143,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Trigger to automatically update books updated_at
+DROP TRIGGER IF EXISTS trigger_update_books_updated_at ON books;
 CREATE TRIGGER trigger_update_books_updated_at
     BEFORE UPDATE ON books
     FOR EACH ROW EXECUTE FUNCTION update_books_updated_at();
@@ -166,6 +178,7 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- Trigger to automatically update user penalty count
+DROP TRIGGER IF EXISTS trigger_update_user_penalty_count ON penalties;
 CREATE TRIGGER trigger_update_user_penalty_count
     AFTER INSERT OR DELETE ON penalties
     FOR EACH ROW EXECUTE FUNCTION update_user_penalty_count();
@@ -177,42 +190,50 @@ ALTER TABLE reservations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE penalties ENABLE ROW LEVEL SECURITY;
 
 -- Users can see their own profile, librarians can see all profiles
+DROP POLICY IF EXISTS "Users can view own profile" ON users;
 CREATE POLICY "Users can view own profile" ON users
     FOR SELECT USING (
         auth.uid() = user_id OR 
         EXISTS (SELECT 1 FROM users WHERE users.user_id = auth.uid() AND users.role = 'librarian')
     );
 
+DROP POLICY IF EXISTS "Users can update own profile" ON users;
 CREATE POLICY "Users can update own profile" ON users
     FOR UPDATE USING (
         auth.uid() = user_id OR 
         EXISTS (SELECT 1 FROM users WHERE users.user_id = auth.uid() AND users.role = 'librarian')
     );
 
+DROP POLICY IF EXISTS "Only librarians can insert users" ON users;
 CREATE POLICY "Only librarians can insert users" ON users
     FOR INSERT WITH CHECK (
         EXISTS (SELECT 1 FROM users WHERE users.user_id = auth.uid() AND users.role = 'librarian')
     );
 
 -- Books are publicly readable, only librarians can modify
+DROP POLICY IF EXISTS "Anyone can view books" ON books;
 CREATE POLICY "Anyone can view books" ON books
     FOR SELECT USING (true);
 
+DROP POLICY IF EXISTS "Only librarians can modify books" ON books;
 CREATE POLICY "Only librarians can modify books" ON books
     FOR ALL USING (
         EXISTS (SELECT 1 FROM users WHERE users.user_id = auth.uid() AND users.role = 'librarian')
     );
 
 -- Users can see their own reservations, librarians can see all
+DROP POLICY IF EXISTS "Users can view own reservations" ON reservations;
 CREATE POLICY "Users can view own reservations" ON reservations
     FOR SELECT USING (
         auth.uid() = user_id OR 
         EXISTS (SELECT 1 FROM users WHERE users.user_id = auth.uid() AND users.role = 'librarian')
     );
 
+DROP POLICY IF EXISTS "Users can create own reservations" ON reservations;
 CREATE POLICY "Users can create own reservations" ON reservations
     FOR INSERT WITH CHECK (auth.uid() = user_id);
 
+DROP POLICY IF EXISTS "Users can update own reservations, librarians can update all" ON reservations;
 CREATE POLICY "Users can update own reservations, librarians can update all" ON reservations
     FOR UPDATE USING (
         auth.uid() = user_id OR 
@@ -220,12 +241,14 @@ CREATE POLICY "Users can update own reservations, librarians can update all" ON 
     );
 
 -- Users can see their own penalties, librarians can see all
+DROP POLICY IF EXISTS "Users can view own penalties" ON penalties;
 CREATE POLICY "Users can view own penalties" ON penalties
     FOR SELECT USING (
         auth.uid() = user_id OR 
         EXISTS (SELECT 1 FROM users WHERE users.user_id = auth.uid() AND users.role = 'librarian')
     );
 
+DROP POLICY IF EXISTS "Only librarians can manage penalties" ON penalties;
 CREATE POLICY "Only librarians can manage penalties" ON penalties
     FOR ALL USING (
         EXISTS (SELECT 1 FROM users WHERE users.user_id = auth.uid() AND users.role = 'librarian')

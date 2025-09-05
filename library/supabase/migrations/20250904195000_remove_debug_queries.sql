@@ -32,6 +32,7 @@ BEGIN
     BEGIN
         INSERT INTO public.users (
             user_id,
+            email,
             first_name,
             last_name,
             role,
@@ -40,6 +41,7 @@ BEGIN
             penalty_count
         ) VALUES (
             NEW.id,
+            NEW.email,
             user_first_name,
             user_last_name,
             user_role,

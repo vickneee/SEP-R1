@@ -1,7 +1,5 @@
 "use server";
-import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
-import { createClient } from "@/utils/supabase/server";
+import { createClient, createAdminClient } from "@/utils/supabase/server";
 import { z } from "zod";
 
 const schemaRegister = z.object({
@@ -15,17 +13,23 @@ const schemaRegister = z.object({
     .max(50, { message: "Last name must be under 50 characters" }),
   password: z
     .string()
-    .min(6, { message: "Password must be at least 6 characters" })
+    .min(8, { message: "Password must be at least 8 characters" })
     .max(100, { message: "Password must be under 100 characters" }),
   email: z
     .string()
-    .nonempty({ message: "Please enter your email address" })
+    .min(1, { message: "Please enter your email address" })
     .email({
       message: "Please enter a valid email address",
     }),
 });
 
-export async function registerUserAction(prevState: any, formData: FormData) {
+type FormState = {
+  data: unknown;
+  zodErrors: Record<string, string[]> | null;
+  message: string | null;
+};
+
+export async function registerUserAction(prevState: FormState, formData: FormData) {
   const validatedFields = schemaRegister.safeParse({
     first_name: (formData.get("first_name") ?? "") as string,
     last_name: (formData.get("last_name") ?? "") as string,
@@ -42,92 +46,89 @@ export async function registerUserAction(prevState: any, formData: FormData) {
   }
 
   const { first_name, last_name, email, password } = validatedFields.data;
-  const supabase = await createClient();
 
   console.log('🚀 Starting user registration:', { email, first_name, last_name });
 
-  const { data: authData, error: authError } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: { 
-        first_name, 
-        last_name,
-        role: 'customer' // Default role for new users
+  try {
+    const supabase = await createClient();
+
+    console.log('🔄 Step 1: Creating user with signup and metadata...');
+
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          first_name,
+          last_name,
+          role: 'customer',
+        },
       },
-    },
-  });
-  
-  if (authError) {
-    console.error('❌ Auth signup error:', authError);
-    return { ...prevState, message: authError?.message || "Registration failed" };
-  }
+    });
 
-  console.log('✅ Auth user created:', authData.user?.id, authData.user?.email);
+    if (error) {
+      console.error('❌ Signup failed:', error);
+      return {
+        ...prevState,
+        message: `Registration failed: ${error.message || 'Unknown error'}. Please try again.`
+      };
+    }
 
-  // Check if user profile was created in database
-  if (authData.user) {
+    if (data.user && data.user.identities?.length === 0) {
+      return {
+        ...prevState,
+        message: "An account with this email already exists. Please sign in instead."
+      };
+    }
+
+    if (!data.user) {
+      console.error('❌ No user returned from signUp');
+      return {
+        ...prevState,
+        message: "Registration failed: No user data received. Please try again."
+      };
+    }
+
+    console.log('✅ User created successfully:', data.user.id);
+
+    // Manually create user profile using admin client to bypass RLS
     try {
-      const { data: userProfile, error: profileError } = await supabase
-        .from('users')
-        .select('*')
-        .eq('user_id', authData.user.id)
-        .single();
+      const adminSupabase = await createAdminClient();
+      const { error: profileError } = await adminSupabase.from("users").upsert({
+        user_id: data.user.id,
+        email,
+        first_name,
+        last_name,
+        role: 'customer',
+      }, { onConflict: 'user_id' });
 
       if (profileError) {
-        console.error('❌ Failed to fetch user profile after creation:', profileError);
-        
-        // Try to create profile manually if trigger failed
-        console.log('🔄 Attempting manual profile creation...');
-        const { error: insertError } = await supabase
-          .from('users')
-          .insert([{
-            user_id: authData.user.id,
-            first_name,
-            last_name,
-            role: 'customer',
-            is_active: true,
-            penalty_count: 0
-          }]);
-
-        if (insertError) {
-          console.error('❌ Manual profile creation failed:', insertError);
-        } else {
-          console.log('✅ Manual profile creation successful');
-        }
+        console.error('❌ Profile creation failed:', profileError);
+        return {
+          ...prevState,
+          message: "Registration failed: Database error updating user. Please try again."
+        };
       } else {
-        console.log('✅ User profile found in database:', userProfile);
+        console.log('✅ User profile created successfully');
       }
-    } catch (err) {
-      console.error('❌ Error checking user profile:', err);
+    } catch (profileErr) {
+      console.error('❌ Profile creation error:', profileErr);
+      return {
+        ...prevState,
+        message: "Registration failed: Database error updating user. Please try again."
+      };
     }
 
-    // Debug: Check trigger logs and auth user data
-    try {
-      const { data: debugData, error: debugError } = await supabase
-        .rpc('debug_auth_users');
-      
-      if (debugError) {
-        console.error('❌ Debug query failed:', debugError);
-      } else {
-        console.log('🔍 Debug auth users data:', debugData);
-      }
+    return {
+      ...prevState,
+      message: "Registration successful! You can now sign in.",
+    };
 
-      const { data: triggerLogs, error: logError } = await supabase
-        .from('trigger_debug_log')
-        .select('*')
-        .eq('user_id', authData.user.id);
-
-      if (logError) {
-        console.error('❌ Trigger log query failed:', logError);
-      } else {
-        console.log('🔍 Trigger execution logs:', triggerLogs);
-      }
-    } catch (debugErr) {
-      console.error('❌ Debug queries failed:', debugErr);
-    }
+  } catch (error) {
+    console.error('❌ Unexpected error during registration:', error);
+    return {
+      ...prevState,
+      message: "Registration failed due to an unexpected error. Please try again."
+    };
   }
-
-  revalidatePath("/", "layout");
-  redirect("/");
 }
