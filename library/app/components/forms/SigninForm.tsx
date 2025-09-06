@@ -40,6 +40,7 @@ const INITIAL_STATE = {
 };
 
 export function SigninForm() {
+  // @ts-ignore
   const [formState, formAction] = useActionState(signinAction, INITIAL_STATE);
   console.log(formState, "client");
   return (
