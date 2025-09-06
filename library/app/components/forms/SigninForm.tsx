@@ -25,9 +25,10 @@ const styles = {
   content: "space-y-2",
   fieldGroup: "space-y-2",
   label: "text-xl text-gray-700",
+  input: "text-gray-700 text-xl h-10",
   footer: "text-2xl flex flex-col",
   button:
-    "px-6 px-4 py-2 bg-[#552A1B] text-white rounded hover:bg-[#E46A07] transition-colors duration-300",
+    "text-2xl px-6 py-1 bg-[#552A1B] text-white rounded hover:bg-[#E46A07] transition-colors duration-300",
   prompt: "mt-4 text-center text-md",
   link: "ml-2 font-extrabold text-orange-500",
 };
@@ -56,7 +57,7 @@ export function SigninForm() {
               <Label className={styles.label} htmlFor="email">
                 Email
               </Label>
-              <Input
+              <Input className={styles.input}
                 id="email"
                 name="email"
                 type="email"
@@ -68,11 +69,11 @@ export function SigninForm() {
               <Label className={styles.label} htmlFor="password">
                 Password
               </Label>
-              <Input
+              <Input className={styles.input}
                 id="password"
                 name="password"
                 type="password"
-                placeholder="password"
+                placeholder="Password"
               />
               <ZodErrors error={formState?.zodErrors?.password} />
             </div>
