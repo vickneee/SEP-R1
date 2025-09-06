@@ -17,7 +17,7 @@ import { Input } from "@/app/components/ui/input";
 import { ZodErrors } from "@/app/components/custom/ZodErrors";
 
 const styles = {
-  container: "flex justify-center items-center w-full max-w-4xl min-h-[800px]",
+  container: "flex justify-center items-center w-full max-w-4xl min-h-[850px]",
   card: "w-112 py-8",
   header: "space-y-2",
   title: "text-4xl font-bold text-center text-orange-500",
