@@ -16,7 +16,7 @@ import { getAllBooks } from "@/app/actions/bookActions";
 
 interface Book {
   book_id: number;
-  isban: string;
+  isbn: string;
   title: string;
   author: string;
   publisher: string;
