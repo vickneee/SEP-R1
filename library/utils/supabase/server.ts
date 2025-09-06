@@ -1,6 +1,5 @@
 
 import { createServerClient } from "@supabase/ssr";
-import { createClient as createCoreClient, SupabaseClient } from "@supabase/supabase-js";
 import { cookies } from "next/headers";
 import type { Database } from "@/types/database";
 
@@ -31,48 +30,3 @@ export const createClient = async () => {
     },
   );
 };
-
-export const createAdminClient = async () => {
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  console.log('🔍 Service role key available:', !!serviceRoleKey);
-  console.log('🔍 Service role key length:', serviceRoleKey?.length || 0);
-
-  if (!serviceRoleKey) {
-    throw new Error("SUPABASE_SERVICE_ROLE_KEY is not set.");
-  }
-
-  return createServerClient<Database>(
-    supabaseUrl!,
-    serviceRoleKey,
-    {
-      cookies: {
-        getAll() {
-          return [];
-        },
-        setAll() { },
-      },
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false,
-      }
-    },
-  );
-}
-
-// A raw admin client without SSR cookie handling for calling Admin API endpoints
-export const createRawAdminClient = (): SupabaseClient<Database> => {
-  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!supabaseUrl) throw new Error("NEXT_PUBLIC_SUPABASE_URL is not set.");
-  if (!serviceRoleKey) throw new Error("SUPABASE_SERVICE_ROLE_KEY is not set.");
-  return createCoreClient<Database>(supabaseUrl, serviceRoleKey, {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-    global: {
-      headers: {
-        "X-Client-Info": "supabase-js/raw-admin",
-      }
-    }
-  });
-}

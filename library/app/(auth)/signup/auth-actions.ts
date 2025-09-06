@@ -1,5 +1,5 @@
 "use server";
-import { createClient, createAdminClient } from "@/utils/supabase/server";
+import { createClient } from "@/utils/supabase/server";
 import { z } from "zod";
 
 const schemaRegister = z.object({
@@ -90,34 +90,6 @@ export async function registerUserAction(prevState: FormState, formData: FormDat
     }
 
     console.log('✅ User created successfully:', data.user.id);
-
-    // Manually create user profile using admin client to bypass RLS
-    try {
-      const adminSupabase = await createAdminClient();
-      const { error: profileError } = await adminSupabase.from("users").upsert({
-        user_id: data.user.id,
-        email,
-        first_name,
-        last_name,
-        role: 'customer',
-      }, { onConflict: 'user_id' });
-
-      if (profileError) {
-        console.error('❌ Profile creation failed:', profileError);
-        return {
-          ...prevState,
-          message: "Registration failed: Database error updating user. Please try again."
-        };
-      } else {
-        console.log('✅ User profile created successfully');
-      }
-    } catch (profileErr) {
-      console.error('❌ Profile creation error:', profileErr);
-      return {
-        ...prevState,
-        message: "Registration failed: Database error updating user. Please try again."
-      };
-    }
 
     return {
       ...prevState,
