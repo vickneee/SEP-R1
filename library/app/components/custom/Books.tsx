@@ -28,7 +28,7 @@ interface Book {
   updated_at: string;
 }
 
-export function Books() {
+export function Books({ books }) {
   /*
   const [books, setBooks] = useState<Book[]>([]);
   const [error, setError] = useState("");
