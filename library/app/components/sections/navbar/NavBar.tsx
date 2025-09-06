@@ -2,10 +2,8 @@
 
 import { parseAsInteger, useQueryState } from "nuqs";
 import { usePathname, useRouter } from "next/navigation";
-
 import bookIcon from "../../../../public/bookIcon.png";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-
 import Link from "next/link";
 import Button from "@/app/components/ui/Button";
 import refetchBooks from "./refetchBook";
