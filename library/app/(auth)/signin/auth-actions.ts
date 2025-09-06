@@ -17,7 +17,7 @@ const schemaRegister = z.object({
     }),
 });
 
-export async function signinAction(prevState: any, formData: FormData) {
+export async function signinAction(prevState: { message?: string; zodErrors?: Record<string, string[]> }, formData: FormData) {
   const validatedFields = schemaRegister.safeParse({
     password: (formData.get("password") ?? "") as string,
     email: (formData.get("email") ?? "") as string,
