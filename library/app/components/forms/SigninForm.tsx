@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { signinAction } from "@/app/(auth)/signin/auth-actions";
+import { useEffect } from "react";
 
 import {
   CardTitle,
@@ -42,6 +43,14 @@ const INITIAL_STATE = {
 export function SigninForm() {
   // @ts-ignore
   const [formState, formAction] = useActionState(signinAction, INITIAL_STATE);
+
+  useEffect(() => {
+    if (formState.message === "Signin successful") {
+      // Force full reload so NavBar picks up the session
+      window.location.href = "/private";
+    }
+  }, [formState]);
+
   console.log(formState, "client");
   return (
     <div className={styles.container}>
