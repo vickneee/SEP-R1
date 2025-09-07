@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal, useEffect, useState} from "react";
 import {
   Card,
   CardAction,
@@ -10,13 +10,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-import { books } from "@/data/books";
+import {books} from "@/data/books";
 import BookImage from "@/app/components/custom/BookImage";
-import { getAllBooks } from "@/app/actions/bookActions";
+import {getAllBooks} from "@/app/actions/bookActions";
 
 interface Book {
   book_id: number;
-  isban: string;
+  isbn: string;
   title: string;
   author: string;
   publisher: string;
@@ -28,7 +28,8 @@ interface Book {
   updated_at: string;
 }
 
-export function Books({ books }) {
+// @ts-ignore
+export function Books({books}) {
   /*
   const [books, setBooks] = useState<Book[]>([]);
   const [error, setError] = useState("");
@@ -50,19 +51,19 @@ export function Books({ books }) {
   });
   */
 
+  // @ts-ignore
   return (
-    <div className="flex flex-col gap-10 max-w-3xl mx-auto">
-      <h1 className="mt-12 text-orange-500 text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 flex justify-center">
-        Library Collection
-      </h1>
-      <div className="grid grid-cols-4 gap-5">
-        {books.map((book) => (
+      <div className="flex flex-col gap-10 max-w-3xl mx-auto">
+        <h1 className="mt-12 text-orange-500 text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 flex justify-center">
+          Library Collection </h1>
+        <div className="grid grid-cols-4 gap-5">
+          {books.map((book: { id: Key | null | undefined; title: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; category: string; author: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined; }) => (
           <Card
             key={book.id}
             className="h-full hover:shadow-lg transition-shadow duration-300 cursor-pointer border-gray-100 flex flex-col justify-between"
           >
             <CardContent className="flex aspect-square items-center justify-center">
-              <BookImage title={book.title} category={book.category} />
+              <BookImage title={typeof book.title === "string" ? book.title : ""} category={book.category} />
             </CardContent>
             <CardTitle className="text-center text-lg font-medium">
               {book.title}

@@ -1,6 +1,6 @@
 "use client";
 
-import { parseAsInteger, useQueryState } from "nuqs";
+import { useQueryState } from "nuqs";
 import { usePathname, useRouter } from "next/navigation";
 import bookIcon from "../../../../public/bookIcon.png";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
@@ -25,8 +25,8 @@ function NavBar() {
   };
 
   return (
-    <section>
-      <nav className="sticky top-0 z-50 bg-white border-b border-gray-200 p-8">
+    <section className="sticky top-0 z-50 bg-white">
+      <nav className="border-b border-gray-200 p-8">
         <div>
           <div className="container mx-auto flex justify-between items-center">
             <div className="text-2xl font-bold flex gap-12">
@@ -67,20 +67,20 @@ function NavBar() {
             </div>
 
             <div className="flex row-auto items-center-safe space-x-12">
-              <Link href="/" className="hover:underline hover:text-orange-500">
-                Home
-              </Link>
+              {/*<Link href="/" className="hover:underline hover:text-orange-500">*/}
+              {/*  Home*/}
+              {/*</Link>*/}
+              {/*<Link*/}
+              {/*  href="/my-books"*/}
+              {/*  className="hover:underline hover:text-orange-500"*/}
+              {/*>*/}
+              {/*  My Books*/}
+              {/*</Link>*/}
               <Link
-                href="/my-books"
+                href="/"
                 className="hover:underline hover:text-orange-500"
               >
-                My Books
-              </Link>
-              <Link
-                href="/history"
-                className="hover:underline hover:text-orange-500"
-              >
-                History
+                Languages
               </Link>
               <div className="ml-4 flex-shrink-0">
                 <Link href="/signin" passHref>

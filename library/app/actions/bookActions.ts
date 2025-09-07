@@ -4,7 +4,7 @@ import { createClient } from "@/utils/supabase/server";
 
 interface Book {
   book_id: number;
-  isban: string;
+  isbn: string;
   title: string;
   author: string;
   publisher: string;
@@ -19,8 +19,8 @@ interface Book {
 const getAllBooks = async () => {
   const supabase = await createClient();
 
-  const { error, data } = await supabase
-    .from<"books", Book>("books")
+  const { data, error } = await supabase
+    .from("books")
     .select("book_id, title, author, category")
     .order("created_at", { ascending: true });
 
@@ -31,10 +31,14 @@ const getAllBooks = async () => {
 };
 
 const getBooksByAuthor = async (search: string) => {
+  if (!search?.trim()) {
+    return { books: [], error: undefined }
+  }
+
   const supabase = await createClient();
 
   const { error, data } = await supabase
-    .from<"books", Book>("books")
+    .from("books")
     .select("book_id, title, author, category")
     .ilike("author", `%${search}%`);
 
@@ -45,12 +49,16 @@ const getBooksByAuthor = async (search: string) => {
 };
 
 const getBooksByTitle = async (search: string) => {
+  if (!search?.trim()) {
+    return { books: [], error: undefined }
+  }
+
   const supabase = await createClient();
 
   const { error, data } = await supabase
-    .from<"books", Book>("books")
+    .from("books")
     .select("book_id, title, author, category")
-    .ilike("author", `%${search}%`);
+    .ilike("title", `%${search}%`);
 
   return {
     error: error?.message,
@@ -59,12 +67,16 @@ const getBooksByTitle = async (search: string) => {
 };
 
 const getBooksByCategory = async (search: string) => {
+  if (!search?.trim()) {
+    return { books: [], error: undefined }
+  }
+
   const supabase = await createClient();
 
   const { error, data } = await supabase
-    .from<"books", Book>("books")
+    .from("books")
     .select("book_id, title, author, category")
-    .ilike("author", `%${search}%`);
+    .ilike("category", `%${search}%`);
 
   return {
     error: error?.message,
