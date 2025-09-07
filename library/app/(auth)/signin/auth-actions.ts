@@ -41,6 +41,6 @@ export async function signinAction(prevState: { message?: string; zodErrors?: Re
     return { ...prevState, message: error?.message || "Signin failed" };
   }
 
-  revalidatePath("/customer-dashboard", "layout");
-  redirect("/customer-dashboard");
+  revalidatePath("/private", "layout");
+  redirect("/private");
 }
