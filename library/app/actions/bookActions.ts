@@ -32,7 +32,7 @@ const getAllBooks = async () => {
 
 const getBooksByAuthor = async (search: string) => {
   if (!search?.trim()) {
-    return { books: [], error: undefined }
+    return { books: [], error: undefined };
   }
 
   const supabase = await createClient();
@@ -50,14 +50,14 @@ const getBooksByAuthor = async (search: string) => {
 
 const getBooksByTitle = async (search: string) => {
   if (!search?.trim()) {
-    return { books: [], error: undefined }
+    return await getAllBooks();
   }
 
   const supabase = await createClient();
 
   const { error, data } = await supabase
     .from("books")
-    .select("book_id, title, author, category")
+    .select("book_id, title, author, category, image")
     .ilike("title", `%${search}%`);
 
   return {
@@ -68,7 +68,7 @@ const getBooksByTitle = async (search: string) => {
 
 const getBooksByCategory = async (search: string) => {
   if (!search?.trim()) {
-    return { books: [], error: undefined }
+    return { books: [], error: undefined };
   }
 
   const supabase = await createClient();
@@ -84,4 +84,24 @@ const getBooksByCategory = async (search: string) => {
   };
 };
 
-export { getAllBooks, getBooksByAuthor, getBooksByTitle, getBooksByCategory };
+const getBookById = async (id: number) => {
+  const supabase = await createClient();
+  const { error, data } = await supabase
+    .from("books")
+    .select("*")
+    .eq("book_id", id)
+    .single();
+  console.log(error);
+  return {
+    error: error?.message,
+    book: data as Book,
+  };
+};
+
+export {
+  getAllBooks,
+  getBooksByAuthor,
+  getBooksByTitle,
+  getBooksByCategory,
+  getBookById,
+};
