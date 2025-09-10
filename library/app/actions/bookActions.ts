@@ -145,8 +145,6 @@ const createBook = async (book: {
   }
 };
 
-export { getAllBooks, getBooksByAuthor, getBooksByTitle, getBooksByCategory, createBook };
-=======
 const getBookById = async (id: number) => {
   const supabase = await createClient();
   const { error, data } = await supabase
@@ -167,4 +165,5 @@ export {
   getBooksByTitle,
   getBooksByCategory,
   getBookById,
+  createBook
 };

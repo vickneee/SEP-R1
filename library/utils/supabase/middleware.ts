@@ -7,7 +7,7 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
 // Protected routes that require authentication
-const protectedRoutes = ['/my-books', '/history', '/private'];
+const protectedRoutes = ['/my-books', '/history', '/private', '/admin-dashboard', '/customer-dashboard'];
 
 export async function updateSession(request: NextRequest) {
   // Create an unmodified response
