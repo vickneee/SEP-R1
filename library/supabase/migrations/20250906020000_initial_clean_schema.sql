@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS public.books (
   book_id SERIAL PRIMARY KEY,
   isbn TEXT UNIQUE NOT NULL,
   title TEXT NOT NULL,
+  image TEXT NULL,
   author TEXT NOT NULL,
   publisher TEXT NOT NULL,
   publication_year INTEGER NOT NULL CHECK (publication_year > 0 AND publication_year <= EXTRACT(YEAR FROM NOW())),
@@ -277,6 +278,22 @@ CREATE POLICY "Only librarians can modify books" ON public.books
   FOR ALL USING (
     EXISTS (SELECT 1 FROM public.users me WHERE me.user_id = auth.uid() AND me.role = 'librarian')
   );
+  
+/*-- Allow only librarians to insert books
+DROP POLICY IF EXISTS "Only librarians can insert books" ON public.books;
+CREATE POLICY "Only librarians can insert books" ON public.books
+  FOR INSERT
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM public.users me
+      WHERE me.user_id = auth.uid() AND me.role = 'librarian'
+    )
+  );
+*/
+  -- Allow all users (including unauthenticated) to insert books (for testing)
+DROP POLICY IF EXISTS "Allow all inserts on books" ON public.books;
+CREATE POLICY "Allow all inserts on books" ON public.books
+  FOR INSERT USING (true);
 
 -- Reservations policies
 DROP POLICY IF EXISTS "Users can view own reservations" ON public.reservations;
