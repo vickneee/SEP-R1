@@ -278,6 +278,17 @@ CREATE POLICY "Only librarians can modify books" ON public.books
   FOR ALL USING (
     EXISTS (SELECT 1 FROM public.users me WHERE me.user_id = auth.uid() AND me.role = 'librarian')
   );
+  
+-- Allow only librarians to insert books
+DROP POLICY IF EXISTS "Only librarians can insert books" ON public.books;
+CREATE POLICY "Only librarians can insert books" ON public.books
+  FOR INSERT
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM public.users me
+      WHERE me.user_id = auth.uid() AND me.role = 'librarian'
+    )
+  );
 
 -- Reservations policies
 DROP POLICY IF EXISTS "Users can view own reservations" ON public.reservations;

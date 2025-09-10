@@ -84,6 +84,69 @@ const getBooksByCategory = async (search: string) => {
   };
 };
 
+const createBook = async (book: {
+  title: string;
+  author: string;
+  image: string;
+  category: string;
+  isbn?: string;
+  publisher?: string;
+  publication_year?: number;
+  total_copies?: number;
+  available_copies?: number;
+}) => {
+  try {
+    if (
+      !book.title ||
+      !book.author ||
+      !book.category ||
+      !book.isbn ||
+      !book.publisher ||
+      !book.publication_year ||
+      !book.total_copies ||
+      typeof book.available_copies !== "number"
+    ) {
+      return { error: "Missing required fields.", book: null };
+    }
+
+    if (
+      book.image &&
+      !/^https?:\/\/.+\..+/.test(book.image)
+    ) {
+      return { error: "Image must be a valid URL.", book: null };
+    }
+
+    const supabase = await createClient();
+    const { data, error } = await supabase
+      .from("books")
+      .insert([{
+        title: book.title,
+        author: book.author,
+        image: book.image,
+        category: book.category,
+        isbn: book.isbn,
+        publisher: book.publisher,
+        publication_year: book.publication_year,
+        total_copies: book.total_copies,
+        available_copies: book.available_copies,
+      }])
+      .select()
+      .single();
+
+    if (error) {
+      console.error("Supabase insert error:", error);
+      return { error: error.message, book: null };
+    }
+
+    return { error: null, book: data };
+  } catch (err: any) {
+    console.error("createBook exception:", err);
+    return { error: err.message || "Unknown error", book: null };
+  }
+};
+
+export { getAllBooks, getBooksByAuthor, getBooksByTitle, getBooksByCategory, createBook };
+=======
 const getBookById = async (id: number) => {
   const supabase = await createClient();
   const { error, data } = await supabase
