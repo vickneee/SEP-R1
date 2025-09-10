@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS public.books (
   book_id SERIAL PRIMARY KEY,
   isbn TEXT UNIQUE NOT NULL,
   title TEXT NOT NULL,
+  image TEXT NULL,
   author TEXT NOT NULL,
   publisher TEXT NOT NULL,
   publication_year INTEGER NOT NULL CHECK (publication_year > 0 AND publication_year <= EXTRACT(YEAR FROM NOW())),
