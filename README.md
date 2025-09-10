@@ -19,8 +19,8 @@
 - **UI/UX Design:** Figma
 
 ### Testing Tools
-- **Automated Testing Framework:** Playwright Unit and E2E Testing
-- **Testing Coverage:** Playwright Test Coverage Extension
+- **Automated Testing Framework:** Jest + React Testing Library
+- **Testing Coverage:** Jest Coverage Report
 
 ### CI/CD
 - Docker

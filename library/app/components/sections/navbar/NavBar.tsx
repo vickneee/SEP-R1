@@ -1,27 +1,26 @@
 "use client";
 
 import { useQueryState } from "nuqs";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import bookIcon from "../../../../public/bookIcon.png";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import Button from "@/app/components/ui/Button";
-import refetchBooks from "./refetchBook";
+import useSupabaseSession from "@/hooks/useSupabaseSession";
 
 function NavBar() {
-  const pathname = usePathname();
   const router = useRouter();
   const [search, setSearch] = useQueryState("search", { defaultValue: "" });
 
+  const { session, loading, supabase } = useSupabaseSession();
+
   const handleSearch = (value: string) => {
-    if (pathname !== "/books") {
-      router.push(`/books?search=${value}`);
-    } else {
-      setSearch(value);
-      setTimeout(() => {
-        refetchBooks();
-      }, 300);
-    }
+    router.push(`/books?search=${value}`);
+  };
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    window.location.href = "/";
   };
 
   return (
@@ -65,7 +64,7 @@ function NavBar() {
                 />
               </div>
             </div>
-
+            {/* Links + Auth */}
             <div className="flex row-auto items-center-safe space-x-12">
               {/*<Link href="/" className="hover:underline hover:text-orange-500">*/}
               {/*  Home*/}
@@ -76,16 +75,19 @@ function NavBar() {
               {/*>*/}
               {/*  My Books*/}
               {/*</Link>*/}
-              <Link
-                href="/"
-                className="hover:underline hover:text-orange-500"
-              >
+              <Link href="/" className="hover:underline hover:text-orange-500">
                 Languages
               </Link>
+
               <div className="ml-4 flex-shrink-0">
-                <Link href="/signin" passHref>
-                  <Button>Sign In</Button>
-                </Link>
+                {!loading &&
+                  (session?.user ? (
+                    <Button onClick={handleLogout}>Log out</Button>
+                  ) : (
+                    <Link href="/signin" passHref>
+                      <Button>Sign In</Button>
+                    </Link>
+                  ))}
               </div>
             </div>
           </div>

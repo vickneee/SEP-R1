@@ -9,7 +9,6 @@ export const books = [
     title: "Atomic Habits",
     author: "James Clear",
     image: "/book-covers/book2.jpg",
-    category: "Personal Development",
     category: "Personal Growth",
   },
   {
