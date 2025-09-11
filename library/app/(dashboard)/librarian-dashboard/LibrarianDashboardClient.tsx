@@ -26,12 +26,12 @@ interface UserProfile {
     user_id: string;
 }
 
-interface AdminDashboardClientProps {
+interface LibrarianDashboardClientProps {
     userProfile: UserProfile;
     userEmail: string;
 }
 
-export default function AdminDashboardClient({ userProfile, userEmail }: AdminDashboardClientProps) {
+export default function LibrarianDashboardClient({ userProfile, userEmail }: LibrarianDashboardClientProps) {
     const [books, setBooks] = useState<Book[]>([]);
     const [form, setForm] = useState<Book>({
         title: "",
@@ -125,7 +125,7 @@ export default function AdminDashboardClient({ userProfile, userEmail }: AdminDa
             </div>
 
             <div className="max-w-md mx-auto">
-                <h1 className="text-2xl font-bold mb-4">Admin Dashboard - Add a Book</h1>
+                <h1 className="text-2xl font-bold mb-4">Add a Book</h1>
                 <form
                     onSubmit={handleSubmit}
                     className="flex flex-col gap-3 bg-white p-6 rounded shadow"

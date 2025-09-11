@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
-import AdminDashboard from "@/app/(dashboard)/admin-dashboard/page";
+import AdminDashboard from "@/app/(dashboard)/librarian-dashboard/page";
 import CustomerDashboard from "@/app/(dashboard)/customer-dashboard/page";
 
 export default async function PrivatePage() {
