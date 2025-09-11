@@ -25,7 +25,7 @@ import { useRouter } from "next/navigation";
 // @ts-ignore
 export function Books({ books }) {
   const router = useRouter();
-  const handleClick = (id) => {
+  const handleClick = (id: Key | null | undefined) => {
     router.push(`/book/${id}`);
   };
 
@@ -35,9 +35,10 @@ export function Books({ books }) {
       <h1 className="mt-12 text-orange-500 text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 flex justify-center">
         Library Collection{" "}
       </h1>
-      <div className="grid grid-cols-4 gap-5">
+      <div className="grid grid-cols-3 gap-5 mb-16 min-w-[800px]">
         {books.map(
           (book: {
+            book_id: Key | null | undefined;
             id: Key | null | undefined;
             title:
               | string
@@ -82,16 +83,24 @@ export function Books({ books }) {
               | null
               | undefined;
             image: string;
+            isbn: string;
+            publisher: string;
+            publication_year: number;
+            total_copies: number;
+            available_copies: number;
+            created_at: string;
+            updated_at: string;
+            alt?: string | undefined
           }) => (
             <Card
               key={book.book_id}
-              className="h-full hover:shadow-lg transition-shadow duration-300 cursor-pointer border-gray-100 flex flex-col justify-between"
+              className="px-4 h-full hover:shadow-lg transition-shadow duration-300 cursor-pointer border-gray-100 flex flex-col justify-between"
             >
               <CardContent className="flex aspect-square items-center justify-center">
                 {book.image ? (
                   <img
                     src={book.image}
-                    alt={book.title}
+                    alt={typeof book.title === "string" ? book.title : undefined}
                     width={200}
                     height={300}
                   />
@@ -105,10 +114,10 @@ export function Books({ books }) {
               <CardTitle className="text-center text-lg font-medium">
                 {book.title}
               </CardTitle>
-              <CardContent className="mt-[-12px] text-center text-sm text-gray-600">
+              <CardContent className="mt-[-22px] text-center text-sm text-gray-600">
                 {book.author}
               </CardContent>
-              <div className="flex justify-center">
+              <div className="flex justify-center mt-[-10px]">
                 <button
                   onClick={() => handleClick(book.book_id)}
                   className="w-auto px-6 spx-4 py-2 bg-[#552A1B] text-white rounded hover:bg-[#E46A07] transition-colors duration-300"

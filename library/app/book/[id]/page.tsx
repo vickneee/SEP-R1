@@ -5,12 +5,12 @@ export default async function BookPage({ params }: { params: { id: string } }) {
   const { book } = await getBookById(Number(params.id));
 
   return (
-    <div className="flex flex-col gap-10 max-w-xl mx-auto">
-      <h1 className="mt-12 text-orange-500 text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 flex justify-center">
+    <div className="flex flex-col items-center mx-auto mt-12 mb-16">
+      <h1 className=" text-orange-500 text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 flex justify-center">
         Book Information
       </h1>
-      <div className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
-        <div className="flex flex-col items-center p-6">
+      <div className="mt-2 w-[380px] px-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
+        <div className="flex flex-col items-center p-2">
           {book.image ? (
             <img
               src={book.image}
@@ -19,12 +19,12 @@ export default async function BookPage({ params }: { params: { id: string } }) {
             />
           ) : (
             <BookImage
-              title={typeof book.title === "string" ? book.title : ""}
+              title={book.title}
               category={book.category}
             />
           )}
 
-          <h2 className="text-xl font-semibold mb-2">{book.title}</h2>
+          <h2 className="text-center text-xl font-semibold mb-2">{book.title}</h2>
           <p className="text-sm text-gray-500 mb-1">
             Category: {book.category}
           </p>
@@ -39,7 +39,7 @@ export default async function BookPage({ params }: { params: { id: string } }) {
           </div>
 
           <div className="py-7 flex justify-center">
-            {book.availeble_copies === 0 ? (
+            {book.available_copies === 0 ? (
               <button className="w-auto px-6 spx-4 py-2 bg-[#552A1B] text-white rounded hover:bg-[#E46A07] transition-colors duration-300">
                 Checked out
               </button>
