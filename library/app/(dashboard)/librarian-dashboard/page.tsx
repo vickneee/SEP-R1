@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import LibrarianDashboardClient from "./LibrarianDashboardClient";
 
-export default async function AdminDashboard() {
+export default async function LibrarianDashboard() {
   const supabase = await createClient();
 
   const { data, error } = await supabase.auth.getUser();
