@@ -16,7 +16,10 @@ const schemaRegister = z.object({
     }),
 });
 
-export async function signinAction(prevState: { message?: string; zodErrors?: Record<string, string[]> }, formData: FormData) {
+export async function signinAction(
+  prevState: { message?: string; zodErrors?: Record<string, string[]> },
+  formData: FormData
+) {
   const validatedFields = schemaRegister.safeParse({
     password: (formData.get("password") ?? "") as string,
     email: (formData.get("email") ?? "") as string,
@@ -37,6 +40,7 @@ export async function signinAction(prevState: { message?: string; zodErrors?: Re
   );
 
   if (error) {
+    console.log(error.message);
     return { ...prevState, message: error?.message || "Signin failed" };
   }
 
