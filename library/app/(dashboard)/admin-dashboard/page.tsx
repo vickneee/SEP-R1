@@ -21,5 +21,5 @@ export default async function AdminDashboard() {
     redirect("/private");
   }
 
-  return <AdminDashboardClient />;
+  return <AdminDashboardClient userProfile={userProfile} userEmail={data.user.email || ''} />;
 }
