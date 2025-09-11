@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
-import AdminDashboard from "@/app/(dashboard)/admin-dashboard/page";
+import LibrarianDashboard from "@/app/(dashboard)/librarian-dashboard/page";
 import CustomerDashboard from "@/app/(dashboard)/customer-dashboard/page";
 
 export default async function PrivatePage() {
@@ -31,7 +31,7 @@ export default async function PrivatePage() {
     <div>
       {/* Render the appropriate dashboard based on user role */}
       {userProfile.role === 'librarian' ? (
-        <AdminDashboard />
+        <LibrarianDashboard />
       ) : userProfile.role === 'customer' ? (
         <CustomerDashboard />
       ) : (

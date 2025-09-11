@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
-import AdminDashboardClient from "./AdminDashboardClient";
+import LibrarianDashboardClient from "./LibrarianDashboardClient";
 
-export default async function AdminDashboard() {
+export default async function LibrarianDashboard() {
   const supabase = await createClient();
 
   const { data, error } = await supabase.auth.getUser();
@@ -21,5 +21,5 @@ export default async function AdminDashboard() {
     redirect("/private");
   }
 
-  return <AdminDashboardClient />;
+  return <LibrarianDashboardClient userProfile={userProfile} userEmail={data.user.email || ''} />;
 }

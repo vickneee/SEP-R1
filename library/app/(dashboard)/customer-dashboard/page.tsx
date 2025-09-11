@@ -21,5 +21,5 @@ export default async function CustomerDashboard() {
         redirect("/private");
     }
 
-    return <CustomerDashboardClient />;
+    return <CustomerDashboardClient userProfile={userProfile} userEmail={data.user.email || ''} />;
 }
