@@ -3,6 +3,7 @@
 import { createClient } from "@/utils/supabase/server";
 
 interface Book {
+  image: string;
   book_id: number;
   isbn: string;
   title: string;
