@@ -61,10 +61,10 @@ export default function UserReservations() {
                         <tr key={res.reservation_id}>
                             <td className="px-6 py-4 text-left">{res.books.title}</td>
                             <td className="px-6 py-4 text-left">{res.books.author}</td>
-                            <td className="px-6 py-4 text-left">{new Date(res.reservation_date).toLocaleDateString()}</td>
-                            <td className="px-6 py-4 text-left">{new Date(res.due_date).toLocaleDateString()}</td>
+                            <td className="px-6 py-4 text-left">{new Date(res.reservation_date).toISOString().slice(0, 10)}</td>
+                            <td className="px-6 py-4 text-left">{new Date(res.due_date).toISOString().slice(0, 10)}</td>
                             <td className="px-6 py-4 text-left">
-                                {res.return_date ? new Date(res.return_date).toLocaleDateString() : "-"}
+                                {res.return_date ? new Date(res.return_date).toISOString() : "-"}
                             </td>
                             <td className="px-4 py-2">
                   <span
