@@ -8,6 +8,7 @@ export default function BookPageClient({ book: initialBook }: { book: any }) {
     const [book, setBook] = useState(initialBook);
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
+    const [isSuccess, setIsSuccess] = useState(false);
 
     const handleReserve = async () => {
         setLoading(true);
@@ -16,11 +17,13 @@ export default function BookPageClient({ book: initialBook }: { book: any }) {
             const user_id = await getUserId();
             if (!user_id) {
                 setMessage("You must be logged in to reserve a book.");
+                setIsSuccess(false);
                 setLoading(false);
                 return;
             }
             if (!initialBook || initialBook.available_copies === 0) {
                 setMessage("No available copies to reserve.");
+                setIsSuccess(false);
                 setLoading(false);
                 return;
             }
@@ -32,12 +35,15 @@ export default function BookPageClient({ book: initialBook }: { book: any }) {
             console.log(result);
             if (result.success) {
                 setMessage("Reservation successful!");
+                setIsSuccess(true);
                 setBook({ ...book, available_copies: book.available_copies - 1 });
             } else {
                 setMessage("Reservation failed.");
+                setIsSuccess(false);
             }
         } catch {
             setMessage("An error occurred.");
+            setIsSuccess(false);
         }
         setLoading(false);
     };
@@ -91,7 +97,7 @@ export default function BookPageClient({ book: initialBook }: { book: any }) {
                             </button>
                         )}
                     </div>
-                    {message && <p className="mb-6 text-center text-sm text-red-600">{message}</p>}
+                    {message && <p className={`mb-6 text-center text-sm ${isSuccess ? "text-green-600" : "text-red-600"}`}>{message}</p>}
                 </div>
             </div>
         </div>
