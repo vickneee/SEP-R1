@@ -95,27 +95,43 @@ CREATE INDEX IF NOT EXISTS idx_penalties_status ON public.penalties(status);
 CREATE OR REPLACE FUNCTION public.update_book_availability()
 RETURNS TRIGGER AS $$
 BEGIN
-  IF TG_OP = 'INSERT' THEN
-    IF NEW.status = 'active' THEN
-      UPDATE public.books SET available_copies = available_copies - 1 WHERE book_id = NEW.book_id;
+    -- INSERT
+    IF TG_OP = 'INSERT' AND NEW.status = 'active' THEN
+        UPDATE public.books
+        SET available_copies = available_copies - 1
+        WHERE book_id = NEW.book_id AND available_copies > 0;
+        IF NOT FOUND THEN
+            RAISE EXCEPTION 'No available copies for book_id=%', NEW.book_id;
+        END IF;
     END IF;
+
+    -- UPDATE
+    IF TG_OP = 'UPDATE' THEN
+        -- active -> returned/cancelled
+        IF OLD.status = 'active' AND NEW.status IN ('returned','cancelled') THEN
+            UPDATE public.books
+            SET available_copies = available_copies + 1
+            WHERE book_id = NEW.book_id;
+        END IF;
+
+        -- returned/cancelled -> active
+        IF OLD.status IN ('returned','cancelled') AND NEW.status = 'active' THEN
+            UPDATE public.books
+            SET available_copies = available_copies - 1
+            WHERE book_id = NEW.book_id AND available_copies > 0;
+        END IF;
+    END IF;
+
+    -- DELETE
+    IF TG_OP = 'DELETE' AND OLD.status = 'active' THEN
+        UPDATE public.books
+        SET available_copies = available_copies + 1
+        WHERE book_id = OLD.book_id;
+    END IF;
+
     RETURN NEW;
-  ELSIF TG_OP = 'UPDATE' THEN
-    IF OLD.status = 'active' AND NEW.status IN ('returned', 'cancelled') THEN
-      UPDATE public.books SET available_copies = available_copies + 1 WHERE book_id = NEW.book_id;
-    ELSIF OLD.status IN ('returned', 'cancelled') AND NEW.status = 'active' THEN
-      UPDATE public.books SET available_copies = available_copies - 1 WHERE book_id = NEW.book_id;
-    END IF;
-    RETURN NEW;
-  ELSIF TG_OP = 'DELETE' THEN
-    IF OLD.status = 'active' THEN
-      UPDATE public.books SET available_copies = available_copies + 1 WHERE book_id = OLD.book_id;
-    END IF;
-    RETURN OLD;
-  END IF;
-  RETURN NULL;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
 
 DROP TRIGGER IF EXISTS trigger_update_book_availability ON public.reservations;
 CREATE TRIGGER trigger_update_book_availability
@@ -296,6 +312,10 @@ CREATE POLICY "Users can view own reservations" ON public.reservations
   FOR SELECT USING (
     auth.uid() = user_id OR EXISTS (SELECT 1 FROM public.users me WHERE me.user_id = auth.uid() AND me.role = 'librarian')
   );
+
+-- Default user_id to auth.uid() on insert
+ALTER TABLE reservations
+    ALTER COLUMN user_id SET DEFAULT auth.uid();
 
 DROP POLICY IF EXISTS "Users can create own reservations" ON public.reservations;
 CREATE POLICY "Users can create own reservations" ON public.reservations
