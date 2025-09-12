@@ -16,7 +16,7 @@ export default function BookPageClient({ book: initialBook }: { book: any }) {
         try {
             const user_id = await getUserId();
             if (!user_id) {
-                setMessage("You must be logged in to reserve a book.");
+                setMessage("You must be signed in to reserve a book.");
                 setIsSuccess(false);
                 setLoading(false);
                 return;
