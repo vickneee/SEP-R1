@@ -6,30 +6,30 @@
 -----------------------------
 INSERT INTO public.books (isbn, title, image, author, publisher, publication_year, category, total_copies, available_copies) VALUES
 -- Fiction
-('978-0-547-92822-7', 'The Hobbit', 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400', 'J.R.R. Tolkien', 'Houghton Mifflin Harcourt', 1937, 'Fiction', 3, 3),
-('978-0-7432-7356-5', 'To Kill a Mockingbird', 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400', 'Harper Lee', 'J. B. Lippincott & Co.', 1960, 'Fiction', 2, 2),
-('978-0-452-28423-4', '1984', 'https://images.unsplash.com/photo-1495640388908-05fa85288e61?w=400', 'George Orwell', 'Secker & Warburg', 1949, 'Fiction', 4, 4),
-('978-0-7434-7679-3', 'The Great Gatsby', 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400', 'F. Scott Fitzgerald', 'Charles Scribner''s Sons', 1925, 'Fiction', 2, 2),
-('978-0-316-76948-0', 'The Catcher in the Rye', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400', 'J.D. Salinger', 'Little, Brown and Company', 1951, 'Fiction', 2, 2),
+('978-0-547-92822-7', 'The Hobbit', 'https://m.media-amazon.com/images/I/81uEDUfKBZL._SL1500_.jpg', 'J.R.R. Tolkien', 'Houghton Mifflin Harcourt', 1937, 'Fiction', 3, 3),
+('978-0-7432-7356-5', 'To Kill a Mockingbird', 'https://m.media-amazon.com/images/I/81aY1lxk+9L._SL1500_.jpg', 'Harper Lee', 'J. B. Lippincott & Co.', 1960, 'Fiction', 2, 2),
+('978-0-452-28423-4', '1984', 'https://m.media-amazon.com/images/I/71wANojhEKL._SL1500_.jpg', 'George Orwell', 'Secker & Warburg', 1949, 'Fiction', 4, 4),
+('978-0-7434-7679-3', 'The Great Gatsby', 'https://m.media-amazon.com/images/I/81TLiZrasVL._SL1500_.jpg', 'F. Scott Fitzgerald', 'Charles Scribner''s Sons', 1925, 'Fiction', 2, 2),
+('978-0-316-76948-0', 'The Catcher in the Rye', 'https://m.media-amazon.com/images/I/81TRBjfC5fL._SL1500_.jpg', 'J.D. Salinger', 'Little, Brown and Company', 1951, 'Fiction', 2, 2),
 
 -- Non-Fiction
-('978-1-60309-025-4', 'Sapiens: A Brief History of Humankind', 'https://images.unsplash.com/photo-1471023492977-0681a21d4ee9?w=400', 'Yuval Noah Harari', 'Harvill Secker', 2014, 'Non-Fiction', 3, 3),
-('978-0-7432-7357-2', 'The Immortal Life of Henrietta Lacks', 'https://images.unsplash.com/photo-1516979187457-637abb4f9353?w=400', 'Rebecca Skloot', 'Crown Publishing Group', 2010, 'Non-Fiction', 2, 2),
-('978-0-307-38789-9', 'Educated', 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400', 'Tara Westover', 'Random House', 2018, 'Non-Fiction', 2, 2),
+('978-1-60309-025-4', 'Sapiens: A Brief History of Humankind', 'https://m.media-amazon.com/images/I/716E6dQ4BXL._SL1500_.jpg', 'Yuval Noah Harari', 'Harvill Secker', 2014, 'Non-Fiction', 3, 3),
+('978-0-7432-7357-2', 'The Immortal Life of Henrietta Lacks', 'https://m.media-amazon.com/images/I/81coyP8S-ZL._SL1500_.jpg', 'Rebecca Skloot', 'Crown Publishing Group', 2010, 'Non-Fiction', 2, 2),
+('978-0-307-38789-9', 'Educated', 'https://m.media-amazon.com/images/I/71-4MkLN5jL._SL1500_.jpg', 'Tara Westover', 'Random House', 2018, 'Non-Fiction', 2, 2),
 
 -- Science & Technology
-('978-0-262-03384-8', 'Introduction to Algorithms', 'https://images.unsplash.com/photo-1532012197267-da84d127e765?w=400', 'Thomas H. Cormen', 'MIT Press', 2009, 'Computer Science', 2, 2),
-('978-0-13-235088-4', 'Clean Code', 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=400', 'Robert C. Martin', 'Prentice Hall', 2008, 'Computer Science', 3, 3),
-('978-0-596-51774-8', 'JavaScript: The Good Parts', 'https://images.unsplash.com/photo-1542831371-29b0f74f9713?w=400', 'Douglas Crockford', 'O''Reilly Media', 2008, 'Computer Science', 2, 2),
-('978-1-449-31884-7', 'Learning React', 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=400', 'Alex Banks', 'O''Reilly Media', 2020, 'Computer Science', 2, 2),
+('978-0-262-03384-8', 'Introduction to Algorithms', 'https://m.media-amazon.com/images/I/61Mw06x2XcL._SL1500_.jpg', 'Thomas H. Cormen', 'MIT Press', 2009, 'Computer Science', 2, 2),
+('978-0-13-235088-4', 'Clean Code', 'https://m.media-amazon.com/images/I/71nj3JM-igL._SL1500_.jpg', 'Robert C. Martin', 'Prentice Hall', 2008, 'Computer Science', 3, 3),
+('978-0-596-51774-8', 'JavaScript: The Good Parts', 'https://m.media-amazon.com/images/I/7185IMvz88L._SL1500_.jpg', 'Douglas Crockford', 'O''Reilly Media', 2008, 'Computer Science', 2, 2),
+('978-1-449-31884-7', 'Learning React', 'https://m.media-amazon.com/images/I/91uFdkCJmAL._SL1500_.jpg', 'Alex Banks', 'O''Reilly Media', 2020, 'Computer Science', 2, 2),
 
 -- History
-('978-0-679-64115-3', 'A People''s History of the United States', 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=400', 'Howard Zinn', 'Harper & Row', 1980, 'History', 2, 2),
-('978-0-14-303943-3', 'The Guns of August', 'https://images.unsplash.com/photo-1589829085413-56de8ae18c73?w=400', 'Barbara Tuchman', 'Macmillan', 1962, 'History', 1, 1),
+('978-0-679-64115-3', 'A People''s History of the United States', 'https://m.media-amazon.com/images/I/71Zb-D8NaGL._SL1500_.jpg', 'Howard Zinn', 'Harper & Row', 1980, 'History', 2, 2),
+('978-0-14-303943-3', 'The Guns of August', 'https://m.media-amazon.com/images/I/71vkxIftlzL._SL1500_.jpg', 'Barbara Tuchman', 'Macmillan', 1962, 'History', 1, 1),
 
 -- Science
-('978-0-553-10953-5', 'A Brief History of Time', 'https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=400', 'Stephen Hawking', 'Bantam Spectra', 1988, 'Science', 2, 2),
-('978-0-14-027740-9', 'The Selfish Gene', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400', 'Richard Dawkins', 'Oxford University Press', 1976, 'Science', 2, 2)
+('978-0-553-10953-5', 'A Brief History of Time', 'https://m.media-amazon.com/images/I/91ebghaV-eL._SL1500_.jpg', 'Stephen Hawking', 'Bantam Spectra', 1988, 'Science', 2, 2),
+('978-0-14-027740-9', 'The Selfish Gene', 'https://m.media-amazon.com/images/I/61dtRkUbfRL._SL1338_.jpg', 'Richard Dawkins', 'Oxford University Press', 1976, 'Science', 2, 2)
 
 ON CONFLICT (isbn) DO NOTHING;
 
@@ -141,6 +141,6 @@ UPDATE public.books SET available_copies = available_copies - 1 WHERE book_id IN
 -- Success message
 -----------------------------
 DO $$ BEGIN
-    RAISE NOTICE 'Seed data inserted: % books, 2 test users, and sample reservations', 
+    RAISE NOTICE 'Seed data inserted: % books, 2 test users, and sample reservations',
         (SELECT COUNT(*) FROM public.books);
 END $$;
