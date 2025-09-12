@@ -37,7 +37,7 @@ function About() {
                                 <span className="text-sm text-gray-300">Online Access</span>
                             </div>
                         </div>
-                        <Link href="/sign-in" passHref>
+                        <Link href="/books" passHref>
                         <button className="mt-8 px-6 py-2 rounded-sm border-1 border-orange-500 text-orange-500 hover:bg-orange-500 hover:text-white transition-colors duration-300">
                             Explore More
                         </button>
