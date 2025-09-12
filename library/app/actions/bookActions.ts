@@ -22,7 +22,7 @@ const getAllBooks = async () => {
 
   const { data, error } = await supabase
     .from("books")
-    .select("book_id, title, author, category")
+    .select("book_id, title, image, author, category")
     .order("created_at", { ascending: true });
 
   return {
