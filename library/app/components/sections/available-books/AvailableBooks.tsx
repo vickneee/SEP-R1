@@ -1,6 +1,7 @@
 import * as React from "react"
 
 import {Card, CardContent, CardTitle} from "@/components/ui/card"
+import { getAllBooks } from "@/app/actions/bookActions";
 import {
     Carousel,
     CarouselContent,
@@ -8,24 +9,41 @@ import {
     CarouselNext,
     CarouselPrevious,
 } from "@/components/ui/carousel"
-import Image from "next/image";
-import {books} from "@/data/books";
 
-function AvailableBooks() {
+async function AvailableBooks() {
+    const { books, error } = await getAllBooks();
+
+    if (error) {
+        return (
+            <div className="flex justify-center items-center h-full">
+                <p className="text-red-600">Failed to load books: {error}</p>
+            </div>
+        );
+    }
+
+
+    if (!books || books.length === 0) {
+        return (
+            <div className="flex justify-center items-center h-full">
+                <p>No books available.</p>
+            </div>
+        );
+    }
+
     return (
         <div className="w-full h-[750px] sm:px-8 md:px-16 py-12">
             <h2 className="mt-12 text-orange-500 text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 flex justify-center">
                 Available Books
             </h2>
-            <div className="flex justify-center mt-10 overflow-hidden">
+            <div className="flex justify-center mt-10 mb-8 overflow-hidden">
             <Carousel className="w-full max-w-1/2 sm:max-w-1/2 lg:max-w-3xl xl:max-w-4xl 2xl:max-w-5xl">
                 <CarouselContent className="-ml-1">
-                    {books.map((book, index) => (
-                        <CarouselItem key={index} className="pl-1 md:basis-1/2 lg:basis-1/3">
+                    {books.map((book) => (
+                        <CarouselItem key={book.book_id} className="pl-1 md:basis-1/2 lg:basis-1/3">
                             <div className="p-4">
                                 <Card className="px-4 h-full hover:shadow-lg transition-shadow duration-300 cursor-pointer border-gray-100">
-                                    <CardContent className="flex aspect-square items-center justify-center">
-                                        <Image src={`/book-covers/book${index + 1}.jpg`} alt={`Book Cover ${book.title}`} width={200} height={250} className="object-cover rounded-md"/>
+                                    <CardContent className="flex items-center justify-center">
+                                        <img src={`${book.image}`} alt={`Book Cover ${book.title}`} width={200} height={250} className="object-cover rounded-md"/>
                                     </CardContent>
                                     <CardTitle className="text-center text-lg font-medium">
                                         {book.title}
