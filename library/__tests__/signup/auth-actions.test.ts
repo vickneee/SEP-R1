@@ -3,9 +3,7 @@ import {
   schemaRegister,
 } from "@/app/(auth)/signup/auth-actions";
 
-import { signinAction } from "@/app/(auth)/signin/auth-actions";
-
-describe("Supabase signup and signin auth actions", () => {
+describe("Supabase signup auth actions", () => {
   let email = `testuser${Date.now()}@example.com`;
   let password = "StrongPassword!!!";
 
@@ -52,31 +50,5 @@ describe("Supabase signup and signin auth actions", () => {
     expect(result.message).toMatch(
       "An account with this email already exists. Please sign in instead."
     );
-  });
-
-  it("should login with valid credentials", async () => {
-    const formData = new FormData();
-    formData.append("email", email);
-    formData.append("password", password);
-
-    const result = await signinAction(
-      { message: undefined, zodErrors: undefined },
-      formData
-    );
-
-    expect(result.message).toMatch("Signin successful");
-  });
-
-  it("should fail login with wrong password", async () => {
-    const formData = new FormData();
-    formData.append("email", email);
-    formData.append("password", "wrongpassword");
-
-    const result = await signinAction(
-      { message: undefined, zodErrors: undefined },
-      formData
-    );
-
-    expect(result.message).toMatch("Invalid login credentials");
   });
 });
