@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
+import { id } from "zod/locales";
 
 interface Book {
   image: string;
@@ -160,11 +161,37 @@ const getBookById = async (id: number) => {
   };
 };
 
+const updateBook = async (id: number, updates: Partial<Book>) => {
+  const supabase = await createClient();
+  const { error, data } = await supabase
+    .from("books")
+    .update(updates)
+    .eq("book_id", id)
+    .select()
+    .single();
+
+  return { error: error?.message, book: data };
+};
+
+const deleteBook = async (id: number) => {
+  const supabase = await createClient();
+  const { data, error } = await supabase
+    .from("books")
+    .delete()
+    .eq("book_id", id)
+    .select()
+    .single();
+
+  return { error: error?.message, book: data };
+};
+
 export {
   getAllBooks,
   getBooksByAuthor,
   getBooksByTitle,
   getBooksByCategory,
   getBookById,
-  createBook
+  createBook,
+  updateBook,
+  deleteBook,
 };
