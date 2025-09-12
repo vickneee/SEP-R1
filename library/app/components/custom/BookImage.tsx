@@ -14,7 +14,7 @@ interface BookImageProps {
       */
 export default function BookImage({ title, category }: BookImageProps) {
   return (
-    <Card className="flex justify-center bg-gray-800 text-white font-[cursive] text-xs px-5 h-45 w-40 relative">
+    <Card className="rounded-md flex justify-center bg-gray-800 text-white text-center px-2 w-full h-full">
       {title}
     </Card>
   );
