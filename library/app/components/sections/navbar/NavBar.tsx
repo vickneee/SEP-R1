@@ -49,14 +49,14 @@ function NavBar() {
               <label htmlFor="search" className="sr-only">
                 Search
               </label>
-              <div className="relative text-gray-400 focus-within:text-gray-600 w-[300px]">
+              <div className="relative ml-[40] text-gray-400 focus-within:text-gray-600 w-[300px]">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
                   <MagnifyingGlassIcon className="h-5 w-5" />
                 </div>
                 <input
                   id="search"
                   name="search"
-                  className="block w-full border border-gray-300 rounded-md py-2 pl-10 pr-4 leading-5 bg-white placeholder-gray-400 focus:ring-1 focus:ring-orange-500 focus:outline-none focus:border-orange-500 sm:text-sm"
+                  className="block w-full border border-gray-300 rounded-md py-2 pl-10 pr-4 leading-5 bg-white placeholder-gray-400 focus:ring-1 focus:ring-orange-500 focus:outline-none focus:border-orange-500 text-sm"
                   placeholder="Search title, authors, or categories..."
                   type="search"
                   value={search}
@@ -69,17 +69,17 @@ function NavBar() {
               {/*<Link href="/" className="hover:underline hover:text-orange-500">*/}
               {/*  Home*/}
               {/*</Link>*/}
-              {/*<Link*/}
-              {/*  href="/my-books"*/}
-              {/*  className="hover:underline hover:text-orange-500"*/}
-              {/*>*/}
-              {/*  My Books*/}
-              {/*</Link>*/}
+              <Link
+                href="/private"
+                className="hover:underline hover:text-orange-500"
+              >
+                Private
+              </Link>
               <Link href="/" className="hover:underline hover:text-orange-500">
                 Languages
               </Link>
 
-              <div className="ml-4 flex-shrink-0">
+              <div className="ml-[-20] flex-shrink-0">
                 {!loading &&
                   (session?.user ? (
                     <Button onClick={handleLogout}>Log out</Button>
