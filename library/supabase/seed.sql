@@ -8,7 +8,7 @@ INSERT INTO public.books (isbn, title, image, author, publisher, publication_yea
 -- Fiction
 ('978-0-547-92822-7', 'The Hobbit', 'https://m.media-amazon.com/images/I/81uEDUfKBZL._SL1500_.jpg', 'J.R.R. Tolkien', 'Houghton Mifflin Harcourt', 1937, 'Fiction', 3, 3),
 ('978-0-7432-7356-5', 'To Kill a Mockingbird', 'https://m.media-amazon.com/images/I/81aY1lxk+9L._SL1500_.jpg', 'Harper Lee', 'J. B. Lippincott & Co.', 1960, 'Fiction', 2, 2),
-('978-0-452-28423-4', '1984', 'https://m.media-amazon.com/images/I/71wANojhEKL._SL1500_.jpg', 'George Orwell', 'Secker & Warburg', 1949, 'Fiction', 4, 4),
+('978-0-452-28423-4', '1984', 'https://www.suomalainen.com/cdn/shop/files/9789510505830_1-vuonna-1984.jpg?v=1743690167&width=950', 'George Orwell', 'Secker & Warburg', 1949, 'Fiction', 4, 4),
 ('978-0-7434-7679-3', 'The Great Gatsby', 'https://m.media-amazon.com/images/I/81TLiZrasVL._SL1500_.jpg', 'F. Scott Fitzgerald', 'Charles Scribner''s Sons', 1925, 'Fiction', 2, 2),
 ('978-0-316-76948-0', 'The Catcher in the Rye', 'https://m.media-amazon.com/images/I/81TRBjfC5fL._SL1500_.jpg', 'J.D. Salinger', 'Little, Brown and Company', 1951, 'Fiction', 2, 2),
 
