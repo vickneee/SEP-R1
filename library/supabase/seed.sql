@@ -14,7 +14,7 @@ INSERT INTO public.books (isbn, title, image, author, publisher, publication_yea
 
 -- Non-Fiction
 ('978-1-60309-025-4', 'Sapiens: A Brief History of Humankind', 'https://m.media-amazon.com/images/I/716E6dQ4BXL._SL1500_.jpg', 'Yuval Noah Harari', 'Harvill Secker', 2014, 'Non-Fiction', 3, 3),
-('978-0-7432-7357-2', 'The Immortal Life of Henrietta Lacks', 'https://m.media-amazon.com/images/I/81coyP8S-ZL._SL1500_.jpg', 'Rebecca Skloot', 'Crown Publishing Group', 2010, 'Non-Fiction', 2, 2),
+('978-0-7432-7357-2', 'The Immortal Life of Henrietta Lacks', 'https://www.univ.ox.ac.uk/wp-content/uploads/2018/11/The-Immortal-Life-of-Henrietta-Lacks.jpg', 'Rebecca Skloot', 'Crown Publishing Group', 2010, 'Non-Fiction', 2, 2),
 ('978-0-307-38789-9', 'Educated', 'https://m.media-amazon.com/images/I/71-4MkLN5jL._SL1500_.jpg', 'Tara Westover', 'Random House', 2018, 'Non-Fiction', 2, 2),
 
 -- Science & Technology
