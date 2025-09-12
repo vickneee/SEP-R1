@@ -15,7 +15,7 @@ export default async function BookPage({ params }: { params: { id: string } }) {
             <img
               src={book.image}
               alt={book.title}
-              className="w-40 h-56 mb-6 mt-4"
+              className="w-40 h-56 mb-6 mt-4 rounded-md"
             />
           ) : (
             <BookImage
@@ -38,9 +38,9 @@ export default async function BookPage({ params }: { params: { id: string } }) {
             <p>Available copies: {book.available_copies}</p>
           </div>
 
-          <div className="py-7 flex justify-center">
+          <div className="py-6 flex justify-center">
             {book.available_copies === 0 ? (
-              <button className="w-auto px-6 spx-4 py-2 bg-[#552A1B] text-white rounded hover:bg-[#E46A07] transition-colors duration-300">
+              <button className="w-auto bg-[#552A1B] text-white rounded hover:bg-[#E46A07] transition-colors duration-300">
                 Checked out
               </button>
             ) : (

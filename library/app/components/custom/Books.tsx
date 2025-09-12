@@ -98,7 +98,7 @@ export function Books({ books }) {
             >
               <CardContent className="flex aspect-square items-center justify-center">
                 {book.image ? (
-                  <img
+                  <img className="rounded-md"
                     src={book.image}
                     alt={typeof book.title === "string" ? book.title : undefined}
                     width={200}
