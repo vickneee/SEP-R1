@@ -1,26 +1,30 @@
 "use client";
 
-import { getUserId, reserveBook } from "@/app/actions/clientActions";
+import { reserveBook } from "@/app/actions/clientActions";
 import BookImage from "@/app/components/custom/BookImage";
-import React, { useState } from "react";
+import React, {useEffect, useState} from "react";
+import { useRouter } from "next/navigation";
 
 export default function BookPageClient({ book: initialBook }: { book: any }) {
+    const router = useRouter();
     const [book, setBook] = useState(initialBook);
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
     const [isSuccess, setIsSuccess] = useState(false);
 
+    useEffect(() => {
+        if (message && isSuccess) {
+            const timer = setTimeout(() => {
+                router.push('/private');
+            }, 2000);
+            return () => clearTimeout(timer);
+        }
+    }, [message, isSuccess, router]);
+
     const handleReserve = async () => {
         setLoading(true);
         setMessage("");
         try {
-            const user_id = await getUserId();
-            if (!user_id) {
-                setMessage("You must be signed in to reserve a book.");
-                setIsSuccess(false);
-                setLoading(false);
-                return;
-            }
             if (!initialBook || initialBook.available_copies === 0) {
                 setMessage("No available copies to reserve.");
                 setIsSuccess(false);
@@ -28,15 +32,13 @@ export default function BookPageClient({ book: initialBook }: { book: any }) {
                 return;
             }
             const due_date = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
-            const result = await reserveBook(user_id, initialBook.book_id, due_date);
-            console.log("User ID", user_id);
+            const result = await reserveBook(initialBook.book_id, due_date);
             console.log("Book ID", initialBook.book_id);
             console.log("Due date", due_date);
-            console.log(result);
+            console.log("Reservation result", result);
             if (result.success) {
                 setMessage("Reservation successful!");
                 setIsSuccess(true);
-                setBook({ ...book, available_copies: book.available_copies - 1 });
             } else {
                 setMessage("Reservation failed.");
                 setIsSuccess(false);

@@ -135,7 +135,7 @@ ON CONFLICT DO NOTHING;
 
 -- Update available copies to reflect the reservations
 -- (This should happen automatically via trigger, but let's ensure consistency)
-UPDATE public.books SET available_copies = available_copies - 1 WHERE book_id IN (1, 3);
+UPDATE public.books SET available_copies = available_copies WHERE book_id IN (1, 3);
 
 -----------------------------
 -- Success message

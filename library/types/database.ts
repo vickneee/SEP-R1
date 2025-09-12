@@ -125,7 +125,6 @@ export type Database = {
           reservation_id?: number
           return_date?: string | null
           status?: Database["public"]["Enums"]["reservation_status"]
-          user_id: string
         }
         Update: {
           book_id?: number
