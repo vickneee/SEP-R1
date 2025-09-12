@@ -1,8 +1,9 @@
 "use server";
 import { createClient } from "@/utils/supabase/server";
+import { createMockClient } from "@/utils/supabase/mock";
 import { z } from "zod";
 
-const schemaRegister = z.object({
+export const schemaRegister = z.object({
   first_name: z
     .string()
     .min(1, { message: "First name is required" })
@@ -29,7 +30,10 @@ type FormState = {
   message: string | null;
 };
 
-export async function registerUserAction(prevState: FormState, formData: FormData) {
+export async function registerUserAction(
+  prevState: FormState,
+  formData: FormData
+) {
   const validatedFields = schemaRegister.safeParse({
     first_name: (formData.get("first_name") ?? "") as string,
     last_name: (formData.get("last_name") ?? "") as string,
@@ -47,12 +51,22 @@ export async function registerUserAction(prevState: FormState, formData: FormDat
 
   const { first_name, last_name, email, password } = validatedFields.data;
 
-  console.log('🚀 Starting user registration:', { email, first_name, last_name });
+  console.log("🚀 Starting user registration:", {
+    email,
+    first_name,
+    last_name,
+  });
 
   try {
-    const supabase = await createClient();
+    const isTest = process.env.NODE_ENV === "test";
+    let supabase;
+    if (isTest) {
+      supabase = await createMockClient();
+    } else {
+      supabase = await createClient();
+    }
 
-    console.log('🔄 Step 1: Creating user with signup and metadata...');
+    console.log("🔄 Step 1: Creating user with signup and metadata...");
 
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -61,46 +75,50 @@ export async function registerUserAction(prevState: FormState, formData: FormDat
         data: {
           first_name,
           last_name,
-          role: 'customer',
+          role: "customer",
         },
       },
     });
 
     if (error) {
-      console.error('❌ Signup failed:', error);
+      console.error("❌ Signup failed:", error);
       return {
         ...prevState,
-        message: `Registration failed: ${error.message || 'Unknown error'}. Please try again.`
+        message: `Registration failed: ${
+          error.message || "Unknown error"
+        }. Please try again.`,
       };
     }
 
     if (data.user && data.user.identities?.length === 0) {
       return {
         ...prevState,
-        message: "An account with this email already exists. Please sign in instead."
+        message:
+          "An account with this email already exists. Please sign in instead.",
       };
     }
 
     if (!data.user) {
-      console.error('❌ No user returned from signUp');
+      console.error("❌ No user returned from signUp");
       return {
         ...prevState,
-        message: "Registration failed: No user data received. Please try again."
+        message:
+          "Registration failed: No user data received. Please try again.",
       };
     }
 
-    console.log('✅ User created successfully:', data.user.id);
+    console.log("✅ User created successfully:", data.user.id);
 
     return {
       ...prevState,
       message: "Registration successful! You can now sign in.",
     };
-
   } catch (error) {
-    console.error('❌ Unexpected error during registration:', error);
+    console.error("❌ Unexpected error during registration:", error);
     return {
       ...prevState,
-      message: "Registration failed due to an unexpected error. Please try again."
+      message:
+        "Registration failed due to an unexpected error. Please try again.",
     };
   }
 }

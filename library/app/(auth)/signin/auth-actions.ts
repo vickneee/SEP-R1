@@ -1,6 +1,7 @@
 "use server";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/utils/supabase/server";
+import { createMockClient } from "@/utils/supabase/mock";
 import { z } from "zod";
 
 const schemaRegister = z.object({
@@ -16,7 +17,10 @@ const schemaRegister = z.object({
     }),
 });
 
-export async function signinAction(prevState: { message?: string; zodErrors?: Record<string, string[]> }, formData: FormData) {
+export async function signinAction(
+  prevState: { message?: string; zodErrors?: Record<string, string[]> },
+  formData: FormData
+) {
   const validatedFields = schemaRegister.safeParse({
     password: (formData.get("password") ?? "") as string,
     email: (formData.get("email") ?? "") as string,
@@ -30,7 +34,13 @@ export async function signinAction(prevState: { message?: string; zodErrors?: Re
     };
   }
 
-  const supabase = await createClient();
+  const isTest = process.env.NODE_ENV === "test";
+  let supabase;
+  if (isTest) {
+    supabase = await createMockClient();
+  } else {
+    supabase = await createClient();
+  }
 
   const { error } = await supabase.auth.signInWithPassword(
     validatedFields.data
@@ -40,6 +50,8 @@ export async function signinAction(prevState: { message?: string; zodErrors?: Re
     return { ...prevState, message: error?.message || "Signin failed" };
   }
 
-  revalidatePath("/private", "layout");
+  if (process.env.NODE_ENV !== "test") {
+    revalidatePath("/private", "layout");
+  }
   return { ...prevState, message: "Signin successful" };
 }
