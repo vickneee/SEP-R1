@@ -1,7 +1,6 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
-import { id } from "zod/locales";
 
 interface Book {
   image: string;
@@ -185,6 +184,38 @@ const deleteBook = async (id: number) => {
   return { error: error?.message, book: data };
 };
 
+const reserveBook = async (bookId: number, dueDate :string) => {
+  const supabase = await createClient();
+  console.log("Reserve book", bookId);
+  console.log("Due date", dueDate);
+
+  // Check if the book exists and has available copies
+  const { error: bookError } = await supabase
+      .from("books")
+      .select("available_copies")
+      .eq("book_id", bookId)
+      .single();
+
+  if (bookError) {
+    console.error("Book fetch error:", bookError);
+    return { success: false, error: bookError };
+  }
+
+  // Create a reservation
+  const { data, error: insertError } = await supabase
+      .from("reservations")
+      .insert([{ book_id: bookId, due_date: dueDate }])
+      .select()
+      .single();
+
+  if (insertError) {
+    console.error("Reservation insert error:", insertError);
+    return { success: false, error: insertError };
+  }
+
+  return { success: true, data };
+}
+
 export {
   getAllBooks,
   getBooksByAuthor,
@@ -194,4 +225,5 @@ export {
   createBook,
   updateBook,
   deleteBook,
+  reserveBook,
 };

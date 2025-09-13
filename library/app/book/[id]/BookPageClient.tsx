@@ -1,13 +1,12 @@
 "use client";
 
-import { reserveBook } from "@/app/actions/clientActions";
+import { reserveBook } from "@/app/actions/bookActions";
 import BookImage from "@/app/components/custom/BookImage";
 import React, {useEffect, useState} from "react";
 import { useRouter } from "next/navigation";
 
 export default function BookPageClient({ book: initialBook }: { book: any }) {
     const router = useRouter();
-    const [book, setBook] = useState(initialBook);
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
     const [isSuccess, setIsSuccess] = useState(false);
