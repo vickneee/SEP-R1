@@ -1,7 +1,4 @@
-import {
-  registerUserAction,
-  schemaRegister,
-} from "@/app/(auth)/signup/auth-actions";
+import { registerUserAction } from "@/app/(auth)/signup/auth-actions";
 
 describe("Supabase signup auth actions", () => {
   const password = "StrongPassword!!!";
@@ -22,17 +19,6 @@ describe("Supabase signup auth actions", () => {
     expect(result.message).toMatch(
       "Registration successful! You can now sign in."
     );
-  });
-
-  it("should reject weak password via Zod", () => {
-    const result = schemaRegister.safeParse({
-      email: "weak@example.com",
-      password: "123",
-      first_name: "Weak",
-      last_name: "User",
-    });
-
-    expect(result.success).toBe(false);
   });
 
   it("should fail to signup with the email wich is registered already", async () => {

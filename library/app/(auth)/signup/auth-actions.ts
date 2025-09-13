@@ -3,7 +3,7 @@ import { createClient } from "@/utils/supabase/server";
 import { createMockClient } from "@/utils/supabase/mock";
 import { z } from "zod";
 
-export const schemaRegister = z.object({
+const schemaRegister = z.object({
   first_name: z
     .string()
     .min(1, { message: "First name is required" })
