@@ -27,7 +27,7 @@ const getAllBooks = async () => {
     .order("created_at", { ascending: true });
 
   return {
-    error: error?.message,
+    error: error ? error.message : null,
     books: data,
   };
 };
