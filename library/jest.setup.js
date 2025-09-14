@@ -21,6 +21,13 @@ jest.mock("next/navigation", () => ({
   },
 }));
 
+jest.mock("nuqs", () => {
+  const React = require("react");
+  return {
+    useQueryState: () => React.useState(""),
+  };
+});
+
 // Mock Next.js Image component
 jest.mock("next/image", () => ({
   __esModule: true,
