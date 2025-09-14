@@ -1,4 +1,4 @@
-import * as booksModule from "../../app/actions/bookActions";
+import * as booksModule from "../../app/books/bookActions";
 import * as supabaseModule from "../../utils/supabase/server";
 
 jest.mock("../../utils/supabase/server");
@@ -94,7 +94,7 @@ describe("Books module", () => {
     mockSupabase.from.mockReturnValue(currentMockQueryBuilder);
 
     const result = await booksModule.getAllBooks();
-    
+
     expect(mockSupabase.from).toHaveBeenCalledWith("books");
     expect(result).toHaveProperty("books");
     expect(result.error).toBeNull();
@@ -116,7 +116,7 @@ describe("Books module", () => {
 
   test("getBooksByAuthor returns empty array for blank search", async () => {
     const result = await booksModule.getBooksByAuthor("  ");
-    
+
     // This test expects the function to return empty array without calling Supabase
     expect(result.books).toEqual([]);
     expect(result.error).toBeUndefined();
@@ -128,7 +128,7 @@ describe("Books module", () => {
     mockSupabase.from.mockReturnValue(currentMockQueryBuilder);
 
     const result = await booksModule.getBooksByTitle("  ");
-    
+
     expect(result.error).toBeNull();
     expect(result.books).toHaveLength(2);
   });
@@ -140,7 +140,7 @@ describe("Books module", () => {
       image: "",
       category: "Fiction",
     } as any);
-    
+
     expect(result.error).toBe("Missing required fields.");
     expect(result.book).toBeNull();
   });
@@ -157,7 +157,7 @@ describe("Books module", () => {
       total_copies: 5,
       available_copies: 5,
     });
-    
+
     expect(result.error).toBe("Image must be a valid URL.");
   });
 
@@ -204,7 +204,7 @@ describe("Books module", () => {
     mockSupabase.from.mockReturnValue(currentMockQueryBuilder);
 
     await booksModule.getBookById(123);
-    
+
     expect(mockSupabase.from).toHaveBeenCalledWith("books");
     expect(currentMockQueryBuilder.select).toHaveBeenCalled();
     expect(currentMockQueryBuilder.eq).toHaveBeenCalledWith("book_id", 123);
@@ -218,7 +218,7 @@ describe("Books module", () => {
 
     const updates = { title: "Updated Title" };
     await booksModule.updateBook(1, updates);
-    
+
     expect(mockSupabase.from).toHaveBeenCalledWith("books");
     expect(currentMockQueryBuilder.update).toHaveBeenCalledWith(updates);
     expect(currentMockQueryBuilder.eq).toHaveBeenCalledWith("book_id", 1);
@@ -230,7 +230,7 @@ describe("Books module", () => {
     mockSupabase.from.mockReturnValue(currentMockQueryBuilder);
 
     await booksModule.deleteBook(1);
-    
+
     expect(mockSupabase.from).toHaveBeenCalledWith("books");
     expect(currentMockQueryBuilder.delete).toHaveBeenCalled();
     expect(currentMockQueryBuilder.eq).toHaveBeenCalledWith("book_id", 1);

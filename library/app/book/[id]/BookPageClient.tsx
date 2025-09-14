@@ -1,7 +1,7 @@
 "use client";
 
-import { reserveBook } from "@/app/actions/bookActions";
-import BookImage from "@/app/components/custom/BookImage";
+import { reserveBook } from "@/app/books/bookActions";
+import BookImage from "@/components/custom/BookImage";
 import React, {useEffect, useState} from "react";
 import { useRouter } from "next/navigation";
 

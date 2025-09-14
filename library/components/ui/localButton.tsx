@@ -7,7 +7,7 @@ interface ButtonProps {
     onClick?: () => void;
 }
 
-function Button ({ children, onClick }: ButtonProps) {
+function LocalButton ({ children, onClick }: ButtonProps) {
   return (
     <button
       onClick={onClick}
@@ -18,4 +18,4 @@ function Button ({ children, onClick }: ButtonProps) {
   );
 }
 
-export default Button;
+export default LocalButton;

@@ -2,10 +2,10 @@
 
 import { useQueryState } from "nuqs";
 import { useRouter } from "next/navigation";
-import bookIcon from "../../../../public/bookIcon.png";
+import bookIcon from "../../public/bookIcon.png";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
-import Button from "@/app/components/ui/Button";
+import LocalButton from "@/components/ui/localButton";
 import useSupabaseSession from "@/hooks/useSupabaseSession";
 
 function NavBar() {
@@ -82,10 +82,10 @@ function NavBar() {
               <div className="ml-[-20] flex-shrink-0">
                 {!loading &&
                   (session?.user ? (
-                    <Button onClick={handleLogout}>Log out</Button>
+                    <LocalButton onClick={handleLogout}>Log out</LocalButton>
                   ) : (
                     <Link href="/signin" passHref>
-                      <Button>Sign In</Button>
+                      <LocalButton>Sign In</LocalButton>
                     </Link>
                   ))}
               </div>

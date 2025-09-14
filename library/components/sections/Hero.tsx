@@ -1,14 +1,14 @@
 "use client";
 import Image from "next/image";
-import { useQueryState } from "nuqs";
+// import { useQueryState } from "nuqs";
 import { useRouter } from "next/navigation";
 
 function Hero() {
-  const [search, setSearch] = useQueryState("search", { defaultValue: "" });
+  // const [search, setSearch] = useQueryState("search", { defaultValue: "" });
   const router = useRouter();
-  const handleClick = () => {
-    router.push(`/books?search=${search}`);
-  };
+  // const handleClick = () => {
+  //   router.push(`/books?search=${search}`);
+  // };
   return (
     <section className="relative w-full h-[750px] flex items-center justify-center bg-white overflow-hidden">
       {/* Background Image with Overlay */}
@@ -38,15 +38,15 @@ function Hero() {
           <input
             id="search"
             name="search"
-            type="search"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            type="text"
+            // value={search}
+            // onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by title, author, or ISBN..."
             className="w-full rounded-sm max-w-lg px-6 py-3 text-lg text-gray-800 placeholder-gray-500 bg-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-600 transition-colors duration-300"
           />
           <div className="absolute right-10 top-1.5 h-full ml-4 flex-shrink-0 hidden sm:block">
             <button
-              onClick={() => handleClick()}
+              // onClick={() => handleClick()}
               className="w-auto px-6 spx-4 py-2 bg-[#552A1B] text-white rounded hover:bg-[#E46A07] transition-colors duration-300"
             >
               Search
