@@ -2,6 +2,8 @@
 import Link from "next/link";
 import { useActionState } from "react";
 import { registerUserAction } from "@/app/(auth)/signup/auth-actions";
+import { toast } from "react-hot-toast";
+import { useEffect } from "react";
 
 import {
   CardTitle,
@@ -52,6 +54,25 @@ export function SignupForm() {
   );
   console.log(formState, "client");
 
+  useEffect(() => {
+    if (formState.message) {
+      toast((t) => {
+        t.duration = 8000;
+        return (
+          <div className="flex flex-col items-center gap-2">
+            <span>{formState.message}</span>
+            {formState.message ==
+            "Registration successful! You can now sign in." ? (
+              <Link href="/signin" className={styles.button}>
+                Sign In
+              </Link>
+            ) : null}
+          </div>
+        );
+      });
+    }
+  }, [formState.message]);
+
   return (
     <div className={styles.container}>
       <form action={formAction}>
@@ -67,7 +88,8 @@ export function SignupForm() {
               <Label className={styles.label} htmlFor="first_name">
                 First Name
               </Label>
-              <Input className={styles.input}
+              <Input
+                className={styles.input}
                 id="first_name"
                 name="first_name"
                 type="text"
@@ -79,7 +101,8 @@ export function SignupForm() {
               <Label className={styles.label} htmlFor="last_name">
                 Last Name
               </Label>
-              <Input className={styles.input}
+              <Input
+                className={styles.input}
                 id="last_name"
                 name="last_name"
                 type="text"
@@ -91,7 +114,8 @@ export function SignupForm() {
               <Label className={styles.label} htmlFor="email">
                 Email
               </Label>
-              <Input className={styles.input}
+              <Input
+                className={styles.input}
                 id="email"
                 name="email"
                 type="email"
@@ -103,7 +127,8 @@ export function SignupForm() {
               <Label className={styles.label} htmlFor="password">
                 Password
               </Label>
-              <Input className={styles.input}
+              <Input
+                className={styles.input}
                 id="password"
                 name="password"
                 type="password"
