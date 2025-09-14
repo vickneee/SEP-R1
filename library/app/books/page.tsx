@@ -1,7 +1,7 @@
-import { Books } from "@/app/components/custom/Books";
-import { loadSearchParams } from "@/app/components/custom/search-params";
+import { Books } from "@/components/custom/Books";
+import { loadSearchParams } from "@/components/custom/search-params";
 import type { SearchParams } from "nuqs/server";
-import { getBooksByTitle } from "@/app/actions/bookActions";
+import { getBooksByTitle } from "@/app/books/bookActions";
 
 type PageProps = {
   searchParams: Promise<SearchParams>;

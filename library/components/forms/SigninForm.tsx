@@ -11,11 +11,11 @@ import {
   CardContent,
   CardFooter,
   Card,
-} from "@/app/components/ui/card";
+} from "@/components/ui/card";
 
-import { Label } from "@/app/components/ui/label";
-import { Input } from "@/app/components/ui/input";
-import { ZodErrors } from "@/app/components/custom/ZodErrors";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { ZodErrors } from "@/components/custom/ZodErrors";
 
 const styles = {
   container: "flex justify-center items-center w-full min-h-[750px]",

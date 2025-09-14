@@ -1,4 +1,4 @@
-import { getBookById } from "@/app/actions/bookActions";
+import { getBookById } from "@/app/books/bookActions";
 import BookPageClient from "./BookPageClient";
 import { notFound } from "next/navigation";
 

@@ -1,7 +1,7 @@
 import * as React from "react"
 
 import {Card, CardContent, CardTitle} from "@/components/ui/card"
-import { getAllBooks } from "@/app/actions/bookActions";
+import { getAllBooks } from "@/app/books/bookActions";
 import {
     Carousel,
     CarouselContent,
