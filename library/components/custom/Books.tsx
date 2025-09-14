@@ -5,20 +5,13 @@ import {
   ReactElement,
   ReactNode,
   ReactPortal,
-  useEffect,
-  useState,
 } from "react";
 import {
   Card,
-  CardAction,
   CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 
-// import { books } from "@/data/books";
 import BookImage from "@/components/custom/BookImage";
 import { useRouter } from "next/navigation";
 
