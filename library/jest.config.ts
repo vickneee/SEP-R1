@@ -6,6 +6,8 @@ const createJestConfig = nextJest({
   dir: "./",
 });
 
+const esModules = ["nuqs"].join("|");
+
 // Add any custom config to be passed to Jest
 const config: Config = {
   // Add more setup options before each test is run
@@ -13,6 +15,13 @@ const config: Config = {
 
   // Test environment configuration
   testEnvironment: "<rootDir>/test/FixJSDOMEnvironment.ts",
+
+  transform: {
+    "^.+\\.(js|ts|tsx)$": "babel-jest",
+  },
+  moduleNameMapper: {
+    "^@/(.*)$": "<rootDir>/$1",
+  },
 
   // Coverage configuration
   collectCoverageFrom: [
@@ -52,4 +61,8 @@ const config: Config = {
 };
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
-export default createJestConfig(config);
+//export default createJestConfig(config);
+export default async () => ({
+  ...(await createJestConfig(config)()),
+  transformIgnorePatterns: [`/node_modules/(?!${esModules})`],
+});
