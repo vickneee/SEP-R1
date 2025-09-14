@@ -1,7 +1,7 @@
-import Footer from "@/components/sections/footer/Footer";
-import Hero from "@/components/sections/hero/Hero";
-import AvailableBooks from "@/components/sections/available-books/AvailableBooks";
-import About from "@/components/sections/about/About";
+import Footer from "@/components/sections/Footer";
+import Hero from "@/components/sections/Hero";
+import AvailableBooks from "@/components/sections/AvailableBooks";
+import About from "@/components/sections/About";
 
 export default function Home() {
     return (

@@ -2,7 +2,7 @@
 
 import { useQueryState } from "nuqs";
 import { useRouter } from "next/navigation";
-import bookIcon from "../../../public/bookIcon.png";
+import bookIcon from "../../public/bookIcon.png";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import LocalButton from "@/components/ui/localButton";
