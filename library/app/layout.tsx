@@ -4,6 +4,7 @@ import "./globals.css";
 import NavBar from "@/app/components/sections/navbar/NavBar";
 import Footer from "@/app/components/sections/footer/Footer";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { Toaster, toast } from "react-hot-toast";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,6 +34,7 @@ export default function RootLayout({
           <main
             className={`${geistSans.variable} ${geistMono.variable} antialiased`}
           >
+            <Toaster position="bottom-left" />
             {children}
           </main>
         </NuqsAdapter>
