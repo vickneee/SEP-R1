@@ -215,7 +215,7 @@ export default function LibrarianDashboardClient({ userProfile, userEmail }: Lib
                 <ul>
                     {books.map((book, idx) => (
                         <li key={idx} className="flex items-center mb-4">
-                            <Image
+                            <img
                                 src={book.image}
                                 alt={book.title}
                                 width={64}
