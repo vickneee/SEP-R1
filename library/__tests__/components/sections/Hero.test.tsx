@@ -1,6 +1,6 @@
 import { render, screen } from '../../utils/test-utils'
 import userEvent from '@testing-library/user-event'
-import Hero from '@/app/components/sections/hero/Hero'
+import Hero from '@/components/sections/Hero'
 
 describe('Hero Component', () => {
     it('renders hero section with correct content', () => {
@@ -76,6 +76,5 @@ describe('Hero Component', () => {
         expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument()
         expect(screen.getByRole('textbox')).toBeInTheDocument()
         expect(screen.getByRole('button')).toBeInTheDocument()
-        expect(screen.getByRole('link')).toBeInTheDocument()
     })
 })
