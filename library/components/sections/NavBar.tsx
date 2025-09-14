@@ -49,15 +49,15 @@ function NavBar() {
               <label htmlFor="search" className="sr-only">
                 Search
               </label>
-              <div className="relative ml-[40] text-gray-400 focus-within:text-gray-600 w-[300px]">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center">
-                  <MagnifyingGlassIcon className="h-5 w-5" />
-                </div>
+              <div className="relative ml-[40] text-gray-400 focus-within:text-gray-600 w-[310px]">
+                {/*<div className="absolute inset-y-0 left-0 pl-3 flex items-center">*/}
+                {/*  /!*<MagnifyingGlassIcon className="h-5 w-5" />*!/*/}
+                {/*</div>*/}
                 <div className="flex items-center">
                   <input
                     id="search"
                     name="search"
-                    className="block w-full border border-gray-300 rounded-l-md py-2 pl-10 pr-4 leading-5 bg-white placeholder-gray-400 focus:ring-1 focus:ring-orange-500 focus:outline-none focus:border-orange-500 text-sm"
+                    className="relative block w-full border border-gray-300 rounded-md py-2 pl-4 pr-4 leading-5 bg-white placeholder-gray-400 focus:ring-1 focus:ring-orange-500 focus:outline-none focus:border-orange-500 text-sm"
                     placeholder="Search title, authors, or categories..."
                     type="search"
                     value={search}
@@ -65,7 +65,7 @@ function NavBar() {
                   />
                   <button
                     type="button"
-                    className="px-3 py-2 bg-orange-500 text-white rounded-r-md hover:bg-orange-600 focus:outline-none"
+                    className="absolute right-0 px-3 py-2 bg-orange-500 text-white rounded-r-md hover:cursor-pointer hover:bg-orange-500 focus:outline-none"
                     onClick={() => handleClick()}
                   >
                     <MagnifyingGlassIcon className="h-5.5 w-5" />

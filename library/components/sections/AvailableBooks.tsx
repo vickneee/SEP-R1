@@ -1,7 +1,7 @@
-import * as React from "react"
+"use client"
 
+import * as React from "react"
 import {Card, CardContent, CardTitle} from "@/components/ui/card"
-import { getAllBooks } from "@/app/books/bookActions";
 import {
     Carousel,
     CarouselContent,
@@ -10,8 +10,27 @@ import {
     CarouselPrevious,
 } from "@/components/ui/carousel"
 
-async function AvailableBooks() {
-    const { books, error } = await getAllBooks();
+export interface Book {
+    book_id: number;
+    title: string;
+    image: string;
+    author: string;
+    category: string;
+    // isbn?: string;
+    // publisher?: string;
+    // publication_year?: number;
+    // total_copies?: number;
+    // available_copies?: number;
+    // created_at: string;
+    // updated_at: string;
+}
+
+interface Props {
+    books: Book[] | null;
+    error: string | null;
+}
+
+function AvailableBooks({books, error}: Props) {
 
     if (error) {
         return (
@@ -20,7 +39,6 @@ async function AvailableBooks() {
             </div>
         );
     }
-
 
     if (!books || books.length === 0) {
         return (

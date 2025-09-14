@@ -81,3 +81,12 @@ global.IntersectionObserver = class IntersectionObserver {
 
 global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder;
+
+// Mock ResizeObserver
+class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+
+global.ResizeObserver = ResizeObserver
