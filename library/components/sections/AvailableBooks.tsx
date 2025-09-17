@@ -1,7 +1,8 @@
 "use client"
 
 import * as React from "react"
-import {Card, CardContent, CardTitle} from "@/components/ui/card"
+import Image from "next/image"
+import { Card, CardContent, CardTitle } from "@/components/ui/card"
 import {
     Carousel,
     CarouselContent,
@@ -9,28 +10,16 @@ import {
     CarouselNext,
     CarouselPrevious,
 } from "@/components/ui/carousel"
+import type { Database } from "@/types/database";
 
-export interface Book {
-    book_id: number;
-    title: string;
-    image: string;
-    author: string;
-    category: string;
-    // isbn?: string;
-    // publisher?: string;
-    // publication_year?: number;
-    // total_copies?: number;
-    // available_copies?: number;
-    // created_at: string;
-    // updated_at: string;
-}
+export type Book = Database['public']['Tables']['books']['Row'];
 
 interface Props {
     books: Book[] | null;
     error: string | null;
 }
 
-function AvailableBooks({books, error}: Props) {
+function AvailableBooks({ books, error }: Props) {
 
     if (error) {
         return (
@@ -54,33 +43,45 @@ function AvailableBooks({books, error}: Props) {
                 Available Books
             </h2>
             <div className="flex justify-center mt-10 mb-8 overflow-hidden">
-            <Carousel className="w-full max-w-1/2 sm:max-w-1/2 lg:max-w-3xl xl:max-w-4xl 2xl:max-w-5xl">
-                <CarouselContent className="-ml-1">
-                    {books.map((book) => (
-                        <CarouselItem key={book.book_id} className="pl-1 md:basis-1/2 lg:basis-1/3">
-                            <div className="p-4">
-                                <Card className="px-4 h-full hover:shadow-lg transition-shadow duration-300 cursor-pointer border-gray-100">
-                                    <CardContent className="flex items-center justify-center">
-                                        <img src={`${book.image}`} alt={`Book Cover ${book.title}`} width={200} height={250} className="object-cover rounded-md"/>
-                                    </CardContent>
-                                    <CardTitle className="text-center text-lg font-medium">
-                                        {book.title}
-                                    </CardTitle>
-                                    <CardContent className="mt-[-12px] text-center text-sm text-gray-600">
-                                        {book.author}
-                                    </CardContent>
-                                </Card>
-                                    </div>
-                                </CarouselItem>
-                            ))}
-                        </CarouselContent>
-                        <CarouselPrevious
-                            className="text-orange-600 hover:shadow-lg transition-shadow duration-300 cursor-pointer"/>
-                        <CarouselNext
-                            className="text-orange-600 hover:shadow-lg transition-shadow duration-300 cursor-pointer"/>
-                    </Carousel>
-                </div>
+                <Carousel className="w-full max-w-1/2 sm:max-w-1/2 lg:max-w-3xl xl:max-w-4xl 2xl:max-w-5xl">
+                    <CarouselContent className="-ml-1">
+                        {books.map((book) => (
+                            <CarouselItem key={book.book_id} className="pl-1 md:basis-1/2 lg:basis-1/3">
+                                <div className="p-4">
+                                    <Card className="px-4 h-full hover:shadow-lg transition-shadow duration-300 cursor-pointer border-gray-100">
+                                        <CardContent className="flex items-center justify-center">
+                                            {book.image ? (
+                                                <Image
+                                                    src={book.image}
+                                                    alt={`Book Cover ${book.title}`}
+                                                    width={200}
+                                                    height={250}
+                                                    className="object-cover rounded-md"
+                                                />
+                                            ) : (
+                                                <div className="w-[200px] h-[250px] bg-gray-200 rounded-md flex items-center justify-center">
+                                                    <span className="text-gray-500 text-sm">No Image</span>
+                                                </div>
+                                            )}
+                                        </CardContent>
+                                        <CardTitle className="text-center text-lg font-medium">
+                                            {book.title}
+                                        </CardTitle>
+                                        <CardContent className="mt-[-12px] text-center text-sm text-gray-600">
+                                            {book.author}
+                                        </CardContent>
+                                    </Card>
+                                </div>
+                            </CarouselItem>
+                        ))}
+                    </CarouselContent>
+                    <CarouselPrevious
+                        className="text-orange-600 hover:shadow-lg transition-shadow duration-300 cursor-pointer" />
+                    <CarouselNext
+                        className="text-orange-600 hover:shadow-lg transition-shadow duration-300 cursor-pointer" />
+                </Carousel>
             </div>
+        </div>
     );
 }
 

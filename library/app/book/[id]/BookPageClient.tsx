@@ -2,10 +2,14 @@
 
 import { reserveBook } from "@/app/books/bookActions";
 import BookImage from "@/components/custom/BookImage";
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+import type { Database } from "@/types/database";
 
-export default function BookPageClient({ book: initialBook }: { book: any }) {
+type Book = Database['public']['Tables']['books']['Row'];
+
+export default function BookPageClient({ book: initialBook }: { book: Book }) {
     const router = useRouter();
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
@@ -57,10 +61,12 @@ export default function BookPageClient({ book: initialBook }: { book: any }) {
             <div className="mt-2 w-[380px] px-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
                 <div className="flex flex-col items-center p-2">
                     {initialBook.image ? (
-                        <img
+                        <Image
                             src={initialBook.image}
                             alt={initialBook.title}
                             className="w-40 h-56 mb-6 mt-4 rounded-md"
+                            width={160}
+                            height={224}
                         />
                     ) : (
                         <BookImage

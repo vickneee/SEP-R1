@@ -3,11 +3,21 @@
 import { createClient } from "@/utils/supabase/client";
 import { useEffect, useState } from "react";
 
-// import {mockReservations} from "@/app/(dashboard)/customer-dashboard/mockReservations";
+type ReservationWithBook = {
+    reservation_id: number;
+    reservation_date: string;
+    due_date: string;
+    return_date: string | null;
+    status: "active" | "returned" | "overdue" | "cancelled";
+    books: {
+        title: string;
+        author: string;
+    };
+};
 
 export default function UserReservations() {
     // const reservations = mockReservations;
-    const [reservations, setReservations] = useState<any[]>([]);
+    const [reservations, setReservations] = useState<ReservationWithBook[]>([]);
 
     useEffect(() => {
         fetchReservations();
@@ -45,40 +55,39 @@ export default function UserReservations() {
             <div className="overflow-x-auto rounded-lg shadow">
                 <table className="min-w-full divide-y divide-gray-200 bg-white">
                     <thead className="bg-gray-50">
-                    <tr>
-                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Title</th>
-                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Author</th>
-                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Borrowed</th>
-                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Due</th>
-                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Returned</th>
-                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Status</th>
-                    </tr>
+                        <tr>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Title</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Author</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Borrowed</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Due</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Returned</th>
+                            <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Status</th>
+                        </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200 text-sm">
-                    {reservations.map((res) => (
-                        <tr key={res.reservation_id}>
-                            <td className="px-6 py-4 text-left">{res.books.title}</td>
-                            <td className="px-6 py-4 text-left">{res.books.author}</td>
-                            <td className="px-6 py-4 text-left">{new Date(res.reservation_date).toISOString().slice(0, 10)}</td>
-                            <td className="px-6 py-4 text-left">{new Date(res.due_date).toISOString().slice(0, 10)}</td>
-                            <td className="px-6 py-4 text-left">
-                                {res.return_date ? new Date(res.return_date).toISOString() : "-"}
-                            </td>
-                            <td className="px-4 py-2">
-                  <span
-                      className={`px-2 py-1 rounded text-xs ${
-                          res.status === "active"
-                              ? "bg-green-100 text-green-700"
-                              : res.status === "returned"
-                                  ? "bg-blue-100 text-blue-700"
-                                  : "bg-red-100 text-red-700"
-                      }`}
-                  >
-                    {res.status}
-                  </span>
-                            </td>
-                        </tr>
-                    ))}
+                        {reservations.map((res) => (
+                            <tr key={res.reservation_id}>
+                                <td className="px-6 py-4 text-left">{res.books.title}</td>
+                                <td className="px-6 py-4 text-left">{res.books.author}</td>
+                                <td className="px-6 py-4 text-left">{new Date(res.reservation_date).toISOString().slice(0, 10)}</td>
+                                <td className="px-6 py-4 text-left">{new Date(res.due_date).toISOString().slice(0, 10)}</td>
+                                <td className="px-6 py-4 text-left">
+                                    {res.return_date ? new Date(res.return_date).toISOString() : "-"}
+                                </td>
+                                <td className="px-4 py-2">
+                                    <span
+                                        className={`px-2 py-1 rounded text-xs ${res.status === "active"
+                                            ? "bg-green-100 text-green-700"
+                                            : res.status === "returned"
+                                                ? "bg-blue-100 text-blue-700"
+                                                : "bg-red-100 text-red-700"
+                                            }`}
+                                    >
+                                        {res.status}
+                                    </span>
+                                </td>
+                            </tr>
+                        ))}
                     </tbody>
                 </table>
             </div>

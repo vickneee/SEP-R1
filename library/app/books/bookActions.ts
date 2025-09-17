@@ -1,21 +1,11 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
+import type { Database } from "@/types/database";
 
-interface Book {
-  image: string;
-  book_id: number;
-  isbn: string;
-  title: string;
-  author: string;
-  publisher: string;
-  publication_year: number;
-  category: string;
-  total_copies: number;
-  available_copies: number;
-  created_at: string;
-  updated_at: string;
-}
+type Book = Database['public']['Tables']['books']['Row'];
+type BookInsert = Database['public']['Tables']['books']['Insert'];
+type BookUpdate = Database['public']['Tables']['books']['Update'];
 
 const getAllBooks = async () => {
   const supabase = await createClient();
@@ -85,16 +75,8 @@ const getBooksByCategory = async (search: string) => {
   };
 };
 
-const createBook = async (book: {
-  title: string;
-  author: string;
-  image: string;
-  category: string;
-  isbn?: string;
-  publisher?: string;
-  publication_year?: number;
-  total_copies?: number;
-  available_copies?: number;
+const createBook = async (book: Omit<BookInsert, 'book_id' | 'created_at' | 'updated_at' | 'available_copies'> & {
+  available_copies: number;
 }) => {
   try {
     if (
@@ -140,9 +122,10 @@ const createBook = async (book: {
     }
 
     return { error: null, book: data };
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("createBook exception:", err);
-    return { error: err.message || "Unknown error", book: null };
+    const errorMessage = err instanceof Error ? err.message : "Unknown error";
+    return { error: errorMessage, book: null };
   }
 };
 
@@ -160,7 +143,7 @@ const getBookById = async (id: number) => {
   };
 };
 
-const updateBook = async (id: number, updates: Partial<Book>) => {
+const updateBook = async (id: number, updates: BookUpdate) => {
   const supabase = await createClient();
   const { error, data } = await supabase
     .from("books")
@@ -184,17 +167,24 @@ const deleteBook = async (id: number) => {
   return { error: error?.message, book: data };
 };
 
-const reserveBook = async (bookId: number, dueDate :string) => {
+const reserveBook = async (bookId: number, dueDate: string) => {
   const supabase = await createClient();
   console.log("Reserve book", bookId);
   console.log("Due date", dueDate);
 
+  // Get the current user
+  const { data: userData, error: userError } = await supabase.auth.getUser();
+  if (userError || !userData.user) {
+    console.error("User authentication error:", userError);
+    return { success: false, error: userError || new Error("User not authenticated") };
+  }
+
   // Check if the book exists and has available copies
   const { error: bookError } = await supabase
-      .from("books")
-      .select("available_copies")
-      .eq("book_id", bookId)
-      .single();
+    .from("books")
+    .select("available_copies")
+    .eq("book_id", bookId)
+    .single();
 
   if (bookError) {
     console.error("Book fetch error:", bookError);
@@ -203,10 +193,10 @@ const reserveBook = async (bookId: number, dueDate :string) => {
 
   // Create a reservation
   const { data, error: insertError } = await supabase
-      .from("reservations")
-      .insert([{ book_id: bookId, due_date: dueDate }])
-      .select()
-      .single();
+    .from("reservations")
+    .insert([{ book_id: bookId, due_date: dueDate, user_id: userData.user.id }])
+    .select()
+    .single();
 
   if (insertError) {
     console.error("Reservation insert error:", insertError);

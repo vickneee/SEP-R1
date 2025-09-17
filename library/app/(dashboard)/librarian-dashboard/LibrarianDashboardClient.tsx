@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 
 interface Book {
@@ -214,7 +215,7 @@ export default function LibrarianDashboardClient({ userProfile, userEmail }: Lib
                 <ul>
                     {books.map((book, idx) => (
                         <li key={idx} className="flex items-center mb-4">
-                            <img
+                            <Image
                                 src={book.image}
                                 alt={book.title}
                                 width={64}
