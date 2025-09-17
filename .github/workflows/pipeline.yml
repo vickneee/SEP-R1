@@ -1,4 +1,4 @@
-name: pipeline
+name: Pipeline
 
 on:
   push:
@@ -10,12 +10,14 @@ on:
 
 jobs:
   test_and_lint:
+    name: Test and Lint pipeline
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout Code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Node.js
+      - name: Node setup
         uses: actions/setup-node@v4
         with:
           node-version: '20'
