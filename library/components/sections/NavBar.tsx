@@ -8,6 +8,7 @@ import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import LocalButton from "@/components/ui/localButton";
 import useSupabaseSession from "@/hooks/useSupabaseSession";
+import Notification from "@/components/sections/Notification";
 
 function NavBar() {
   const router = useRouter();
@@ -94,7 +95,10 @@ function NavBar() {
               <div className="ml-[-20] flex-shrink-0">
                 {!loading &&
                   (session?.user ? (
-                    <LocalButton onClick={handleLogout}>Log out</LocalButton>
+                    <div className="flex item-center gap-4">
+                      <LocalButton onClick={handleLogout}>Log out</LocalButton>
+                      <Notification />
+                    </div>
                   ) : (
                     <Link href="/signin" passHref>
                       <LocalButton>Sign In</LocalButton>
