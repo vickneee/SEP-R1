@@ -24,13 +24,13 @@ jobs:
         run: npm ci
         working-directory: ./library
 
-      # - name: Check style
-        # run: npm run lint
-        # working-directory: ./library
+      - name: Check style
+        run: npm run lint
+        working-directory: ./library
 
-      # - name: Build
-        # run: npm run build
-        # working-directory: ./library
+      - name: Build
+        run: npm run build
+        working-directory: ./library
 
       - name: Tests && Coverage
         # Single command runs tests and generate the report
