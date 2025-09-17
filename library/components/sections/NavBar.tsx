@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useQueryState } from "nuqs";
 import { useRouter } from "next/navigation";
 import bookIcon from "../../public/bookIcon.png";
@@ -32,9 +33,11 @@ function NavBar() {
               {/* Logo Section */}
               <Link href="/">
                 {/* The book icon */}
-                <img
-                  src={bookIcon.src}
+                <Image
+                  src={bookIcon}
                   alt="LibraryHub Logo"
+                  width={32}
+                  height={32}
                   className="h-8 w-8"
                 />
               </Link>

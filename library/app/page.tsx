@@ -7,9 +7,12 @@ import About from "@/components/sections/About";
 import Footer from "@/components/sections/Footer";
 
 import { createClient } from "@/utils/supabase/client";
+import type { Database } from "@/types/database";
+
+type Book = Database['public']['Tables']['books']['Row'];
 
 export default function Home() {
-    const [books, setBooks] = useState<any[]>([]);
+    const [books, setBooks] = useState<Book[]>([]);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
@@ -31,11 +34,11 @@ export default function Home() {
     return (
         <div className="font-sans items-center justify-items-center min-h-screen">
             <main className="w-full">
-                <Hero/>
+                <Hero />
                 <AvailableBooks books={books} error={error} />
                 <About />
             </main>
-            <Footer/>
+            <Footer />
         </div>
     );
 }

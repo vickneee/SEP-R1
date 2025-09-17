@@ -1,10 +1,13 @@
 import * as booksModule from "../../app/books/bookActions";
 import * as supabaseModule from "../../utils/supabase/server";
+import type { Database } from "../../types/database";
 
 jest.mock("../../utils/supabase/server");
 
+type Book = Database['public']['Tables']['books']['Row'];
+
 // Centralized test data
-const mockBooks = [
+const mockBooks: Book[] = [
   {
     book_id: 1,
     title: "Book One",
@@ -36,7 +39,7 @@ const mockBooks = [
 ];
 
 // Create a proper mock query builder that tracks method calls and resolves correctly
-const createMockQueryBuilder = (resolveValue: any = { data: mockBooks, error: null }) => {
+const createMockQueryBuilder = (resolveValue: { data: unknown; error: unknown } = { data: mockBooks, error: null }) => {
   const mockBuilder = {
     select: jest.fn(),
     order: jest.fn(),
@@ -59,7 +62,7 @@ const createMockQueryBuilder = (resolveValue: any = { data: mockBooks, error: nu
   mockBuilder.single.mockResolvedValue(resolveValue);
 
   // Make the builder itself a thenable (promise-like) for direct awaiting
-  (mockBuilder as any).then = jest.fn((onResolve) => {
+  (mockBuilder as unknown as { then: jest.Mock }).then = jest.fn((onResolve) => {
     return Promise.resolve(onResolve(resolveValue));
   });
 
@@ -78,7 +81,7 @@ const mockSupabase = {
 const createClientMock = supabaseModule.createClient as jest.MockedFunction<
   typeof supabaseModule.createClient
 >;
-createClientMock.mockReturnValue(mockSupabase as any);
+createClientMock.mockReturnValue(Promise.resolve(mockSupabase as unknown as Awaited<ReturnType<typeof supabaseModule.createClient>>));
 
 describe("Books module", () => {
   beforeEach(() => {
@@ -139,7 +142,7 @@ describe("Books module", () => {
       author: "",
       image: "",
       category: "Fiction",
-    } as any);
+    } as Parameters<typeof booksModule.createBook>[0]);
 
     expect(result.error).toBe("Missing required fields.");
     expect(result.book).toBeNull();

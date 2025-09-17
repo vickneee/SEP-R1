@@ -41,7 +41,7 @@ const INITIAL_STATE = {
 };
 
 export function SigninForm() {
-  // @ts-ignore
+  // @ts-expect-error - useActionState type inference is incorrect
   const [formState, formAction] = useActionState(signinAction, INITIAL_STATE);
 
   useEffect(() => {

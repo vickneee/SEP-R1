@@ -10,5 +10,9 @@ type PageProps = {
 export default async function BookPage({ searchParams }: PageProps) {
   const { search } = await loadSearchParams(searchParams);
   const { books } = await getBooksByTitle(search);
-  return <Books books={books} />;
+
+  // Ensure books is never null - fallback to empty array
+  const safeBooks = books || [];
+
+  return <Books books={safeBooks} />;
 }
