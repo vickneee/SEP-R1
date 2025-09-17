@@ -4,6 +4,7 @@ import "./globals.css";
 import NavBar from "@/components/sections/NavBar";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Toaster } from "react-hot-toast";
+import { Suspense } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,7 +30,9 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <NuqsAdapter>
-          <NavBar />
+          <Suspense fallback={<div>Loading...</div>}>
+            <NavBar />
+          </Suspense>
           <main
             className={`${geistSans.variable} ${geistMono.variable} antialiased`}
           >

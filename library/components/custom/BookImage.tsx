@@ -5,7 +5,7 @@ interface BookImageProps {
   category: string;
 }
 
-export default function BookImage({ title, category }: BookImageProps) {
+export default function BookImage({ title }: BookImageProps) {
   return (
     <Card className="rounded-md flex justify-center bg-gray-800 text-white text-center px-2 w-full h-full">
       {title}
