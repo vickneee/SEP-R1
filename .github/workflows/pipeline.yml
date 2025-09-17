@@ -24,14 +24,7 @@ jobs:
         run: npm ci
         working-directory: ./library
 
-      - name: Run Tests
-        run: npm test
-        working-directory: ./library
-
-      - name: Coverage
+      - name: Tests && Coverage
+        # Single command runs tests and generate the report
         run: npm run test:coverage
-        working-directory: ./library
-
-      - name: Coverage report
-        run: npm run test:coverage:open
         working-directory: ./library
