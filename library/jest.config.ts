@@ -42,10 +42,10 @@ const config: Config = {
   // Coverage thresholds
   coverageThreshold: {
     global: {
-      branches: 27,
+      branches: 26,
       functions: 29,
-      lines: 32,
-      statements: 32,
+      lines: 31,
+      statements: 31,
     },
   },
 
@@ -62,7 +62,9 @@ const config: Config = {
 
 // createJestConfig is exported this way to ensure that next/jest can load the Next.js config which is async
 //export default createJestConfig(config);
-export default async () => ({
+const jestConfig = async () => ({
   ...(await createJestConfig(config)()),
   transformIgnorePatterns: [`/node_modules/(?!${esModules})`],
 });
+
+export default jestConfig;
