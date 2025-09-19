@@ -11,6 +11,7 @@ import { Bell, CheckIcon } from "lucide-react";
 import {
   getDueDateNotification,
   getOverdueNotification,
+  markReminderSentAsTrue,
 } from "@/components/sections/NotificationAction";
 import { useEffect, useState } from "react";
 import { getBookById } from "@/app/books/bookActions";
@@ -40,6 +41,8 @@ export default function NotificationSection() {
   const [overdueBookTitles, setOverdueBookTitles] = useState<
     Record<number, string>
   >({});
+
+  const [hasFetchedNotifications, setHasFetchedNotifications] = useState(false);
 
   const fetchDueDateNotifications = async () => {
     const result = await getDueDateNotification();
@@ -84,9 +87,12 @@ export default function NotificationSection() {
   };
 
   useEffect(() => {
-    fetchDueDateNotifications();
-    fetchOverdueNotifications();
-  }, []);
+    if (!hasFetchedNotifications) {
+      fetchDueDateNotifications();
+      fetchOverdueNotifications();
+      setHasFetchedNotifications(true);
+    }
+  }, [hasFetchedNotifications]);
 
   useEffect(() => {
     if (overdueNotifications.length > 0) {
@@ -107,7 +113,17 @@ export default function NotificationSection() {
   const hasNotifications =
     dueDateNotifications.length > 0 || overdueNotifications.length > 0;
 
+  const markAsRead = async (reservationId: number) => {
+    const result = await markReminderSentAsTrue(reservationId);
+    if (result?.error) {
+      console.log(result.error);
+    }
+    fetchDueDateNotifications();
+    fetchOverdueNotifications();
+  };
+
   console.log(dueDateNotifications);
+  console.log(overdueNotifications);
 
   return (
     <Popover>
@@ -115,7 +131,7 @@ export default function NotificationSection() {
         <Button variant="ghost" size="icon" className="p-2 relative">
           <Bell width={16} />
           {hasNotifications && (
-            <div className="absolute -top-0 -right-1 flex h-4 w-4 items-center justify-center ">
+            <div className="absolute -top-0 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-white text-xs">
               {dueDateNotifications.length + overdueNotifications.length}
             </div>
           )}
@@ -152,9 +168,6 @@ export default function NotificationSection() {
                       </strong>
                       . Please return it as soon as possible.
                     </p>
-                    <Button variant="ghost" size="icon">
-                      <CheckIcon className="h-5 w-5" />
-                    </Button>
                   </div>
                 )
               )}
@@ -180,7 +193,11 @@ export default function NotificationSection() {
                       </strong>
                       . Please make sure to return it by then.
                     </p>
-                    <Button variant="ghost" size="icon">
+                    <Button
+                      onClick={() => markAsRead(reservation_id)}
+                      variant="ghost"
+                      size="icon"
+                    >
                       <CheckIcon className="h-5 w-5" />
                     </Button>
                   </div>
