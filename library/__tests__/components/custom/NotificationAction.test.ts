@@ -1,6 +1,6 @@
 jest.mock("@/utils/supabase/server");
 
-import * as notificationModule from "@/components/sections/NotificationAction";
+import * as notificationModule from "@/components/custom/NotificationAction";
 import * as supabaseModule from "@/utils/supabase/server";
 import { createClient } from "@/utils/supabase/server";
 

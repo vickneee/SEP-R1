@@ -4,10 +4,10 @@ import {
   waitFor,
   fireEvent,
   act,
-} from "../../utils/test-utils";
-import Notification from "@/components/sections/Notification";
+} from "../../utils/test-utils"
+import Notification from "@/components/custom/Notification";
 
-jest.mock("@/components/sections/NotificationAction", () => ({
+jest.mock("@/components/custom/NotificationAction", () => ({
   getDueDateNotification: jest.fn(() => Promise.resolve({ notifications: [] })),
   getOverdueNotification: jest.fn(() => Promise.resolve({ notifications: [] })),
   markReminderSentAsTrue: jest.fn(() => Promise.resolve({})),

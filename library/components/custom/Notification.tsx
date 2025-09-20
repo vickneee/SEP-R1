@@ -11,7 +11,7 @@ import {
   getDueDateNotification,
   getOverdueNotification,
   markReminderSentAsTrue,
-} from "@/components/sections/NotificationAction";
+} from "@/components/custom/NotificationAction";
 import {useCallback, useEffect, useState} from "react";
 import { getBookById } from "@/app/books/bookActions";
 
