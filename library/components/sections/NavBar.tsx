@@ -11,7 +11,6 @@ import useSupabaseSession from "@/hooks/useSupabaseSession";
 import Notification from "@/components/sections/Notification";
 import { getUserProfile } from "@/app/private/userProfile-action";
 import { useEffect, useState } from "react";
-import { ja } from "zod/v4/locales";
 
 function NavBar() {
   const router = useRouter();

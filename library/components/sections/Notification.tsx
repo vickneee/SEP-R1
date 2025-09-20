@@ -12,7 +12,7 @@ import {
   getOverdueNotification,
   markReminderSentAsTrue,
 } from "@/components/sections/NotificationAction";
-import { useEffect, useState } from "react";
+import {useCallback, useEffect, useState} from "react";
 import { getBookById } from "@/app/books/bookActions";
 
 type notification = {
@@ -61,13 +61,14 @@ export default function NotificationSection() {
     }
   };
 
-  const fetchBookTitles = async (bookIds: number[]) => {
+  const fetchBookTitles = useCallback( async (bookIds: number[]) => {
     const results = await Promise.all(
       bookIds.map(async (id) => {
         try {
           const res = await getBookById(id);
           if (res.error) throw new Error("Failed to fetch book");
           return { id, title: res.book.title || "Untitled" };
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
           return { id, title: "Unknown Title" };
         }
@@ -75,15 +76,18 @@ export default function NotificationSection() {
     );
 
     return Object.fromEntries(results.map(({ id, title }) => [id, title]));
-  };
+  }, []
+  );
 
-  const loadBookTitles = async (
+  const loadBookTitles = useCallback( async (
     bookIds: number[],
     setTitles: React.Dispatch<React.SetStateAction<Record<number, string>>>
   ) => {
     const titles = await fetchBookTitles(bookIds);
     setTitles(titles);
-  };
+  },
+      [fetchBookTitles]
+  );
 
   useEffect(() => {
     if (!hasFetchedNotifications) {
@@ -96,18 +100,18 @@ export default function NotificationSection() {
   useEffect(() => {
     if (overdueNotifications.length > 0) {
       const bookIds = overdueNotifications.map((n) => n.book_id);
-      const bookTitles = fetchBookTitles(bookIds);
+      fetchBookTitles(bookIds);
       loadBookTitles(bookIds, setOverdueBookTitles);
     }
-  }, [overdueNotifications]);
+  }, [overdueNotifications, loadBookTitles, fetchBookTitles]);
 
   useEffect(() => {
     if (dueDateNotifications.length > 0) {
       const bookIds = dueDateNotifications.map((n) => n.book_id);
-      const bookTitles = fetchBookTitles(bookIds);
+      fetchBookTitles(bookIds);
       loadBookTitles(bookIds, setDueDateBookTitles);
     }
-  }, [dueDateNotifications]);
+  }, [dueDateNotifications, loadBookTitles, fetchBookTitles]);
 
   const hasNotifications =
     dueDateNotifications.length > 0 || overdueNotifications.length > 0;

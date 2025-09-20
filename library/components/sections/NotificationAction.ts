@@ -4,7 +4,7 @@ import { createClient } from "@/utils/supabase/server";
 
 const getDueDateNotification = async () => {
   const supabase = await createClient();
-  const { data: userData, error: userError } = await supabase.auth.getUser();
+  const { data: userData } = await supabase.auth.getUser();
   if (userData?.user?.id) {
     const today = new Date();
     const threeDaysLater = new Date();
@@ -30,7 +30,7 @@ const getDueDateNotification = async () => {
 
 const getOverdueNotification = async () => {
   const supabase = await createClient();
-  const { data: userData, error: userError } = await supabase.auth.getUser();
+  const { data: userData } = await supabase.auth.getUser();
   if (userData?.user?.id) {
     const { data: reservationData, error: reservationError } = await supabase
       .from("reservations")
@@ -47,7 +47,7 @@ const getOverdueNotification = async () => {
 
 const markReminderSentAsTrue = async (id: number) => {
   const supabase = await createClient();
-  const { data: userData, error: userError } = await supabase.auth.getUser();
+  const { data: userData } = await supabase.auth.getUser();
   if (!userData?.user?.id) {
     return {
       error: "User not found",
