@@ -77,7 +77,7 @@ function NavBar() {
                     name="search"
                     className="relative block w-full border border-gray-300 rounded-md py-2 pl-4 pr-4 leading-5 bg-white placeholder-gray-400 focus:ring-1 focus:ring-orange-500 focus:outline-none focus:border-orange-500 text-sm"
                     placeholder="Search title, authors, or categories..."
-                    type="search"
+                    type="text"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                   />
