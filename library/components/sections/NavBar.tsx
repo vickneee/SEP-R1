@@ -8,12 +8,17 @@ import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import LocalButton from "@/components/ui/localButton";
 import useSupabaseSession from "@/hooks/useSupabaseSession";
+import Notification from "@/components/sections/Notification";
+import { getUserProfile } from "@/app/private/userProfile-action";
+import { useEffect, useState } from "react";
+import { ja } from "zod/v4/locales";
 
 function NavBar() {
   const router = useRouter();
   const [search, setSearch] = useQueryState("search", { defaultValue: "" });
 
   const { session, loading, supabase } = useSupabaseSession();
+  const [userRole, setUserRole] = useState<string | null>(null);
 
   const handleClick = () => {
     router.push(`/books?search=${search}`);
@@ -23,6 +28,17 @@ function NavBar() {
     await supabase.auth.signOut();
     window.location.href = "/";
   };
+
+  const fetchUserProfile = async () => {
+    const userProfile = await getUserProfile();
+    if (userProfile) {
+      setUserRole(userProfile.role);
+    }
+  };
+
+  useEffect(() => {
+    fetchUserProfile();
+  }, []);
 
   return (
     <section className="sticky top-0 z-50 bg-white">
@@ -94,7 +110,10 @@ function NavBar() {
               <div className="ml-[-20] flex-shrink-0">
                 {!loading &&
                   (session?.user ? (
-                    <LocalButton onClick={handleLogout}>Log out</LocalButton>
+                    <div className="flex item-center gap-4">
+                      <LocalButton onClick={handleLogout}>Log out</LocalButton>
+                      {userRole && userRole == "customer" && <Notification />}
+                    </div>
                   ) : (
                     <Link href="/signin" passHref>
                       <LocalButton>Sign In</LocalButton>

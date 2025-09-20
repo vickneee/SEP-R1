@@ -1,22 +1,9 @@
-import { redirect } from "next/navigation";
-import { createClient } from "@/utils/supabase/server";
+import { getUserProfile } from "./userProfile-action";
 import LibrarianDashboard from "@/app/(dashboard)/librarian-dashboard/page";
 import CustomerDashboard from "@/app/(dashboard)/customer-dashboard/page";
 
 export default async function PrivatePage() {
-  const supabase = await createClient();
-
-  const { data, error } = await supabase.auth.getUser();
-  if (error || !data?.user) {
-    redirect("/signin");
-  }
-
-  // Get user profile from our database
-  const { data: userProfile } = await supabase
-    .from('users')
-    .select('*')
-    .eq('user_id', data.user.id)
-    .single();
+  const userProfile = await getUserProfile();
 
   if (!userProfile) {
     return (
@@ -30,9 +17,9 @@ export default async function PrivatePage() {
   return (
     <div>
       {/* Render the appropriate dashboard based on user role */}
-      {userProfile.role === 'librarian' ? (
+      {userProfile.role === "librarian" ? (
         <LibrarianDashboard />
-      ) : userProfile.role === 'customer' ? (
+      ) : userProfile.role === "customer" ? (
         <CustomerDashboard />
       ) : (
         <div className="max-w-2xl mx-auto p-6">
