@@ -2,18 +2,15 @@ jest.mock("@/utils/supabase/server");
 
 import * as notificationModule from "@/components/sections/NotificationAction";
 import * as supabaseModule from "@/utils/supabase/server";
+import { createClient } from "@/utils/supabase/server";
 
-const mockSupabase = {
-  auth: {
-    getUser: jest.fn(),
-  },
-  from: jest.fn(),
-};
+type SupabaseClientType = Awaited<ReturnType<typeof createClient>>;
+
+let mockSupabase: SupabaseClientType;
 
 const createClientMock = supabaseModule.createClient as jest.MockedFunction<
   typeof supabaseModule.createClient
 >;
-createClientMock.mockReturnValue(mockSupabase as any);
 
 const createMockQueryBuilder = (resolveValue: {
   data: unknown;
@@ -43,12 +40,19 @@ let currentMockQueryBuilder: ReturnType<typeof createMockQueryBuilder>;
 describe("Notification module", () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    currentMockQueryBuilder = createMockQueryBuilder({ data: [], error: null });
-    mockSupabase.from.mockReturnValue(currentMockQueryBuilder);
+
+    mockSupabase = {
+      auth: {
+        getUser: jest.fn(),
+      },
+      from: jest.fn(),
+    } as unknown as SupabaseClientType;
+
+    createClientMock.mockResolvedValue(mockSupabase);
   });
 
   test("getDueDateNotification returns notifications", async () => {
-    mockSupabase.auth.getUser.mockResolvedValue({
+    (mockSupabase.auth.getUser as jest.Mock).mockResolvedValue({
       data: { user: { id: "user123" } },
       error: null,
     });
@@ -61,7 +65,7 @@ describe("Notification module", () => {
       data: mockNotifications,
       error: null,
     });
-    mockSupabase.from.mockReturnValue(currentMockQueryBuilder);
+    (mockSupabase.from as jest.Mock).mockReturnValue(currentMockQueryBuilder);
 
     const result = await notificationModule.getDueDateNotification();
 
@@ -73,7 +77,7 @@ describe("Notification module", () => {
   });
 
   test("getOverdueNotification returns overdue notifications", async () => {
-    mockSupabase.auth.getUser.mockResolvedValue({
+    (mockSupabase.auth.getUser as jest.Mock).mockResolvedValue({
       data: { user: { id: "user123" } },
       error: null,
     });
@@ -86,7 +90,7 @@ describe("Notification module", () => {
       data: mockOverdue,
       error: null,
     });
-    mockSupabase.from.mockReturnValue(currentMockQueryBuilder);
+    (mockSupabase.from as jest.Mock).mockReturnValue(currentMockQueryBuilder);
 
     const result = await notificationModule.getOverdueNotification();
 
@@ -100,11 +104,16 @@ describe("Notification module", () => {
   test("markReminderSentAsTrue updates reminder_sent field", async () => {
     const reservationId = 1;
 
+    (mockSupabase.auth.getUser as jest.Mock).mockResolvedValue({
+      data: { user: { id: "user123" } },
+      error: null,
+    });
+
     currentMockQueryBuilder = createMockQueryBuilder({
       data: null,
       error: null,
     });
-    mockSupabase.from.mockReturnValue(currentMockQueryBuilder);
+    (mockSupabase.from as jest.Mock).mockReturnValue(currentMockQueryBuilder);
 
     const result = await notificationModule.markReminderSentAsTrue(
       reservationId

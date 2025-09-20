@@ -2,11 +2,10 @@ import {
   Popover,
   PopoverTrigger,
   PopoverContent,
-  PopoverAnchor,
 } from "@/components/ui/popover";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { Bell, CheckIcon } from "lucide-react";
 import {
   getDueDateNotification,
@@ -121,6 +120,9 @@ export default function NotificationSection() {
     fetchDueDateNotifications();
     fetchOverdueNotifications();
   };
+
+  console.log(dueDateError);
+  console.log(OverdueError);
 
   return (
     <Popover>
