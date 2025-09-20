@@ -12,11 +12,22 @@ const createClientMock = supabaseModule.createClient as jest.MockedFunction<
   typeof supabaseModule.createClient
 >;
 
+type MockQueryBuilder = {
+  select: jest.Mock;
+  eq: jest.Mock;
+  gte: jest.Mock;
+  lte: jest.Mock;
+  update: jest.Mock;
+  then: (
+    onResolve: (value: { data: unknown; error: unknown }) => unknown
+  ) => Promise<unknown>;
+};
+
 const createMockQueryBuilder = (resolveValue: {
   data: unknown;
   error: unknown;
 }) => {
-  const mockBuilder = {
+  const mockBuilder: Partial<MockQueryBuilder> = {
     select: jest.fn(),
     eq: jest.fn(),
     gte: jest.fn(),
@@ -25,12 +36,12 @@ const createMockQueryBuilder = (resolveValue: {
   };
 
   Object.keys(mockBuilder).forEach((key) => {
-    mockBuilder[key as keyof typeof mockBuilder].mockReturnValue(mockBuilder);
+    (mockBuilder[key as keyof typeof mockBuilder] as jest.Mock).mockReturnValue(
+      mockBuilder
+    );
   });
 
-  (mockBuilder as any).then = jest.fn((onResolve) =>
-    Promise.resolve(onResolve(resolveValue))
-  );
+  mockBuilder.then = (onResolve) => Promise.resolve(onResolve(resolveValue));
 
   return mockBuilder;
 };
