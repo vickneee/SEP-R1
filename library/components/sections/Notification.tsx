@@ -122,14 +122,11 @@ export default function NotificationSection() {
     fetchOverdueNotifications();
   };
 
-  console.log(dueDateNotifications);
-  console.log(overdueNotifications);
-
   return (
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="ghost" size="icon" className="p-2 relative">
-          <Bell width={16} />
+          <Bell width={16} data-testid="bell-icon" />
           {hasNotifications && (
             <div className="absolute -top-0 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-white text-xs">
               {dueDateNotifications.length + overdueNotifications.length}

@@ -13,7 +13,7 @@ const mockSupabase = {
 const createClientMock = supabaseModule.createClient as jest.MockedFunction<
   typeof supabaseModule.createClient
 >;
-createClientMock.mockReturnValue(Promise.resolve(mockSupabase as any));
+createClientMock.mockReturnValue(mockSupabase as any);
 
 const createMockQueryBuilder = (resolveValue: {
   data: unknown;
