@@ -2,8 +2,20 @@ import {render, screen, act, waitFor} from '../../utils/test-utils'
 import UserReservations from '@/app/(dashboard)/customer-dashboard/UserReservations';
 import CustomerDashboardClient from '@/app/(dashboard)/customer-dashboard/CustomerDashboardClient';
 
+type Reservation = {
+    reservation_id: number;
+    reservation_date: string;
+    due_date: string;
+    return_date: string | null;
+    status: "active" | "returned" | "overdue" | "cancelled";
+    books: {
+        title: string;
+        author: string;
+    };
+};
+
 // Mock Supabase client for client-side
-const createMockClient = (reservations: any[]) => ({
+const createMockClient = (reservations: Reservation[]) => ({
     auth: {
         getUser: jest.fn().mockResolvedValue({
             data: { user: { id: '123', email: 'test@example.com' } },
