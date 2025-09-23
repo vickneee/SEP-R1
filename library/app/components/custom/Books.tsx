@@ -21,12 +21,32 @@ import {
 // import { books } from "@/data/books";
 import BookImage from "@/app/components/custom/BookImage";
 import { useRouter } from "next/navigation";
+import { Trash2 } from "lucide-react";
+import { deleteBook } from "../../actions/bookActions";
 
 // @ts-ignore
 export function Books({ books }) {
   const router = useRouter();
   const handleClick = (id: Key | null | undefined) => {
     router.push(`/book/${id}`);
+  };
+
+  const handleDelete = async (e: React.MouseEvent, bookId: Key | null | undefined) => {
+    e.stopPropagation();
+    if (bookId) {
+      try {
+        const result = await deleteBook(Number(bookId));
+        if (result.error) {
+          console.error("Error deleting book:", result.error);
+          alert("Failed to delete book: " + result.error);
+        } else {
+          window.location.reload();
+        }
+      } catch (error) {
+        console.error("Error deleting book:", error);
+        alert("An unexpected error occurred while deleting the book.");
+      }
+    }
   };
 
   // @ts-ignore
@@ -94,8 +114,17 @@ export function Books({ books }) {
           }) => (
             <Card
               key={book.book_id}
-              className="px-4 h-full hover:shadow-lg transition-shadow duration-300 cursor-pointer border-gray-100 flex flex-col justify-between"
+              className="px-4 h-full hover:shadow-lg transition-shadow duration-300 cursor-pointer border-gray-100 flex flex-col justify-between group relative"
             >
+              {/* Delete button only visible by hovering */}
+              <button
+                onClick={(e) => handleDelete(e, book.book_id)}
+                className="absolute top-2 right-2 p-2 bg-red-500 text-white rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-red-600 z-10"
+                aria-label="Delete book"
+              >
+                <Trash2 size={16} />
+              </button>
+
               <CardContent className="flex aspect-square items-center justify-center">
                 {book.image ? (
                   <img className="rounded-md"

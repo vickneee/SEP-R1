@@ -175,14 +175,13 @@ const updateBook = async (id: number, updates: Partial<Book>) => {
 
 const deleteBook = async (id: number) => {
   const supabase = await createClient();
-  const { data, error } = await supabase
+  
+  const { error } = await supabase
     .from("books")
     .delete()
-    .eq("book_id", id)
-    .select()
-    .single();
+    .eq("book_id", id);
 
-  return { error: error?.message, book: data };
+  return { error: error?.message };
 };
 
 export {
