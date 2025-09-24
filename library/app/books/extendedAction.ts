@@ -5,7 +5,9 @@ import { createClient } from "@/utils/supabase/server";
 class ReservationWithBook {
 }
 
-export async function extendReservation(reservationId: number) {
+export async function extendReservation(reservationId: string | number) {
+
+    const id = typeof reservationId === "string" ? Number(reservationId) : reservationId;
 
     const supabase = await createClient();
 
@@ -15,7 +17,7 @@ export async function extendReservation(reservationId: number) {
             *,
             books:book_id (title, author)
         `)
-        .eq("reservation_id", reservationId)
+        .eq("reservation_id", id)
         .single();
 
     if (fetchError || !reservation) throw new Error("Reservation not found");
@@ -28,7 +30,7 @@ export async function extendReservation(reservationId: number) {
         .update({ due_date: newDueDate.toISOString(),
         extended: true // Mark as extended
         })
-        .eq("reservation_id", reservationId)
+        .eq("reservation_id", id)
         .select(`
             *,
             books:book_id (title, author)
