@@ -2,6 +2,7 @@
 
 import {createClient} from "@/utils/supabase/client";
 import {useEffect, useState} from "react";
+import {extendReservation} from "@/app/books/extendedAction";
 
 type ReservationWithBook = {
     reservation_id: number;
@@ -9,6 +10,7 @@ type ReservationWithBook = {
     due_date: string;
     return_date: string | null;
     status: "active" | "returned" | "overdue" | "cancelled";
+    extended: boolean;
     books: {
         title: string;
         author: string;
@@ -16,10 +18,11 @@ type ReservationWithBook = {
 };
 
 export default function UserReservations() {
-    // const reservations = mockReservations;
     const [reservations, setReservations] = useState<ReservationWithBook[]>([]);
     const [loading, setLoading] = useState(true);
     const [isReturning, setIsReturning] = useState<Record<number, boolean>>({});
+    const [isExtending] = useState<{ [key: string]: boolean }>({});
+    const [extendedReservations, setExtendedReservations] = useState<number[]>([]);
     const [feedback, setFeedback] = useState('');
 
     useEffect(() => {
@@ -38,7 +41,7 @@ export default function UserReservations() {
         }
         const {data, error} = await supabase
             .from("reservations")
-            .select("reservation_id, reservation_date, due_date, return_date, status, books(title, author)")
+            .select("reservation_id, reservation_date, due_date, return_date, status, extended, books(title, author)")
             .eq("user_id", user.id)
             .order("reservation_date", {ascending: false});
 
@@ -52,45 +55,67 @@ export default function UserReservations() {
         setLoading(false);
     }
 
+    const handleExtend = async (reservationId: number) => {
+
+        if (extendedReservations.includes(reservationId)) {
+            return;
+        }
+
+        try {
+            const updated = await extendReservation(reservationId) as ReservationWithBook;
+
+            setReservations(reservations.map(r =>
+                r.reservation_id === reservationId ? updated : r
+            ));
+
+            setExtendedReservations([...extendedReservations, reservationId]);
+
+            setFeedback("Book extended successfully!");
+        } catch (err) {
+            console.error(err);
+            setFeedback("Could not extend book");
+        }
+    };
+
     const handleReturn = async (reservationId: number) => {
-            setIsReturning({...isReturning, [reservationId]: true});
-            setFeedback('');
+        setIsReturning({...isReturning, [reservationId]: true});
+        setFeedback('');
 
-            const supabase = createClient();
+        const supabase = createClient();
 
-            try {
-                const returnDate = new Date().toISOString(); // ISO format
-                const {error} = await supabase
-                    .from("reservations")
-                    .update({
-                        status: "returned",
-                        return_date: returnDate
-                    })
-                    .eq("reservation_id", reservationId);
+        try {
+            const returnDate = new Date().toISOString(); // ISO format
+            const {error} = await supabase
+                .from("reservations")
+                .update({
+                    status: "returned",
+                    return_date: returnDate
+                })
+                .eq("reservation_id", reservationId);
 
-                if (error) {
-                    console.error("Error updating reservation:", error);
-                    setIsReturning({...isReturning, [reservationId]: false});
-                    setFeedback("Failed to return book. Please try again.");
-                    return;
-                }
-                const updatedReservations: ReservationWithBook[]  = reservations.map(res =>
-                    res.reservation_id === reservationId
-                        ? {...res, status: "returned", return_date: returnDate}
-                        : res
-                );
-                setReservations(updatedReservations);
-                setFeedback("Book successfully returned");
-            } catch
-                (err) {
-                console.error("Error fetching reservations:", err);
-                setFeedback("Failed to return book. Please try again");
-
-            } finally {
+            if (error) {
+                console.error("Error updating reservation:", error);
                 setIsReturning({...isReturning, [reservationId]: false});
-                setLoading(false);
+                setFeedback("Failed to return book. Please try again.");
+                return;
             }
-        };
+            const updatedReservations: ReservationWithBook[] = reservations.map(res =>
+                res.reservation_id === reservationId
+                    ? {...res, status: "returned", return_date: returnDate}
+                    : res
+            );
+            setReservations(updatedReservations);
+            setFeedback("Book successfully returned");
+        } catch
+            (err) {
+            console.error("Error fetching reservations:", err);
+            setFeedback("Failed to return book. Please try again");
+
+        } finally {
+            setIsReturning({...isReturning, [reservationId]: false});
+            setLoading(false);
+        }
+    };
 
     function isOverdue(res: ReservationWithBook): boolean {
         if (res.status !== "active") return false; // Only active ones can be overdue
@@ -104,7 +129,7 @@ export default function UserReservations() {
     }
 
     return (
-        <div className="w-full max-w-4xl mt-8">
+        <div className="min-w-[1020] max-w-4xl mt-8">
             {loading && <p className="text-gray-600 mt-0">Loading reservations...</p>}
             {feedback && <p className="mb-6 text-sm text-green-600 mt-2">{feedback}</p>}
             <div className="overflow-x-auto rounded-lg shadow">
@@ -117,7 +142,8 @@ export default function UserReservations() {
                         <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Due</th>
                         <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Returned</th>
                         <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Status</th>
-                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Actions</th>
+                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Extend</th>
+                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Return</th>
                     </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200 text-sm">
@@ -133,14 +159,28 @@ export default function UserReservations() {
                             <td className="px-4 py-2">
                                     <span className={`px-2 py-1 rounded text-xs ${
                                         res.status === "returned"
-                                        ? "bg-blue-100 text-blue-700"
-                                        : isOverdue(res)
-                                            ? "bg-red-100 text-red-700"
-                                            : "bg-green-100 text-green-700"
+                                            ? "bg-blue-100 text-blue-700"
+                                            : isOverdue(res)
+                                                ? "bg-red-100 text-red-700"
+                                                : "bg-green-100 text-green-700"
                                     }`}>
                                         {res.status === "returned" ? "returned" : isOverdue(res) ? "overdue" : "active"}
                                     </span>
                             </td>
+                            <td className="px-4 py-2 text-center">
+                                {res.status === 'active' && (
+                                    <button onClick={() => handleExtend(res.reservation_id)}
+                                            disabled={isExtending[res.reservation_id] || res.extended}
+                                            className="px-4 py-2 text-xs font-semibold rounded-md transition-colors
+                                            bg-green-600 hover:bg-green-700 text-white
+                                            disabled:bg-gray-400 disabled:cursor-not-allowed"
+                                    >
+                                        {isExtending[res.reservation_id]
+                                            ? 'Extending...' : res.extended ? 'Extended' : 'Extend'}
+                                    </button>
+                                )}
+                            </td>
+
                             <td className="px-4 py-2 text-center">
                                 {res.status === 'active' && (
                                     <button onClick={() => handleReturn(res.reservation_id)}
