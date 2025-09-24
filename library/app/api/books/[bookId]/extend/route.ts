@@ -1,9 +1,10 @@
 import { NextResponse } from "next/server";
 import { extendReservation } from "@/app/books/extendedAction";
 
-export async function POST(request: Request, { params }: { params: { reservationId: string } }) {
+export async function POST(request: Request, { params }: { params: { bookId: string } }) {
+    const reservationId = Number(params.bookId); // convert string to number
     try {
-        const updated = await extendReservation(params.reservationId);
+        const updated = await extendReservation(reservationId);
         return NextResponse.json(updated, { status: 200 });
     } catch (err: unknown) {
         const message = err instanceof Error ? err.message : "Unknown error";
