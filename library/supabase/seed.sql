@@ -232,13 +232,13 @@ INSERT INTO public.reservations (user_id, book_id, reservation_date, due_date, r
 ('44444444-4444-4444-4444-444444444444', 8, NOW() - INTERVAL '9 days', NOW() - INTERVAL '2 days', NULL, 'overdue')
 ON CONFLICT DO NOTHING;
 
--- Insert corresponding penalties for the overdue situations
+-- Insert corresponding overdue tracking records (no payment amounts)
 INSERT INTO public.penalties (user_id, reservation_id, amount, reason, status, created_at) VALUES
--- Sarah's penalties
+-- Sarah's overdue tracking
 (
     '33333333-3333-3333-3333-333333333333',
     (SELECT reservation_id FROM public.reservations WHERE user_id = '33333333-3333-3333-3333-333333333333' AND book_id = 4 LIMIT 1),
-    4.00,
+    0.00,
     'Overdue book: "The Great Gatsby" (5 days overdue)',
     'pending',
     NOW() - INTERVAL '4 days'
@@ -246,17 +246,17 @@ INSERT INTO public.penalties (user_id, reservation_id, amount, reason, status, c
 (
     '33333333-3333-3333-3333-333333333333',
     (SELECT reservation_id FROM public.reservations WHERE user_id = '33333333-3333-3333-3333-333333333333' AND book_id = 5 LIMIT 1),
-    2.00,
-    'Overdue book: "The Catcher in the Rye" (3 days overdue when returned)',
-    'pending',
+    0.00,
+    'Overdue book: "The Catcher in the Rye" (returned 3 days late)',
+    'waived',
     NOW() - INTERVAL '15 days'
 ),
 
--- Mike's penalties (multiple scenarios)
+-- Mike's overdue tracking (multiple scenarios)
 (
     '44444444-4444-4444-4444-444444444444',
     (SELECT reservation_id FROM public.reservations WHERE user_id = '44444444-4444-4444-4444-444444444444' AND book_id = 6 LIMIT 1),
-    9.00,
+    0.00,
     'Overdue book: "Sapiens: A Brief History of Humankind" (10 days overdue)',
     'pending',
     NOW() - INTERVAL '9 days'
@@ -264,15 +264,15 @@ INSERT INTO public.penalties (user_id, reservation_id, amount, reason, status, c
 (
     '44444444-4444-4444-4444-444444444444',
     (SELECT reservation_id FROM public.reservations WHERE user_id = '44444444-4444-4444-4444-444444444444' AND book_id = 7 LIMIT 1),
-    6.00,
-    'Overdue book: "The Immortal Life of Henrietta Lacks" (7 days overdue when returned)',
-    'paid',
+    0.00,
+    'Overdue book: "The Immortal Life of Henrietta Lacks" (returned 7 days late)',
+    'waived',
     NOW() - INTERVAL '20 days'
 ),
 (
     '44444444-4444-4444-4444-444444444444',
     (SELECT reservation_id FROM public.reservations WHERE user_id = '44444444-4444-4444-4444-444444444444' AND book_id = 8 LIMIT 1),
-    1.00,
+    0.00,
     'Overdue book: "Educated" (2 days overdue)',
     'pending',
     NOW() - INTERVAL '1 days'
@@ -290,13 +290,13 @@ SET available_copies = GREATEST(0, available_copies - (
 ))
 WHERE book_id IN (1, 3, 4, 6, 8);
 
--- Update penalty counts (should be handled by triggers, but ensuring consistency)
+-- Update penalty counts based on overdue books (should be handled by triggers, but ensuring consistency)
 UPDATE public.users
 SET penalty_count = (
     SELECT COUNT(*)
-    FROM public.penalties
+    FROM public.reservations
     WHERE user_id = public.users.user_id
-    AND status = 'pending'
+    AND status = 'overdue'
 )
 WHERE user_id IN ('33333333-3333-3333-3333-333333333333', '44444444-4444-4444-4444-444444444444');
 
@@ -304,26 +304,30 @@ WHERE user_id IN ('33333333-3333-3333-3333-333333333333', '44444444-4444-4444-44
 -- Test scenario summary
 -----------------------------
 -- Test Users Created:
--- 1. librarian@library.com (Admin Librarian) - Can manage all penalties
--- 2. customer@library.com (John Customer) - Normal user, no penalties
--- 3. penalty.user@library.com (Sarah Overdue) - Has 2 pending penalties ($6.00 total)
--- 4. multiple.penalties@library.com (Mike Penalties) - Has 2 pending penalties ($10.00 total), 1 paid penalty
+-- 1. librarian@library.com (Admin Librarian) - Can manage overdue books and mark as returned
+-- 2. customer@library.com (John Customer) - Normal user, no overdue books
+-- 3. penalty.user@library.com (Sarah Overdue) - Has 1 overdue book: "The Great Gatsby"
+-- 4. multiple.penalties@library.com (Mike Penalties) - Has 2 overdue books: "Sapiens" & "Educated"
 --
--- Penalty Scenarios:
--- - Sarah: Cannot reserve new books (2 pending penalties)
--- - Mike: Cannot reserve new books (2 pending penalties)
+-- Restriction Scenarios:
+-- - Sarah: Cannot reserve new books (1 overdue book must be returned)
+-- - Mike: Cannot reserve new books (2 overdue books must be returned)
 -- - John: Can reserve books normally
 --
--- Books with Test Reservations:
--- - Book IDs 1,3: Reserved by John (active)
--- - Book IDs 4,6,8: Reserved by Sarah/Mike (overdue)
--- - Book IDs 5,7: Previously reserved, returned late
+-- Books with Test Reservations (visible in "My Books"):
+-- - Book IDs 1,3: Reserved by John (active - due dates in future)
+-- - Book ID 4: Reserved by Sarah (overdue - "The Great Gatsby")
+-- - Book ID 5: Previously reserved by Sarah (returned late - "The Catcher in the Rye")
+-- - Book ID 6: Reserved by Mike (overdue - "Sapiens")
+-- - Book ID 7: Previously reserved by Mike (returned late - "Henrietta Lacks")
+-- - Book ID 8: Reserved by Mike (overdue - "Educated")
 
 -----------------------------
 -- Success message
 -----------------------------
 DO $$ BEGIN
-    RAISE NOTICE 'Seed data inserted: % books, 4 test users (2 with penalties), sample reservations and penalties for UI testing',
+    RAISE NOTICE 'Seed data inserted: % books, 4 test users (2 with overdue books), sample reservations for UI testing',
         (SELECT COUNT(*) FROM public.books);
-    RAISE NOTICE 'Test accounts: librarian@library.com, customer@library.com, penalty.user@library.com, multiple.penalties@library.com (all password: password123)';
+    RAISE NOTICE 'Test accounts: librarian@library.com, customer@library.com, penalty.user@library.com (1 overdue), multiple.penalties@library.com (2 overdue) - all password: password123';
+    RAISE NOTICE 'System now tracks overdue books rather than payment penalties. Users must return overdue books to continue borrowing.';
 END $$;

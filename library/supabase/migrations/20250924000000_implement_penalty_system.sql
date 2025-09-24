@@ -81,63 +81,36 @@ BEGIN
     RETURN;
   END IF;
 
-  -- Calculate penalty amount
-  penalty_amount := public.calculate_penalty_amount(overdue_days);
-
-  -- Skip if no penalty due to grace period
-  IF penalty_amount <= 0 THEN
-    RETURN;
-  END IF;
-
-  -- Create penalty reason
+  -- Create simple overdue tracking reason (no payment amounts)
   penalty_reason := 'Overdue book: "' || res_record.title || '" (' || overdue_days || ' days overdue)';
 
-  -- Check if penalty already exists for this reservation
+  -- Check if penalty tracking already exists for this reservation
   IF EXISTS (
     SELECT 1 FROM public.penalties
     WHERE reservation_id = reservation_uuid
   ) THEN
-    -- Update existing penalty amount
+    -- Update existing overdue tracking
     UPDATE public.penalties
-    SET amount = penalty_amount,
-        reason = penalty_reason
+    SET amount = 0.00, -- Remove payment amount
+        reason = penalty_reason,
+        status = 'pending'
     WHERE reservation_id = reservation_uuid;
   ELSE
-    -- Insert new penalty
+    -- Insert new overdue tracking record
     INSERT INTO public.penalties (user_id, reservation_id, amount, reason, status)
-    VALUES (res_record.user_id, reservation_uuid, penalty_amount, penalty_reason, 'pending');
+    VALUES (res_record.user_id, reservation_uuid, 0.00, penalty_reason, 'pending');
   END IF;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Function to auto-resolve penalty when book is returned early
-CREATE OR REPLACE FUNCTION public.resolve_penalty_on_return(reservation_uuid INTEGER)
+-- Function to resolve overdue tracking when book is returned
+CREATE OR REPLACE FUNCTION public.resolve_overdue_on_return(reservation_uuid INTEGER)
 RETURNS VOID AS $$
-DECLARE
-  grace_days DECIMAL;
-  actual_overdue_days INTEGER;
-  res_due_date TIMESTAMPTZ;
-  res_return_date TIMESTAMPTZ;
 BEGIN
-  -- Get reservation dates
-  SELECT due_date, return_date
-  INTO res_due_date, res_return_date
-  FROM public.reservations
-  WHERE reservation_id = reservation_uuid;
-
-  IF NOT FOUND OR res_return_date IS NULL THEN
-    RETURN;
-  END IF;
-
-  grace_days := public.get_penalty_config('grace_period_days');
-  actual_overdue_days := EXTRACT(DAY FROM res_return_date - res_due_date)::INTEGER;
-
-  -- If returned within grace period, waive the penalty
-  IF actual_overdue_days <= grace_days THEN
-    UPDATE public.penalties
-    SET status = 'waived'
-    WHERE reservation_id = reservation_uuid AND status = 'pending';
-  END IF;
+  -- Mark penalty tracking as resolved when book is returned
+  UPDATE public.penalties
+  SET status = 'waived'
+  WHERE reservation_id = reservation_uuid AND status = 'pending';
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
@@ -161,14 +134,13 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Trigger to handle penalty resolution when book is returned
+-- Trigger to handle overdue tracking resolution when book is returned
 CREATE OR REPLACE FUNCTION public.handle_book_return()
 RETURNS TRIGGER AS $$
 BEGIN
-  -- When a book is returned
+  -- When a book is returned, resolve overdue tracking
   IF OLD.status != 'returned' AND NEW.status = 'returned' THEN
-    -- Try to resolve penalty if returned within grace period
-    PERFORM public.resolve_penalty_on_return(NEW.reservation_id);
+    PERFORM public.resolve_overdue_on_return(NEW.reservation_id);
   END IF;
 
   RETURN NEW;
@@ -227,44 +199,41 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Check if user can make new reservations
+-- Check if user can make new reservations (focuses on overdue books, not payments)
 CREATE OR REPLACE FUNCTION public.can_user_reserve_books(user_uuid UUID DEFAULT auth.uid())
 RETURNS TABLE (
   can_reserve BOOLEAN,
-  pending_penalty_count INTEGER,
-  pending_penalty_amount DECIMAL,
+  overdue_book_count INTEGER,
   restriction_reason TEXT
 ) AS $$
 DECLARE
-  penalty_count INTEGER;
-  penalty_total DECIMAL;
+  overdue_count INTEGER;
 BEGIN
-  -- Count pending penalties
-  SELECT
-    COUNT(*)::INTEGER,
-    COALESCE(SUM(amount), 0)::DECIMAL
-  INTO penalty_count, penalty_total
-  FROM public.penalties
-  WHERE user_id = user_uuid AND status = 'pending';
+  -- Count active overdue reservations (not returned books)
+  SELECT COUNT(*)::INTEGER
+  INTO overdue_count
+  FROM public.reservations
+  WHERE user_id = user_uuid AND status = 'overdue';
 
-  IF penalty_count > 0 THEN
+  IF overdue_count > 0 THEN
     RETURN QUERY SELECT
       FALSE as can_reserve,
-      penalty_count as pending_penalty_count,
-      penalty_total as pending_penalty_amount,
-      'You have ' || penalty_count || ' pending penalty(ies) totaling $' || penalty_total || '. Please pay your penalties to continue borrowing books.' as restriction_reason;
+      overdue_count as overdue_book_count,
+      CASE
+        WHEN overdue_count = 1 THEN 'You have 1 overdue book. Please return it to continue borrowing.'
+        ELSE 'You have ' || overdue_count || ' overdue books. Please return them to continue borrowing.'
+      END as restriction_reason;
   ELSE
     RETURN QUERY SELECT
       TRUE as can_reserve,
-      0 as pending_penalty_count,
-      0::DECIMAL as pending_penalty_amount,
+      0 as overdue_book_count,
       NULL::TEXT as restriction_reason;
   END IF;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
--- Librarian function to pay penalty
-CREATE OR REPLACE FUNCTION public.pay_penalty(penalty_uuid INTEGER)
+-- Librarian function to mark overdue book as returned
+CREATE OR REPLACE FUNCTION public.mark_book_returned(reservation_uuid INTEGER)
 RETURNS BOOLEAN AS $$
 DECLARE
   is_librarian BOOLEAN;
@@ -276,38 +245,21 @@ BEGIN
   ) INTO is_librarian;
 
   IF NOT is_librarian THEN
-    RAISE EXCEPTION 'Only librarians can manage penalties';
+    RAISE EXCEPTION 'Only librarians can mark books as returned';
   END IF;
 
-  -- Update penalty status
-  UPDATE public.penalties
-  SET status = 'paid'
-  WHERE penalty_id = penalty_uuid AND status = 'pending';
+  -- Update reservation status and set return date
+  UPDATE public.reservations
+  SET
+    status = 'returned',
+    return_date = NOW()
+  WHERE reservation_id = reservation_uuid
+  AND status = 'overdue';
 
-  RETURN FOUND;
-END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
-
--- Librarian function to waive penalty
-CREATE OR REPLACE FUNCTION public.waive_penalty(penalty_uuid INTEGER)
-RETURNS BOOLEAN AS $$
-DECLARE
-  is_librarian BOOLEAN;
-BEGIN
-  -- Check if user is librarian
-  SELECT EXISTS (
-    SELECT 1 FROM public.users
-    WHERE user_id = auth.uid() AND role = 'librarian'
-  ) INTO is_librarian;
-
-  IF NOT is_librarian THEN
-    RAISE EXCEPTION 'Only librarians can manage penalties';
-  END IF;
-
-  -- Update penalty status
+  -- Auto-resolve penalty tracking when book is returned
   UPDATE public.penalties
   SET status = 'waived'
-  WHERE penalty_id = penalty_uuid AND status = 'pending';
+  WHERE reservation_id = reservation_uuid AND status = 'pending';
 
   RETURN FOUND;
 END;
@@ -342,13 +294,44 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+-- Add function to get all overdue books for librarian management
+CREATE OR REPLACE FUNCTION public.get_all_overdue_books()
+RETURNS TABLE (
+  reservation_id INTEGER,
+  user_name TEXT,
+  user_email TEXT,
+  book_title TEXT,
+  book_author TEXT,
+  due_date TIMESTAMPTZ,
+  days_overdue INTEGER,
+  user_id UUID
+) AS $$
+BEGIN
+  RETURN QUERY
+  SELECT
+    r.reservation_id,
+    (u.first_name || ' ' || u.last_name) as user_name,
+    u.email as user_email,
+    b.title as book_title,
+    b.author as book_author,
+    r.due_date,
+    GREATEST(0, EXTRACT(DAY FROM NOW() - r.due_date)::INTEGER) as days_overdue,
+    r.user_id
+  FROM public.reservations r
+  JOIN public.users u ON r.user_id = u.user_id
+  JOIN public.books b ON r.book_id = b.book_id
+  WHERE r.status = 'overdue'
+  ORDER BY r.due_date ASC;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 -----------------------------
 -- Grants
 -----------------------------
 GRANT EXECUTE ON FUNCTION public.get_user_penalties(UUID) TO authenticated;
 GRANT EXECUTE ON FUNCTION public.can_user_reserve_books(UUID) TO authenticated;
-GRANT EXECUTE ON FUNCTION public.pay_penalty(INTEGER) TO authenticated;
-GRANT EXECUTE ON FUNCTION public.waive_penalty(INTEGER) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.mark_book_returned(INTEGER) TO authenticated;
+GRANT EXECUTE ON FUNCTION public.get_all_overdue_books() TO authenticated;
 GRANT EXECUTE ON FUNCTION public.process_overdue_books() TO authenticated;
 GRANT EXECUTE ON FUNCTION public.user_has_pending_penalties(UUID) TO authenticated;
 
@@ -356,5 +339,5 @@ GRANT EXECUTE ON FUNCTION public.user_has_pending_penalties(UUID) TO authenticat
 -- Final notice
 -----------------------------
 DO $$ BEGIN
-  RAISE NOTICE 'Penalty system implemented: triggers, functions, and policies ready.';
+  RAISE NOTICE 'Overdue book tracking system implemented: focuses on returning books rather than payments.';
 END $$;

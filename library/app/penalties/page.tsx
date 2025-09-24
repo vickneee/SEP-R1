@@ -1,93 +1,68 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getAllPenalties, payPenalty, waivePenalty, processOverdueBooks, type UserPenalty } from "./penaltyActions";
+import { getAllOverdueBooks, markBookReturned, processOverdueBooks } from "./penaltyActions";
 
-type ExtendedPenalty = UserPenalty & {
+type OverdueBook = {
+  reservation_id: number;
   user_name: string;
   user_email: string;
+  book_title: string;
+  book_author: string;
+  due_date: string;
+  days_overdue: number;
+  user_id: string;
 };
 
-export default function PenaltiesPage() {
-  const [penalties, setPenalties] = useState<ExtendedPenalty[]>([]);
+export default function OverdueBooksPage() {
+  const [overdueBooks, setOverdueBooks] = useState<OverdueBook[]>([]);
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState<Record<number, boolean>>({});
   const [processingOverdue, setProcessingOverdue] = useState(false);
   const [feedback, setFeedback] = useState("");
   const [error, setError] = useState("");
-  const [filter, setFilter] = useState<'all' | 'pending' | 'paid' | 'waived'>('pending');
 
   useEffect(() => {
-    loadPenalties();
+    loadOverdueBooks();
   }, []);
 
-  const loadPenalties = async () => {
+  const loadOverdueBooks = async () => {
     setLoading(true);
     setError("");
     try {
-      const result = await getAllPenalties();
+      const result = await getAllOverdueBooks();
       if (result.error) {
         setError(result.error);
       } else {
-        setPenalties(result.penalties || []);
+        setOverdueBooks(result.overdueBooks || []);
       }
     } catch (err) {
-      console.error("Error loading penalties:", err);
-      setError("Failed to load penalties");
+      console.error("Error loading overdue books:", err);
+      setError("Failed to load overdue books");
     } finally {
       setLoading(false);
     }
   };
 
-  const handlePayPenalty = async (penaltyId: number) => {
-    setActionLoading({ ...actionLoading, [penaltyId]: true });
+  const handleMarkReturned = async (reservationId: number) => {
+    setActionLoading({ ...actionLoading, [reservationId]: true });
     setFeedback("");
     setError("");
 
     try {
-      const result = await payPenalty(penaltyId);
+      const result = await markBookReturned(reservationId);
       if (result.success) {
-        setFeedback("Penalty marked as paid successfully");
-        // Update local state
-        setPenalties(penalties.map(p =>
-          p.penalty_id === penaltyId
-            ? { ...p, status: 'paid' }
-            : p
-        ));
+        setFeedback("Book marked as returned successfully");
+        // Remove from local state
+        setOverdueBooks(overdueBooks.filter(book => book.reservation_id !== reservationId));
       } else {
-        setError(result.error || "Failed to pay penalty");
+        setError(result.error || "Failed to mark book as returned");
       }
     } catch (err) {
-      console.error("Error paying penalty:", err);
-      setError("Failed to pay penalty");
+      console.error("Error marking book as returned:", err);
+      setError("Failed to mark book as returned");
     } finally {
-      setActionLoading({ ...actionLoading, [penaltyId]: false });
-    }
-  };
-
-  const handleWaivePenalty = async (penaltyId: number) => {
-    setActionLoading({ ...actionLoading, [penaltyId]: true });
-    setFeedback("");
-    setError("");
-
-    try {
-      const result = await waivePenalty(penaltyId);
-      if (result.success) {
-        setFeedback("Penalty waived successfully");
-        // Update local state
-        setPenalties(penalties.map(p =>
-          p.penalty_id === penaltyId
-            ? { ...p, status: 'waived' }
-            : p
-        ));
-      } else {
-        setError(result.error || "Failed to waive penalty");
-      }
-    } catch (err) {
-      console.error("Error waiving penalty:", err);
-      setError("Failed to waive penalty");
-    } finally {
-      setActionLoading({ ...actionLoading, [penaltyId]: false });
+      setActionLoading({ ...actionLoading, [reservationId]: false });
     }
   };
 
@@ -102,8 +77,8 @@ export default function PenaltiesPage() {
         setError(result.error);
       } else {
         setFeedback(`Processed ${result.processed_count} overdue books`);
-        // Reload penalties to show new ones
-        await loadPenalties();
+        // Reload overdue books to show new ones
+        await loadOverdueBooks();
       }
     } catch (err) {
       console.error("Error processing overdue books:", err);
@@ -113,39 +88,27 @@ export default function PenaltiesPage() {
     }
   };
 
-  const filteredPenalties = penalties.filter(penalty => {
-    if (filter === 'all') return true;
-    return penalty.status === filter;
-  });
-
-  const pendingCount = penalties.filter(p => p.status === 'pending').length;
-  const totalPendingAmount = penalties
-    .filter(p => p.status === 'pending')
-    .reduce((sum, p) => sum + p.amount, 0);
+  const totalOverdueBooks = overdueBooks.length;
+  const averageDaysOverdue = totalOverdueBooks > 0
+    ? Math.round(overdueBooks.reduce((sum, book) => sum + book.days_overdue, 0) / totalOverdueBooks)
+    : 0;
 
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-800 mb-4">Penalty Management</h1>
+        <h1 className="text-3xl font-bold text-gray-800 mb-4">Overdue Book Management</h1>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <h3 className="text-lg font-semibold text-red-800">Pending Penalties</h3>
-            <p className="text-2xl font-bold text-red-600">{pendingCount}</p>
-            <p className="text-sm text-red-600">${totalPendingAmount.toFixed(2)} total</p>
+            <h3 className="text-lg font-semibold text-red-800">Overdue Books</h3>
+            <p className="text-2xl font-bold text-red-600">{totalOverdueBooks}</p>
+            <p className="text-sm text-red-600">Books currently overdue</p>
           </div>
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-            <h3 className="text-lg font-semibold text-green-800">Paid Penalties</h3>
-            <p className="text-2xl font-bold text-green-600">
-              {penalties.filter(p => p.status === 'paid').length}
-            </p>
-          </div>
-          <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-            <h3 className="text-lg font-semibold text-gray-800">Waived Penalties</h3>
-            <p className="text-2xl font-bold text-gray-600">
-              {penalties.filter(p => p.status === 'waived').length}
-            </p>
+          <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+            <h3 className="text-lg font-semibold text-orange-800">Average Days Overdue</h3>
+            <p className="text-2xl font-bold text-orange-600">{averageDaysOverdue}</p>
+            <p className="text-sm text-orange-600">Days past due date</p>
           </div>
         </div>
 
@@ -160,30 +123,12 @@ export default function PenaltiesPage() {
               {processingOverdue ? "Processing..." : "Process Overdue Books"}
             </button>
             <button
-              onClick={loadPenalties}
+              onClick={loadOverdueBooks}
               disabled={loading}
               className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded disabled:bg-gray-400"
             >
               {loading ? "Loading..." : "Refresh"}
             </button>
-          </div>
-
-          {/* Filter Buttons */}
-          <div className="flex gap-1 bg-gray-200 rounded-lg p-1">
-            {(['all', 'pending', 'paid', 'waived'] as const).map((status) => (
-              <button
-                key={status}
-                onClick={() => setFilter(status)}
-                className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
-                  filter === status
-                    ? 'bg-white text-gray-800 shadow'
-                    : 'text-gray-600 hover:text-gray-800'
-                }`}
-              >
-                {status === 'all' ? 'All' : status.charAt(0).toUpperCase() + status.slice(1)}
-                {status !== 'all' && ` (${penalties.filter(p => p.status === status).length})`}
-              </button>
-            ))}
           </div>
         </div>
 
@@ -200,16 +145,14 @@ export default function PenaltiesPage() {
         )}
       </div>
 
-      {/* Penalties Table */}
+      {/* Overdue Books Table */}
       {loading ? (
         <div className="text-center py-8">
-          <p className="text-gray-600">Loading penalties...</p>
+          <p className="text-gray-600">Loading overdue books...</p>
         </div>
-      ) : filteredPenalties.length === 0 ? (
+      ) : overdueBooks.length === 0 ? (
         <div className="text-center py-8">
-          <p className="text-gray-600">
-            {filter === 'all' ? 'No penalties found.' : `No ${filter} penalties found.`}
-          </p>
+          <p className="text-gray-600">No overdue books found.</p>
         </div>
       ) : (
         <div className="overflow-x-auto rounded-lg shadow">
@@ -218,73 +161,46 @@ export default function PenaltiesPage() {
               <tr>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">User</th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Book</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Amount</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Reason</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Status</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Created</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Due Date</th>
+                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Days Overdue</th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {filteredPenalties.map((penalty) => (
-                <tr key={penalty.penalty_id} className="hover:bg-gray-50">
+              {overdueBooks.map((book) => (
+                <tr key={book.reservation_id} className="hover:bg-gray-50">
                   <td className="px-6 py-4">
                     <div>
-                      <div className="font-medium text-gray-900">{penalty.user_name}</div>
-                      <div className="text-sm text-gray-500">{penalty.user_email}</div>
+                      <div className="font-medium text-gray-900">{book.user_name}</div>
+                      <div className="text-sm text-gray-500">{book.user_email}</div>
                     </div>
                   </td>
                   <td className="px-6 py-4">
                     <div>
-                      <div className="font-medium text-gray-900">
-                        {penalty.book_title || 'Unknown Book'}
-                      </div>
-                      {penalty.book_author && (
-                        <div className="text-sm text-gray-500">by {penalty.book_author}</div>
-                      )}
+                      <div className="font-medium text-gray-900">{book.book_title}</div>
+                      <div className="text-sm text-gray-500">by {book.book_author}</div>
                     </div>
                   </td>
-                  <td className="px-6 py-4">
-                    <div className="text-lg font-semibold text-gray-900">
-                      ${penalty.amount.toFixed(2)}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600 max-w-xs">
-                    <div className="truncate" title={penalty.reason}>
-                      {penalty.reason}
-                    </div>
+                  <td className="px-6 py-4 text-sm text-gray-600">
+                    {new Date(book.due_date).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4">
                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                      penalty.status === 'pending' ? 'bg-red-100 text-red-800' :
-                      penalty.status === 'paid' ? 'bg-green-100 text-green-800' :
-                      'bg-gray-100 text-gray-800'
+                      book.days_overdue <= 3 ? 'bg-yellow-100 text-yellow-800' :
+                      book.days_overdue <= 7 ? 'bg-orange-100 text-orange-800' :
+                      'bg-red-100 text-red-800'
                     }`}>
-                      {penalty.status}
+                      {book.days_overdue} days
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    {new Date(penalty.created_at).toLocaleDateString()}
-                  </td>
                   <td className="px-6 py-4">
-                    {penalty.status === 'pending' && (
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => handlePayPenalty(penalty.penalty_id)}
-                          disabled={actionLoading[penalty.penalty_id]}
-                          className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs disabled:bg-gray-400"
-                        >
-                          {actionLoading[penalty.penalty_id] ? '...' : 'Pay'}
-                        </button>
-                        <button
-                          onClick={() => handleWaivePenalty(penalty.penalty_id)}
-                          disabled={actionLoading[penalty.penalty_id]}
-                          className="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded text-xs disabled:bg-gray-400"
-                        >
-                          {actionLoading[penalty.penalty_id] ? '...' : 'Waive'}
-                        </button>
-                      </div>
-                    )}
+                    <button
+                      onClick={() => handleMarkReturned(book.reservation_id)}
+                      disabled={actionLoading[book.reservation_id]}
+                      className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs disabled:bg-gray-400"
+                    >
+                      {actionLoading[book.reservation_id] ? 'Processing...' : 'Mark as Returned'}
+                    </button>
                   </td>
                 </tr>
               ))}

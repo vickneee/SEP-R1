@@ -2,7 +2,6 @@
 
 import {createClient} from "@/utils/supabase/client";
 import {useEffect, useState} from "react";
-import { getUserPenalties, type UserPenalty } from "@/app/penalties/penaltyActions";
 
 type ReservationWithBook = {
     reservation_id: number;
@@ -18,7 +17,6 @@ type ReservationWithBook = {
 
 export default function UserReservations() {
     const [reservations, setReservations] = useState<ReservationWithBook[]>([]);
-    const [penalties, setPenalties] = useState<UserPenalty[]>([]);
     const [loading, setLoading] = useState(true);
     const [isReturning, setIsReturning] = useState<Record<number, boolean>>({});
     const [feedback, setFeedback] = useState('');
@@ -33,33 +31,27 @@ export default function UserReservations() {
         const user = userData.user;
 
         if (!user) {
+            console.log("No user found in UserReservations");
             setReservations([]);
-            setPenalties([]);
             setLoading(false);
             return;
         }
 
+        console.log("UserReservations: Current user:", user.id, user.email);
+
         try {
-            // Fetch reservations and penalties in parallel
-            const [reservationsResult, penaltiesResult] = await Promise.all([
-                supabase
-                    .from("reservations")
-                    .select("reservation_id, reservation_date, due_date, return_date, status, books(title, author)")
-                    .eq("user_id", user.id)
-                    .order("reservation_date", {ascending: false}),
-                getUserPenalties()
-            ]);
+            // Fetch reservations for current user
+            const reservationsResult = await supabase
+                .from("reservations")
+                .select("reservation_id, reservation_date, due_date, return_date, status, books(title, author)")
+                .eq("user_id", user.id)
+                .order("reservation_date", {ascending: false});
 
             if (reservationsResult.error) {
                 console.error("Error fetching reservations:", reservationsResult.error);
             } else {
+                console.log("Fetched reservations for user:", user.id, "Count:", reservationsResult.data?.length || 0);
                 setReservations(reservationsResult.data || []);
-            }
-
-            if (penaltiesResult.error) {
-                console.error("Error fetching penalties:", penaltiesResult.error);
-            } else {
-                setPenalties(penaltiesResult.penalties || []);
             }
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -115,9 +107,6 @@ export default function UserReservations() {
         return dueDate < today;
     }
 
-    function getPenaltyForReservation(reservationId: number): UserPenalty | null {
-        return penalties.find(p => p.reservation_id === reservationId && p.status === 'pending') || null;
-    }
 
     function getOverdueDays(dueDate: string): number {
         const today = new Date();
@@ -127,13 +116,16 @@ export default function UserReservations() {
         return Math.max(0, diffDays);
     }
 
+    if (loading) {
+        return <p className="text-gray-600">Loading reservations...</p>;
+    }
+
     if (!reservations || reservations.length === 0) {
-        return <p className="text-gray-600">You don’t have any borrowed books.</p>;
+        return <p className="text-gray-600">You don't have any borrowed books.</p>;
     }
 
     return (
         <div className="w-full max-w-4xl mt-8">
-            {loading && <p className="text-gray-600 mt-0">Loading reservations...</p>}
             {feedback && <p className="mb-6 text-sm text-green-600 mt-2">{feedback}</p>}
             <div className="overflow-x-auto rounded-lg shadow">
                 <table className="min-w-full divide-y divide-gray-200 bg-white">
@@ -145,7 +137,7 @@ export default function UserReservations() {
                         <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Due</th>
                         <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Returned</th>
                         <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Status</th>
-                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Penalty</th>
+                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Overdue Info</th>
                         <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Actions</th>
                     </tr>
                     </thead>
@@ -172,20 +164,28 @@ export default function UserReservations() {
                             </td>
                             <td className="px-4 py-2">
                                 {(() => {
-                                    const penalty = getPenaltyForReservation(res.reservation_id);
-                                    if (penalty) {
+                                    if (isOverdue(res) && res.status === "active") {
+                                        const overdueDays = getOverdueDays(res.due_date);
                                         return (
                                             <div className="text-red-600 font-medium">
-                                                <div>${penalty.amount.toFixed(2)}</div>
+                                                <div className="text-xs">
+                                                    {overdueDays} day{overdueDays !== 1 ? 's' : ''} overdue
+                                                </div>
                                                 <div className="text-xs text-gray-500">
-                                                    {getOverdueDays(res.due_date)} days overdue
+                                                    Return to continue borrowing
                                                 </div>
                                             </div>
                                         );
-                                    } else if (isOverdue(res) && res.status === "active") {
+                                    } else if (res.status === "overdue") {
+                                        const overdueDays = getOverdueDays(res.due_date);
                                         return (
-                                            <div className="text-orange-600 text-xs">
-                                                Penalty pending
+                                            <div className="text-red-600 font-medium">
+                                                <div className="text-xs">
+                                                    {overdueDays} day{overdueDays !== 1 ? 's' : ''} overdue
+                                                </div>
+                                                <div className="text-xs text-gray-500">
+                                                    Return to continue borrowing
+                                                </div>
                                             </div>
                                         );
                                     }

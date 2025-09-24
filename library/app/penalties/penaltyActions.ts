@@ -20,8 +20,7 @@ export interface UserPenalty {
 
 export interface UserReservationStatus {
   can_reserve: boolean;
-  pending_penalty_count: number;
-  pending_penalty_amount: number;
+  overdue_book_count: number;
   restriction_reason: string | null;
 }
 
@@ -104,9 +103,9 @@ export const checkUserCanReserve = async (userId?: string): Promise<{
 };
 
 /**
- * Pay a penalty (librarian only)
+ * Mark an overdue book as returned (librarian only)
  */
-export const payPenalty = async (penaltyId: number): Promise<{
+export const markBookReturned = async (reservationId: number): Promise<{
   success: boolean;
   error: string | null;
 }> => {
@@ -127,73 +126,39 @@ export const payPenalty = async (penaltyId: number): Promise<{
       .single();
 
     if (profileError || userProfile?.role !== "librarian") {
-      return { success: false, error: "Only librarians can manage penalties" };
+      return { success: false, error: "Only librarians can mark books as returned" };
     }
 
-    const { data, error } = await supabase.rpc('pay_penalty', {
-      penalty_uuid: penaltyId
+    const { data, error } = await supabase.rpc('mark_book_returned', {
+      reservation_uuid: reservationId
     });
 
     if (error) {
-      console.error("Error paying penalty:", error);
+      console.error("Error marking book as returned:", error);
       return { success: false, error: error.message };
     }
 
     return { success: data === true, error: null };
   } catch (err) {
-    console.error("Exception in payPenalty:", err);
-    return { success: false, error: "Failed to pay penalty" };
+    console.error("Exception in markBookReturned:", err);
+    return { success: false, error: "Failed to mark book as returned" };
   }
 };
 
 /**
- * Waive a penalty (librarian only)
+ * Get all overdue books (librarian only) - for management interface
  */
-export const waivePenalty = async (penaltyId: number): Promise<{
-  success: boolean;
-  error: string | null;
-}> => {
-  try {
-    const supabase = await createClient();
-
-    // Verify user is librarian (RPC will also check, but we check here too)
-    const { data: userData, error: userError } = await supabase.auth.getUser();
-    if (userError || !userData.user) {
-      return { success: false, error: "User not authenticated" };
-    }
-
-    // Check user role
-    const { data: userProfile, error: profileError } = await supabase
-      .from("users")
-      .select("role")
-      .eq("user_id", userData.user.id)
-      .single();
-
-    if (profileError || userProfile?.role !== "librarian") {
-      return { success: false, error: "Only librarians can manage penalties" };
-    }
-
-    const { data, error } = await supabase.rpc('waive_penalty', {
-      penalty_uuid: penaltyId
-    });
-
-    if (error) {
-      console.error("Error waiving penalty:", error);
-      return { success: false, error: error.message };
-    }
-
-    return { success: data === true, error: null };
-  } catch (err) {
-    console.error("Exception in waivePenalty:", err);
-    return { success: false, error: "Failed to waive penalty" };
-  }
-};
-
-/**
- * Get all penalties (librarian only) - for management interface
- */
-export const getAllPenalties = async (): Promise<{
-  penalties: (UserPenalty & { user_name: string; user_email: string })[] | null;
+export const getAllOverdueBooks = async (): Promise<{
+  overdueBooks: {
+    reservation_id: number;
+    user_name: string;
+    user_email: string;
+    book_title: string;
+    book_author: string;
+    due_date: string;
+    days_overdue: number;
+    user_id: string;
+  }[] | null;
   error: string | null;
 }> => {
   try {
@@ -202,7 +167,7 @@ export const getAllPenalties = async (): Promise<{
     // Verify user is librarian
     const { data: userData, error: userError } = await supabase.auth.getUser();
     if (userError || !userData.user) {
-      return { penalties: null, error: "User not authenticated" };
+      return { overdueBooks: null, error: "User not authenticated" };
     }
 
     const { data: userProfile, error: profileError } = await supabase
@@ -212,53 +177,20 @@ export const getAllPenalties = async (): Promise<{
       .single();
 
     if (profileError || userProfile?.role !== "librarian") {
-      return { penalties: null, error: "Only librarians can view all penalties" };
+      return { overdueBooks: null, error: "Only librarians can view overdue books" };
     }
 
-    // Get penalties with user information
-    const { data, error } = await supabase
-      .from("penalties")
-      .select(`
-        penalty_id,
-        reservation_id,
-        amount,
-        reason,
-        status,
-        created_at,
-        users!inner(first_name, last_name, email),
-        reservations(
-          due_date,
-          return_date,
-          books(title, author)
-        )
-      `)
-      .order("created_at", { ascending: false });
+    const { data, error } = await supabase.rpc('get_all_overdue_books');
 
     if (error) {
-      console.error("Error fetching all penalties:", error);
-      return { penalties: null, error: error.message };
+      console.error("Error fetching all overdue books:", error);
+      return { overdueBooks: null, error: error.message };
     }
 
-    // Transform data to match expected format
-    const transformedPenalties = data?.map(penalty => ({
-      penalty_id: penalty.penalty_id,
-      reservation_id: penalty.reservation_id,
-      amount: penalty.amount,
-      reason: penalty.reason,
-      status: penalty.status,
-      created_at: penalty.created_at,
-      book_title: penalty.reservations?.books?.title || null,
-      book_author: penalty.reservations?.books?.author || null,
-      due_date: penalty.reservations?.due_date || null,
-      return_date: penalty.reservations?.return_date || null,
-      user_name: `${penalty.users.first_name} ${penalty.users.last_name}`,
-      user_email: penalty.users.email
-    }));
-
-    return { penalties: transformedPenalties || [], error: null };
+    return { overdueBooks: data || [], error: null };
   } catch (err) {
-    console.error("Exception in getAllPenalties:", err);
-    return { penalties: null, error: "Failed to fetch all penalties" };
+    console.error("Exception in getAllOverdueBooks:", err);
+    return { overdueBooks: null, error: "Failed to fetch overdue books" };
   }
 };
 
