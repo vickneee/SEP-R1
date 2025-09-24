@@ -1,10 +1,13 @@
-import { NextResponse } from "next/server";
+import {NextRequest, NextResponse} from "next/server";
 import { extendReservation } from "@/app/books/extendedAction";
 
-export async function POST(request: Request, { params }: { params: { reservationId: string } }) {
-    const reservationId = Number(params.reservationId); // Convert string to number
+export async function POST(request: NextRequest,
+                           context: { params: Promise<{ reservationId: string }> }
+) {
+    const {reservationId} = await context.params
+    const id = Number(reservationId);
 
-    if (isNaN(reservationId)) {
+    if (isNaN(id)) {
         return NextResponse.json({ error: "Invalid reservation ID" }, { status: 400 });
     }
 
