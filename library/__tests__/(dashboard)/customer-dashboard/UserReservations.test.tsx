@@ -1,6 +1,8 @@
 import {render, screen, act, waitFor} from '../../utils/test-utils'
 import UserReservations from '@/app/(dashboard)/customer-dashboard/UserReservations';
 import CustomerDashboardClient from '@/app/(dashboard)/customer-dashboard/CustomerDashboardClient';
+import {fireEvent} from "@testing-library/dom";
+import {extendReservation} from "@/app/books/extendedAction";
 
 type Reservation = {
     reservation_id: number;
@@ -8,6 +10,7 @@ type Reservation = {
     due_date: string;
     return_date: string | null;
     status: "active" | "returned" | "overdue" | "cancelled";
+    extended: boolean;
     books: {
         title: string;
         author: string;
@@ -37,6 +40,13 @@ jest.mock('@/utils/supabase/client', () => ({
     createClient: () => mockCreateClient(),
 }));
 
+// Mock extendReservation API
+jest.mock("@/app/books/extendedAction", () => ({
+    extendReservation: jest.fn(),
+}));
+
+const mockedExtendReservation = extendReservation as jest.MockedFunction<typeof extendReservation>;
+
 // Test user with reservations
 describe('UserReservations Component', () => {
     it('renders reservations when user has some', async () => {
@@ -48,6 +58,7 @@ describe('UserReservations Component', () => {
                     due_date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
                     return_date: null,
                     status: 'active',
+                    extended: false,
                     books: { title: 'Test Book', author: 'Author A' },
                 },
             ])
@@ -71,6 +82,7 @@ describe('UserReservations Component', () => {
                     due_date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
                     return_date: null,
                     status: 'active',
+                    extended: false,
                     books: { title: 'Test Book', author: 'Author A' },
                 },
             ])
@@ -96,6 +108,7 @@ describe('UserReservations Component', () => {
                     due_date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
                     return_date: null,
                     status: 'active',
+                    extended: false,
                     books: { title: 'Test Book', author: 'Author A' },
                 },
             ])
@@ -153,6 +166,7 @@ describe('UserReservations Component', () => {
                     due_date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(), //
                     return_date: null,
                     status: 'active',
+                    extended: false,
                     books: { title: 'Test Book', author: 'Author A' },
                 },
             ])
@@ -165,4 +179,75 @@ describe('UserReservations Component', () => {
             expect(screen.getByText(new RegExp(formatted.replace(/-/g, '[-/]'), 'i'))).toBeInTheDocument();
         });
     });
+
+    it('should extend a reservation successfully', async () => {
+        const initialReservation = {
+            reservation_id: 1,
+            reservation_date: new Date().toISOString(),
+            due_date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
+            return_date: null,
+            status: "active" as const,
+            extended: false,
+            books: { title: "Test Book", author: "Author A" },
+        };
+
+        const updatedReservation = { ...initialReservation, extended: true };
+
+        mockCreateClient.mockReturnValueOnce(createMockClient([initialReservation]));
+        mockedExtendReservation.mockResolvedValueOnce(updatedReservation);
+
+        // Act: render + click "Extend"
+        render(<UserReservations />);
+        const button = await screen.findByRole("button", { name: /extend/i });
+        fireEvent.click(button);
+
+        // Assert
+        await waitFor(() => {
+            expect(mockedExtendReservation).toHaveBeenCalledWith(1);
+            expect(screen.getByText(/Book extended successfully!/i)).toBeInTheDocument();
+        });
+    });
+
+    it('should not extend a reservation twice', async () => {
+        const initialReservation2 = {
+            reservation_id: 1,
+            reservation_date: new Date().toISOString(),
+            due_date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
+            return_date: null,
+            status: "active" as const,
+            extended: false,
+            books: { title: "Test Book", author: "Author A" },
+        };
+
+        const updatedReservation2 = { ...initialReservation2, extended: true };
+
+        mockCreateClient.mockReturnValueOnce(createMockClient([initialReservation2]));
+        mockedExtendReservation.mockResolvedValueOnce(updatedReservation2);
+
+        render(<UserReservations />);
+
+        // First click should work
+        const button = await screen.findByRole("button", { name: /Extend/i });
+        fireEvent.click(button);
+
+        await waitFor(() => {
+            expect(mockedExtendReservation).toHaveBeenCalledWith(1);
+            expect(screen.getByText(/Book extended successfully!/i)).toBeInTheDocument();
+        });
+
+        // wait for update: API called + feedback + new button text
+        await waitFor(() => {
+            expect(mockedExtendReservation).toHaveBeenCalledWith(1);
+            expect(screen.getByText(/Book extended successfully!/i)).toBeInTheDocument();
+            expect(
+                screen.getByRole("button", { name: /Extended/i })
+            ).toBeDisabled();
+        });
+
+        await waitFor(() => {
+            expect(mockedExtendReservation).toHaveBeenCalledWith(1);
+            expect(button).toBeDisabled();
+        });
+    });
+
 });
