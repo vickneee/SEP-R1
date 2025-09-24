@@ -55,20 +55,22 @@ export default function UserReservations() {
         setLoading(false);
     }
 
-    const handleExtend = async (reservationId: number) => {
+    const handleExtend = async (reservationId: string | number) => {
+        // Convert to number if it’s a string
+        const id = typeof reservationId === "string" ? Number(reservationId) : reservationId;
 
-        if (extendedReservations.includes(reservationId)) {
+        if (extendedReservations.includes(id)) {
             return;
         }
 
         try {
-            const updated = await extendReservation(reservationId) as ReservationWithBook;
+            const updated = await extendReservation(id) as ReservationWithBook;
 
             setReservations(reservations.map(r =>
                 r.reservation_id === reservationId ? updated : r
             ));
 
-            setExtendedReservations([...extendedReservations, reservationId]);
+            setExtendedReservations([...extendedReservations, id]);
 
             setFeedback("Book extended successfully!");
         } catch (err) {
