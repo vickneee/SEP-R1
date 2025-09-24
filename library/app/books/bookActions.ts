@@ -179,6 +179,22 @@ const reserveBook = async (bookId: number, dueDate: string) => {
     return { success: false, error: userError || new Error("User not authenticated") };
   }
 
+  // Check if user can make reservations (penalty check)
+  const { data: canReserveData, error: reservationError } = await supabase.rpc('can_user_reserve_books', {
+    user_uuid: userData.user.id
+  });
+
+  if (reservationError) {
+    console.error("Error checking user reservation status:", reservationError);
+    return { success: false, error: new Error("Failed to verify reservation eligibility") };
+  }
+
+  const reservationStatus = canReserveData?.[0];
+  if (!reservationStatus?.can_reserve) {
+    const message = reservationStatus?.restriction_reason || "You cannot make reservations at this time";
+    return { success: false, error: new Error(message) };
+  }
+
   // Check if the book exists and has available copies
   const { error: bookError } = await supabase
     .from("books")

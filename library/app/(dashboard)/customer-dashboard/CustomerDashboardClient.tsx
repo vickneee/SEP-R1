@@ -1,5 +1,6 @@
 import { Suspense } from "react";
 import UserReservations from "@/app/(dashboard)/customer-dashboard/UserReservations";
+import PenaltyStatus from "@/components/custom/PenaltyStatus";
 
 interface UserProfile {
     created_at: string;
@@ -28,9 +29,11 @@ export default function CustomerDashboardClient({ userProfile, userEmail }: Cust
                     <p><strong>Name:</strong> {userProfile.first_name} {userProfile.last_name}</p>
                     <p><strong>Role:</strong> <span className="capitalize">{userProfile.role}</span></p>
                     <p><strong>Status:</strong> <span className={userProfile.is_active ? 'text-green-600' : 'text-red-600'}>{userProfile.is_active ? 'Active' : 'Inactive'}</span></p>
-                    {userProfile.penalty_count > 0 && (
-                        <p><strong>Penalties:</strong> <span className="text-red-600">{userProfile.penalty_count}</span></p>
-                    )}
+
+                    {/* Enhanced penalty display with details */}
+                    <div className="mt-3">
+                        <PenaltyStatus userId={userProfile.user_id} showDetails={true} />
+                    </div>
                 </div>
             </div>
 

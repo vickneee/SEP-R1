@@ -1,7 +1,9 @@
 "use client";
 
 import { reserveBook } from "@/app/books/bookActions";
+import { checkUserCanReserve, type UserReservationStatus } from "@/app/penalties/penaltyActions";
 import BookImage from "@/components/custom/BookImage";
+import PenaltyBadge from "@/components/custom/PenaltyBadge";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -14,6 +16,8 @@ export default function BookPageClient({ book: initialBook }: { book: Book }) {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
     const [isSuccess, setIsSuccess] = useState(false);
+    const [reservationStatus, setReservationStatus] = useState<UserReservationStatus | null>(null);
+    const [statusLoading, setStatusLoading] = useState(true);
 
     useEffect(() => {
         if (message && isSuccess) {
@@ -23,6 +27,24 @@ export default function BookPageClient({ book: initialBook }: { book: Book }) {
             return () => clearTimeout(timer);
         }
     }, [message, isSuccess, router]);
+
+    useEffect(() => {
+        loadReservationStatus();
+    }, []);
+
+    const loadReservationStatus = async () => {
+        setStatusLoading(true);
+        try {
+            const result = await checkUserCanReserve();
+            if (!result.error && result.status) {
+                setReservationStatus(result.status);
+            }
+        } catch (error) {
+            console.error("Error checking reservation status:", error);
+        } finally {
+            setStatusLoading(false);
+        }
+    };
 
     const handleReserve = async () => {
         setLoading(true);
@@ -34,6 +56,15 @@ export default function BookPageClient({ book: initialBook }: { book: Book }) {
                 setLoading(false);
                 return;
             }
+
+            // Check for penalty restrictions
+            if (reservationStatus && !reservationStatus.can_reserve) {
+                setMessage(reservationStatus.restriction_reason || "You cannot make reservations at this time.");
+                setIsSuccess(false);
+                setLoading(false);
+                return;
+            }
+
             const due_date = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
             const result = await reserveBook(initialBook.book_id, due_date);
             console.log("Book ID", initialBook.book_id);
@@ -43,7 +74,7 @@ export default function BookPageClient({ book: initialBook }: { book: Book }) {
                 setMessage("Reservation successful!");
                 setIsSuccess(true);
             } else {
-                setMessage("Reservation failed.");
+                setMessage(result.error?.message || "Reservation failed.");
                 setIsSuccess(false);
             }
         } catch {
@@ -89,14 +120,29 @@ export default function BookPageClient({ book: initialBook }: { book: Book }) {
                         <p>Available copies: {initialBook.available_copies}</p>
                     </div>
 
+                    {/* Penalty Status Display */}
+                    {reservationStatus && !reservationStatus.can_reserve && (
+                        <div className="mb-4">
+                            <PenaltyBadge className="w-full" />
+                        </div>
+                    )}
+
                     <div className="py-7 flex justify-center">
                         {initialBook.available_copies === 0 ? (
-                            <button className="w-auto px-6 spx-4 py-2 bg-[#552A1B] text-white rounded hover:bg-[#E46A07] transition-colors duration-300">
+                            <button className="w-auto px-6 spx-4 py-2 bg-gray-500 text-white rounded cursor-not-allowed">
                                 Checked out
+                            </button>
+                        ) : reservationStatus && !reservationStatus.can_reserve ? (
+                            <button className="w-auto px-6 spx-4 py-2 bg-red-500 text-white rounded cursor-not-allowed" disabled>
+                                Cannot Reserve (Pending Penalties)
+                            </button>
+                        ) : statusLoading ? (
+                            <button className="w-auto px-6 spx-4 py-2 bg-gray-400 text-white rounded cursor-not-allowed" disabled>
+                                Checking eligibility...
                             </button>
                         ) : (
                             <button
-                                className="w-auto px-6 spx-4 py-2 bg-[#552A1B] text-white rounded hover:bg-[#E46A07] transition-colors duration-300"
+                                className="w-auto px-6 spx-4 py-2 bg-[#552A1B] text-white rounded hover:bg-[#E46A07] transition-colors duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed"
                                 onClick={handleReserve}
                                 disabled={loading}
                             >

@@ -2,6 +2,7 @@
 
 import {createClient} from "@/utils/supabase/client";
 import {useEffect, useState} from "react";
+import { getUserPenalties, type UserPenalty } from "@/app/penalties/penaltyActions";
 
 type ReservationWithBook = {
     reservation_id: number;
@@ -16,40 +17,55 @@ type ReservationWithBook = {
 };
 
 export default function UserReservations() {
-    // const reservations = mockReservations;
     const [reservations, setReservations] = useState<ReservationWithBook[]>([]);
+    const [penalties, setPenalties] = useState<UserPenalty[]>([]);
     const [loading, setLoading] = useState(true);
     const [isReturning, setIsReturning] = useState<Record<number, boolean>>({});
     const [feedback, setFeedback] = useState('');
 
     useEffect(() => {
-        fetchReservations();
+        fetchReservationsAndPenalties();
     }, []);
 
-    async function fetchReservations() {
+    async function fetchReservationsAndPenalties() {
         const supabase = createClient();
         const {data: userData} = await supabase.auth.getUser();
         const user = userData.user;
 
         if (!user) {
             setReservations([]);
-            setLoading(false);
-            return;
-        }
-        const {data, error} = await supabase
-            .from("reservations")
-            .select("reservation_id, reservation_date, due_date, return_date, status, books(title, author)")
-            .eq("user_id", user.id)
-            .order("reservation_date", {ascending: false});
-
-        if (error) {
-            console.error("Error fetching reservations:", error);
+            setPenalties([]);
             setLoading(false);
             return;
         }
 
-        setReservations(data);
-        setLoading(false);
+        try {
+            // Fetch reservations and penalties in parallel
+            const [reservationsResult, penaltiesResult] = await Promise.all([
+                supabase
+                    .from("reservations")
+                    .select("reservation_id, reservation_date, due_date, return_date, status, books(title, author)")
+                    .eq("user_id", user.id)
+                    .order("reservation_date", {ascending: false}),
+                getUserPenalties()
+            ]);
+
+            if (reservationsResult.error) {
+                console.error("Error fetching reservations:", reservationsResult.error);
+            } else {
+                setReservations(reservationsResult.data || []);
+            }
+
+            if (penaltiesResult.error) {
+                console.error("Error fetching penalties:", penaltiesResult.error);
+            } else {
+                setPenalties(penaltiesResult.penalties || []);
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        } finally {
+            setLoading(false);
+        }
     }
 
     const handleReturn = async (reservationId: number) => {
@@ -99,6 +115,18 @@ export default function UserReservations() {
         return dueDate < today;
     }
 
+    function getPenaltyForReservation(reservationId: number): UserPenalty | null {
+        return penalties.find(p => p.reservation_id === reservationId && p.status === 'pending') || null;
+    }
+
+    function getOverdueDays(dueDate: string): number {
+        const today = new Date();
+        const due = new Date(dueDate);
+        const diffTime = today.getTime() - due.getTime();
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        return Math.max(0, diffDays);
+    }
+
     if (!reservations || reservations.length === 0) {
         return <p className="text-gray-600">You don’t have any borrowed books.</p>;
     }
@@ -117,6 +145,7 @@ export default function UserReservations() {
                         <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Due</th>
                         <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Returned</th>
                         <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Status</th>
+                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Penalty</th>
                         <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">Actions</th>
                     </tr>
                     </thead>
@@ -140,6 +169,28 @@ export default function UserReservations() {
                                     }`}>
                                         {res.status === "returned" ? "returned" : isOverdue(res) ? "overdue" : "active"}
                                     </span>
+                            </td>
+                            <td className="px-4 py-2">
+                                {(() => {
+                                    const penalty = getPenaltyForReservation(res.reservation_id);
+                                    if (penalty) {
+                                        return (
+                                            <div className="text-red-600 font-medium">
+                                                <div>${penalty.amount.toFixed(2)}</div>
+                                                <div className="text-xs text-gray-500">
+                                                    {getOverdueDays(res.due_date)} days overdue
+                                                </div>
+                                            </div>
+                                        );
+                                    } else if (isOverdue(res) && res.status === "active") {
+                                        return (
+                                            <div className="text-orange-600 text-xs">
+                                                Penalty pending
+                                            </div>
+                                        );
+                                    }
+                                    return <span className="text-gray-400">-</span>;
+                                })()}
                             </td>
                             <td className="px-4 py-2 text-center">
                                 {res.status === 'active' && (
