@@ -125,8 +125,8 @@ export default function NotificationSection() {
     fetchOverdueNotifications();
   };
 
-  console.log(dueDateError);
-  console.log(OverdueError);
+  // console.log(dueDateError);
+  // console.log(OverdueError);
 
   return (
     <Popover>
