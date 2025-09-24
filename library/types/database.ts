@@ -108,7 +108,8 @@ export type Database = {
           reservation_date: string
           reservation_id: number
           return_date: string | null
-          status: Database["public"]["Enums"]["reservation_status"]
+          status: Database["public"]["Enums"]["reservation_status"],
+          extended: boolean,
           user_id: string
         }
         Insert: {
