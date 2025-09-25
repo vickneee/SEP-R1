@@ -17,7 +17,11 @@ type ReservationWithBook = {
     };
 };
 
-export default function UserReservations() {
+interface UserReservationsProps {
+    onStatusChange?: () => void; // Optional callback when book status changes
+}
+
+export default function UserReservations({ onStatusChange }: UserReservationsProps = {}) {
     const [reservations, setReservations] = useState<ReservationWithBook[]>([]);
     const [loading, setLoading] = useState(true);
     const [isReturning, setIsReturning] = useState<Record<number, boolean>>({});
@@ -77,6 +81,11 @@ export default function UserReservations() {
             setExtendedReservations([...extendedReservations, reservationId]);
 
             setFeedback("Book extended successfully!");
+
+            // Notify parent component that status might have changed
+            if (onStatusChange) {
+                onStatusChange();
+            }
         } catch (err) {
             console.error(err);
             setFeedback("Could not extend book");
@@ -112,6 +121,11 @@ export default function UserReservations() {
             );
             setReservations(updatedReservations);
             setFeedback("Book successfully returned");
+
+            // Notify parent component that status might have changed
+            if (onStatusChange) {
+                onStatusChange();
+            }
         } catch (err) {
             console.error("Error returning book:", err);
             setFeedback("Failed to return book. Please try again");

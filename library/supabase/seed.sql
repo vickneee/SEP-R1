@@ -209,27 +209,27 @@ ON CONFLICT (user_id) DO NOTHING;
 -----------------------------
 
 -- Regular customer (John) - has some active reservations, no penalties
-INSERT INTO public.reservations (user_id, book_id, reservation_date, due_date, status) VALUES
-('22222222-2222-2222-2222-222222222222', 1, NOW() - INTERVAL '5 days', NOW() + INTERVAL '9 days', 'active'),
-('22222222-2222-2222-2222-222222222222', 3, NOW() - INTERVAL '3 days', NOW() + INTERVAL '11 days', 'active')
+INSERT INTO public.reservations (user_id, book_id, reservation_date, due_date, status, extended) VALUES
+('22222222-2222-2222-2222-222222222222', 1, NOW() - INTERVAL '5 days', NOW() + INTERVAL '9 days', 'active', false),
+('22222222-2222-2222-2222-222222222222', 3, NOW() - INTERVAL '3 days', NOW() + INTERVAL '11 days', 'active', false)
 ON CONFLICT DO NOTHING;
 
 -- Sarah Overdue - has overdue reservations with penalties
-INSERT INTO public.reservations (user_id, book_id, reservation_date, due_date, return_date, status) VALUES
--- Currently overdue book (5 days overdue) - should generate penalty
-('33333333-3333-3333-3333-333333333333', 4, NOW() - INTERVAL '12 days', NOW() - INTERVAL '5 days', NULL, 'overdue'),
+INSERT INTO public.reservations (user_id, book_id, reservation_date, due_date, return_date, status, extended) VALUES
+-- Currently overdue book (5 days overdue) - should generate penalty - status 'active' so buttons show
+('33333333-3333-3333-3333-333333333333', 4, NOW() - INTERVAL '12 days', NOW() - INTERVAL '5 days', NULL, 'active', false),
 -- Previously overdue book that was returned late (returned 3 days late)
-('33333333-3333-3333-3333-333333333333', 5, NOW() - INTERVAL '20 days', NOW() - INTERVAL '15 days', NOW() - INTERVAL '12 days', 'returned')
+('33333333-3333-3333-3333-333333333333', 5, NOW() - INTERVAL '20 days', NOW() - INTERVAL '15 days', NOW() - INTERVAL '12 days', 'returned', false)
 ON CONFLICT DO NOTHING;
 
 -- Mike Penalties - has multiple penalty scenarios
-INSERT INTO public.reservations (user_id, book_id, reservation_date, due_date, return_date, status) VALUES
--- Very overdue book (10 days overdue)
-('44444444-4444-4444-4444-444444444444', 6, NOW() - INTERVAL '20 days', NOW() - INTERVAL '10 days', NULL, 'overdue'),
+INSERT INTO public.reservations (user_id, book_id, reservation_date, due_date, return_date, status, extended) VALUES
+-- Very overdue book (10 days overdue) - status 'active' so buttons show
+('44444444-4444-4444-4444-444444444444', 6, NOW() - INTERVAL '20 days', NOW() - INTERVAL '10 days', NULL, 'active', false),
 -- Returned late book (was 7 days late)
-('44444444-4444-4444-4444-444444444444', 7, NOW() - INTERVAL '25 days', NOW() - INTERVAL '18 days', NOW() - INTERVAL '11 days', 'returned'),
--- Recently overdue (2 days overdue)
-('44444444-4444-4444-4444-444444444444', 8, NOW() - INTERVAL '9 days', NOW() - INTERVAL '2 days', NULL, 'overdue')
+('44444444-4444-4444-4444-444444444444', 7, NOW() - INTERVAL '25 days', NOW() - INTERVAL '18 days', NOW() - INTERVAL '11 days', 'returned', false),
+-- Recently overdue (2 days overdue) - status 'active' so buttons show
+('44444444-4444-4444-4444-444444444444', 8, NOW() - INTERVAL '9 days', NOW() - INTERVAL '2 days', NULL, 'active', false)
 ON CONFLICT DO NOTHING;
 
 -- Insert corresponding overdue tracking records (no payment amounts)
@@ -281,22 +281,24 @@ ON CONFLICT DO NOTHING;
 
 -- Update available copies to reflect the active reservations
 -- The returned books should have their copies restored automatically via triggers
+-- Note: All overdue books now use 'active' status, so only checking 'active'
 UPDATE public.books
 SET available_copies = GREATEST(0, available_copies - (
     SELECT COUNT(*)
     FROM public.reservations
     WHERE book_id = public.books.book_id
-    AND status IN ('active', 'overdue')
+    AND status = 'active'
 ))
 WHERE book_id IN (1, 3, 4, 6, 8);
 
 -- Update penalty counts based on overdue books (should be handled by triggers, but ensuring consistency)
+-- Note: Overdue books now use 'active' status with past due dates - UI determines visual status
 UPDATE public.users
 SET penalty_count = (
     SELECT COUNT(*)
     FROM public.reservations
     WHERE user_id = public.users.user_id
-    AND status = 'overdue'
+    AND status = 'active' AND due_date < NOW()
 )
 WHERE user_id IN ('33333333-3333-3333-3333-333333333333', '44444444-4444-4444-4444-444444444444');
 
@@ -316,11 +318,11 @@ WHERE user_id IN ('33333333-3333-3333-3333-333333333333', '44444444-4444-4444-44
 --
 -- Books with Test Reservations (visible in "My Books"):
 -- - Book IDs 1,3: Reserved by John (active - due dates in future)
--- - Book ID 4: Reserved by Sarah (overdue - "The Great Gatsby")
+-- - Book ID 4: Reserved by Sarah (active status, overdue due date - "The Great Gatsby") - buttons visible
 -- - Book ID 5: Previously reserved by Sarah (returned late - "The Catcher in the Rye")
--- - Book ID 6: Reserved by Mike (overdue - "Sapiens")
+-- - Book ID 6: Reserved by Mike (active status, overdue due date - "Sapiens") - buttons visible
 -- - Book ID 7: Previously reserved by Mike (returned late - "Henrietta Lacks")
--- - Book ID 8: Reserved by Mike (overdue - "Educated")
+-- - Book ID 8: Reserved by Mike (active status, overdue due date - "Educated") - buttons visible
 
 -----------------------------
 -- Success message

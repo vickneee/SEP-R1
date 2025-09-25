@@ -7,9 +7,10 @@ interface OverdueStatusProps {
   userId?: string;
   showDetails?: boolean;
   className?: string;
+  refreshTrigger?: number; // Optional prop to trigger refresh from parent
 }
 
-export default function OverdueStatus({ userId, showDetails = false, className = "" }: OverdueStatusProps) {
+export default function OverdueStatus({ userId, showDetails = false, className = "", refreshTrigger }: OverdueStatusProps) {
   const [reservationStatus, setReservationStatus] = useState<UserReservationStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -38,6 +39,13 @@ export default function OverdueStatus({ userId, showDetails = false, className =
   useEffect(() => {
     loadReservationStatus();
   }, [loadReservationStatus]);
+
+  // Refresh when refreshTrigger changes
+  useEffect(() => {
+    if (refreshTrigger !== undefined) {
+      loadReservationStatus();
+    }
+  }, [refreshTrigger, loadReservationStatus]);
 
 
   if (loading) {

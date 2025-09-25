@@ -117,16 +117,13 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -----------------------------
 -- Triggers
 -----------------------------
--- Trigger to automatically mark reservations as overdue and create penalties
+-- Trigger to automatically create penalties for overdue books (keep status as active)
 CREATE OR REPLACE FUNCTION public.handle_overdue_reservations()
 RETURNS TRIGGER AS $$
 BEGIN
-  -- Only process active reservations that become overdue
+  -- Only process active reservations that become overdue (keep status as 'active')
   IF NEW.status = 'active' AND NEW.due_date < NOW() THEN
-    -- Mark as overdue
-    NEW.status := 'overdue';
-
-    -- Create penalty (will be handled by separate scheduled job in practice)
+    -- Create penalty (keep status as 'active' so UI buttons remain visible)
     PERFORM public.create_overdue_penalty(NEW.reservation_id);
   END IF;
 
@@ -152,7 +149,7 @@ DROP TRIGGER IF EXISTS trigger_handle_overdue_reservations ON public.reservation
 CREATE TRIGGER trigger_handle_overdue_reservations
   BEFORE UPDATE ON public.reservations
   FOR EACH ROW
-  WHEN (OLD.status = 'active' AND NEW.due_date < NOW())
+  WHEN (OLD.status = 'active' AND NEW.status = 'active' AND NEW.due_date < NOW())
   EXECUTE FUNCTION public.handle_overdue_reservations();
 
 DROP TRIGGER IF EXISTS trigger_handle_book_return ON public.reservations;
@@ -209,11 +206,11 @@ RETURNS TABLE (
 DECLARE
   overdue_count INTEGER;
 BEGIN
-  -- Count active overdue reservations (not returned books)
+  -- Count active reservations that are overdue (due_date < NOW())
   SELECT COUNT(*)::INTEGER
   INTO overdue_count
   FROM public.reservations
-  WHERE user_id = user_uuid AND status = 'overdue';
+  WHERE user_id = user_uuid AND status = 'active' AND due_date < NOW();
 
   IF overdue_count > 0 THEN
     RETURN QUERY SELECT
@@ -237,6 +234,7 @@ CREATE OR REPLACE FUNCTION public.mark_book_returned(reservation_uuid INTEGER)
 RETURNS BOOLEAN AS $$
 DECLARE
   is_librarian BOOLEAN;
+  reservation_count INTEGER;
 BEGIN
   -- Check if user is librarian
   SELECT EXISTS (
@@ -248,20 +246,24 @@ BEGIN
     RAISE EXCEPTION 'Only librarians can mark books as returned';
   END IF;
 
-  -- Update reservation status and set return date
+  -- Update reservation status and set return date (for active overdue books)
   UPDATE public.reservations
   SET
     status = 'returned',
     return_date = NOW()
   WHERE reservation_id = reservation_uuid
-  AND status = 'overdue';
+  AND status = 'active' AND due_date < NOW();
 
-  -- Auto-resolve penalty tracking when book is returned
+  -- Capture the number of reservations updated
+  GET DIAGNOSTICS reservation_count = ROW_COUNT;
+
+  -- Auto-resolve penalty tracking when book is returned (if penalties exist)
   UPDATE public.penalties
   SET status = 'waived'
   WHERE reservation_id = reservation_uuid AND status = 'pending';
 
-  RETURN FOUND;
+  -- Return success based on reservation update, not penalty update
+  RETURN reservation_count > 0;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
@@ -272,19 +274,14 @@ DECLARE
   processed_count INTEGER := 0;
   reservation_record RECORD;
 BEGIN
-  -- Find all active reservations that are overdue
+  -- Find all active reservations that are overdue (keep status as 'active')
   FOR reservation_record IN
     SELECT reservation_id
     FROM public.reservations
     WHERE status = 'active'
     AND due_date < NOW() - INTERVAL '1 hour' -- Add buffer to avoid edge cases
   LOOP
-    -- Update status to overdue
-    UPDATE public.reservations
-    SET status = 'overdue'
-    WHERE reservation_id = reservation_record.reservation_id;
-
-    -- Create penalty
+    -- Create penalty (keep reservation status as 'active' for UI buttons)
     PERFORM public.create_overdue_penalty(reservation_record.reservation_id);
 
     processed_count := processed_count + 1;
@@ -320,7 +317,7 @@ BEGIN
   FROM public.reservations r
   JOIN public.users u ON r.user_id = u.user_id
   JOIN public.books b ON r.book_id = b.book_id
-  WHERE r.status = 'overdue'
+  WHERE r.status = 'active' AND r.due_date < NOW()
   ORDER BY r.due_date ASC;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
