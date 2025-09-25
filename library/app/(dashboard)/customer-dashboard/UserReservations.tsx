@@ -142,20 +142,13 @@ export default function UserReservations({ onStatusChange }: UserReservationsPro
     }
 
 
-    function getOverdueDays(dueDate: string): number {
-        const today = new Date();
-        const due = new Date(dueDate);
-        const diffTime = today.getTime() - due.getTime();
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-        return Math.max(0, diffDays);
-    }
 
     if (loading) {
         return <p className="text-gray-600">Loading reservations...</p>;
     }
 
     if (!reservations || reservations.length === 0) {
-        return <p className="text-gray-600">You don't have any borrowed books.</p>;
+        return <p className="text-gray-600">You don&apos;t have any borrowed books.</p>;
     }
 
     return (
