@@ -24,8 +24,22 @@ function NavBar() {
   };
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
-    window.location.href = "/";
+    try {
+      // Sign out globally (all sessions)
+      const { error } = await supabase.auth.signOut({ scope: 'global' });
+      if (error) {
+        console.error('Error signing out:', error);
+        return;
+      }
+
+      // Clear any cached user role state
+      setUserRole(null);
+
+      // Use window.location for a complete page reload to ensure all state/cookies are cleared
+      window.location.href = "/";
+    } catch (err) {
+      console.error('Sign out failed:', err);
+    }
   };
 
   const fetchUserProfile = async () => {

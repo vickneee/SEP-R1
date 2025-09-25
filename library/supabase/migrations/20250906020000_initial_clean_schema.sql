@@ -59,6 +59,7 @@ CREATE TABLE IF NOT EXISTS public.reservations (
   due_date TIMESTAMPTZ NOT NULL,
   return_date TIMESTAMPTZ,
   status reservation_status NOT NULL DEFAULT 'active',
+  extended BOOLEAN NOT NULL DEFAULT false,
   reminder_sent BOOLEAN NOT NULL DEFAULT false,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

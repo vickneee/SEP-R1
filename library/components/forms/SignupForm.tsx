@@ -31,7 +31,7 @@ const styles = {
   input: "text-gray-700 text-xl h-10",
   footer: "text-2xl flex flex-col",
   button:
-    "px-6 py-1 text-2xl bg-[#552A1B] text-white rounded hover:bg-[#E46A07] transition-colors duration-300",
+    "px-6 py-1 text-lg bg-[#552A1B] text-white rounded hover:bg-[#E46A07] transition-colors duration-300",
   prompt: "mt-4 text-center text-md",
   link: "ml-2 font-extrabold text-orange-500",
 };
