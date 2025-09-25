@@ -3,6 +3,7 @@ import UserReservations from '@/app/(dashboard)/customer-dashboard/UserReservati
 import CustomerDashboardClient from '@/app/(dashboard)/customer-dashboard/CustomerDashboardClient';
 import {fireEvent} from "@testing-library/dom";
 import {extendReservation} from "@/app/books/extendedAction";
+import {checkUserCanReserve} from "@/app/penalties/penaltyActions";
 
 type Reservation = {
     reservation_id: number;
@@ -45,10 +46,28 @@ jest.mock("@/app/books/extendedAction", () => ({
     extendReservation: jest.fn(),
 }));
 
+// Mock penalty actions to prevent server-side cookies error
+jest.mock("@/app/penalties/penaltyActions", () => ({
+    checkUserCanReserve: jest.fn(),
+}));
+
 const mockedExtendReservation = extendReservation as jest.MockedFunction<typeof extendReservation>;
+const mockedCheckUserCanReserve = checkUserCanReserve as jest.MockedFunction<typeof checkUserCanReserve>;
 
 // Test user with reservations
 describe('UserReservations Component', () => {
+    beforeEach(() => {
+        // Mock penalty check to return success by default to avoid server-side cookies error
+        mockedCheckUserCanReserve.mockResolvedValue({
+            status: {
+                can_reserve: true,
+                overdue_book_count: 0,
+                restriction_reason: null,
+            },
+            error: null,
+        });
+    });
+
     it('renders reservations when user has some', async () => {
         mockCreateClient.mockReturnValueOnce(
             createMockClient([
@@ -147,11 +166,7 @@ describe('UserReservations Component', () => {
         })
 
         await waitFor(() => {
-            const emptyMessage = screen.getByText((content, element) => {
-                return element?.tagName.toLowerCase() === 'p' &&
-                    content.includes("You don’t have any borrowed books");
-            });
-            expect(emptyMessage).toBeInTheDocument();
+            expect(screen.getByText(/You don't have any borrowed books/i)).toBeInTheDocument();
         });
     });
 
