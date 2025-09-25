@@ -7,6 +7,31 @@ export type Json =
   | Json[]
 
 export type Database = {
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       books: {
@@ -104,29 +129,31 @@ export type Database = {
           book_id: number
           created_at: string
           due_date: string
+          extended: boolean
           reminder_sent: boolean
           reservation_date: string
           reservation_id: number
           return_date: string | null
-          status: Database["public"]["Enums"]["reservation_status"],
-          extended: boolean,
+          status: Database["public"]["Enums"]["reservation_status"]
           user_id: string
         }
         Insert: {
           book_id: number
           created_at?: string
           due_date: string
+          extended?: boolean
           reminder_sent?: boolean
           reservation_date?: string
           reservation_id?: number
           return_date?: string | null
           status?: Database["public"]["Enums"]["reservation_status"]
-          user_id: string
+          user_id?: string
         }
         Update: {
           book_id?: number
           created_at?: string
           due_date?: string
+          extended?: boolean
           reminder_sent?: boolean
           reservation_date?: string
           reservation_id?: number
@@ -189,6 +216,22 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calculate_penalty_amount: {
+        Args: { overdue_days: number }
+        Returns: number
+      }
+      can_user_reserve_books: {
+        Args: { user_uuid?: string }
+        Returns: {
+          can_reserve: boolean
+          overdue_book_count: number
+          restriction_reason: string
+        }[]
+      }
+      create_overdue_penalty: {
+        Args: { reservation_uuid: number }
+        Returns: undefined
+      }
       create_user_profile_manually: {
         Args: {
           p_email: string
@@ -212,6 +255,38 @@ export type Database = {
           user_role_type_exists: boolean
         }[]
       }
+      get_all_overdue_books: {
+        Args: Record<PropertyKey, never>
+        Returns: {
+          book_author: string
+          book_title: string
+          days_overdue: number
+          due_date: string
+          reservation_id: number
+          user_email: string
+          user_id: string
+          user_name: string
+        }[]
+      }
+      get_penalty_config: {
+        Args: { config_key: string }
+        Returns: number
+      }
+      get_user_penalties: {
+        Args: { user_uuid?: string }
+        Returns: {
+          amount: number
+          book_author: string
+          book_title: string
+          created_at: string
+          due_date: string
+          penalty_id: number
+          reason: string
+          reservation_id: number
+          return_date: string
+          status: Database["public"]["Enums"]["penalty_status"]
+        }[]
+      }
       get_user_profile: {
         Args: { user_uuid?: string }
         Returns: {
@@ -224,6 +299,22 @@ export type Database = {
           role: Database["public"]["Enums"]["user_role"]
           user_id: string
         }[]
+      }
+      mark_book_returned: {
+        Args: { reservation_uuid: number }
+        Returns: boolean
+      }
+      process_overdue_books: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
+      resolve_overdue_on_return: {
+        Args: { reservation_uuid: number }
+        Returns: undefined
+      }
+      user_has_pending_penalties: {
+        Args: { user_uuid: string }
+        Returns: boolean
       }
     }
     Enums: {
@@ -355,6 +446,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {
       penalty_status: ["pending", "paid", "waived"],

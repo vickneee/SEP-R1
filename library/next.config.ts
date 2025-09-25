@@ -11,22 +11,17 @@ const nextConfig: NextConfig = {
     unoptimized: true,
   },
 
-  // GitHub Codespaces configuration
   experimental: {
-    // Allow Server Actions to work in Codespaces
+    // Allow Server Actions to work locally
     serverActions: {
       allowedOrigins: [
         'localhost:3001',
-        '127.0.0.1:3001',
-        // GitHub Codespaces domain pattern
-        '*.app.github.dev',
-        // Also allow the specific subdomain pattern
-        'reimagined-potato-j969qq5xqqxhq6q9-3001.app.github.dev'
+        '127.0.0.1:3001'
       ],
     },
   },
 
-  // Additional headers for Codespaces
+  // Additional security headers
   async headers() {
     return [
       {

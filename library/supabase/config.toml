@@ -117,10 +117,9 @@ file_size_limit = "50MiB"
 enabled = true
 # The base URL of your website. Used as an allow-list for redirects and for constructing URLs used
 # in emails.
-site_url = "https://reimagined-potato-j969qq5xqqxhq6q9-3001.app.github.dev"
+site_url = "http://localhost:3001"
 # A list of *exact* URLs that auth providers are permitted to redirect to post authentication.
 additional_redirect_urls = [
-  "https://reimagined-potato-j969qq5xqqxhq6q9-3001.app.github.dev",
   "http://127.0.0.1:3001",
   "http://localhost:3001"
 ]
