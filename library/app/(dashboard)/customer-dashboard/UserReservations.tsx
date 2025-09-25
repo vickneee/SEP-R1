@@ -17,7 +17,11 @@ type ReservationWithBook = {
     };
 };
 
-export default function UserReservations() {
+interface UserReservationsProps {
+    onStatusChange?: () => void; // Optional callback when book status changes
+}
+
+export default function UserReservations({ onStatusChange }: UserReservationsProps = {}) {
     const [reservations, setReservations] = useState<ReservationWithBook[]>([]);
     const [loading, setLoading] = useState(true);
     const [isReturning, setIsReturning] = useState<Record<number, boolean>>({});
@@ -26,33 +30,39 @@ export default function UserReservations() {
     const [feedback, setFeedback] = useState('');
 
     useEffect(() => {
-        fetchReservations();
+        fetchReservationsAndPenalties();
     }, []);
 
-    async function fetchReservations() {
+    async function fetchReservationsAndPenalties() {
         const supabase = createClient();
         const {data: userData} = await supabase.auth.getUser();
         const user = userData.user;
 
         if (!user) {
+            console.log("No user found in UserReservations");
             setReservations([]);
             setLoading(false);
             return;
         }
-        const {data, error} = await supabase
-            .from("reservations")
-            .select("reservation_id, reservation_date, due_date, return_date, status, extended, books(title, author)")
-            .eq("user_id", user.id)
-            .order("reservation_date", {ascending: false});
 
-        if (error) {
-            console.error("Error fetching reservations:", error);
+        try {
+            const {data, error} = await supabase
+                .from("reservations")
+                .select("reservation_id, reservation_date, due_date, return_date, status, extended, books(title, author)")
+                .eq("user_id", user.id)
+                .order("reservation_date", {ascending: false});
+
+            if (error) {
+                console.error("Error fetching reservations:", error);
+            } else {
+                console.log("Fetched reservations for user:", user.id, "Count:", data?.length || 0);
+                setReservations(data || []);
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        } finally {
             setLoading(false);
-            return;
         }
-
-        setReservations(data);
-        setLoading(false);
     }
 
     const handleExtend = async (reservationId: number) => {
@@ -71,6 +81,11 @@ export default function UserReservations() {
             setExtendedReservations([...extendedReservations, reservationId]);
 
             setFeedback("Book extended successfully!");
+
+            // Notify parent component that status might have changed
+            if (onStatusChange) {
+                onStatusChange();
+            }
         } catch (err) {
             console.error(err);
             setFeedback("Could not extend book");
@@ -106,14 +121,16 @@ export default function UserReservations() {
             );
             setReservations(updatedReservations);
             setFeedback("Book successfully returned");
-        } catch
-            (err) {
-            console.error("Error fetching reservations:", err);
-            setFeedback("Failed to return book. Please try again");
 
+            // Notify parent component that status might have changed
+            if (onStatusChange) {
+                onStatusChange();
+            }
+        } catch (err) {
+            console.error("Error returning book:", err);
+            setFeedback("Failed to return book. Please try again");
         } finally {
             setIsReturning({...isReturning, [reservationId]: false});
-            setLoading(false);
         }
     };
 
@@ -124,13 +141,18 @@ export default function UserReservations() {
         return dueDate < today;
     }
 
+
+
+    if (loading) {
+        return <p className="text-gray-600">Loading reservations...</p>;
+    }
+
     if (!reservations || reservations.length === 0) {
-        return <p className="text-gray-600">You don’t have any borrowed books.</p>;
+        return <p className="text-gray-600">You don&apos;t have any borrowed books.</p>;
     }
 
     return (
         <div className="min-w-[1020] max-w-4xl mt-8">
-            {loading && <p className="text-gray-600 mt-0">Loading reservations...</p>}
             {feedback && <p className="mb-6 text-sm text-green-600 mt-2">{feedback}</p>}
             <div className="overflow-x-auto rounded-lg shadow">
                 <table className="min-w-full divide-y divide-gray-200 bg-white">

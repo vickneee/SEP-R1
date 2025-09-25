@@ -1,5 +1,7 @@
-import { Suspense } from "react";
+'use client'
+import { Suspense, useState } from "react";
 import UserReservations from "@/app/(dashboard)/customer-dashboard/UserReservations";
+import PenaltyStatus from "@/components/custom/PenaltyStatus";
 
 interface UserProfile {
     created_at: string;
@@ -18,6 +20,14 @@ interface CustomerDashboardClientProps {
 }
 
 export default function CustomerDashboardClient({ userProfile, userEmail }: CustomerDashboardClientProps) {
+    // State to trigger penalty status refresh when reservation status changes
+    const [penaltyRefreshTrigger, setPenaltyRefreshTrigger] = useState<number>(0);
+
+    // Callback to trigger penalty status refresh when UserReservations status changes
+    const handleStatusChange = () => {
+        setPenaltyRefreshTrigger(prev => prev + 1);
+    };
+
     return (
         <div className="flex flex-col items-center text-center w-full min-h-screen p-8">
             {/* User Information Section */}
@@ -28,9 +38,11 @@ export default function CustomerDashboardClient({ userProfile, userEmail }: Cust
                     <p><strong>Name:</strong> {userProfile.first_name} {userProfile.last_name}</p>
                     <p><strong>Role:</strong> <span className="capitalize">{userProfile.role}</span></p>
                     <p><strong>Status:</strong> <span className={userProfile.is_active ? 'text-green-600' : 'text-red-600'}>{userProfile.is_active ? 'Active' : 'Inactive'}</span></p>
-                    {userProfile.penalty_count > 0 && (
-                        <p><strong>Penalties:</strong> <span className="text-red-600">{userProfile.penalty_count}</span></p>
-                    )}
+
+                    {/* Enhanced penalty display with details */}
+                    <div className="mt-3">
+                        <PenaltyStatus userId={userProfile.user_id} showDetails={true} refreshTrigger={penaltyRefreshTrigger} />
+                    </div>
                 </div>
             </div>
 
@@ -38,7 +50,7 @@ export default function CustomerDashboardClient({ userProfile, userEmail }: Cust
                 My Books
             </h1>
             <Suspense fallback={<p className="text-gray-600">Loading reservations...</p>}>
-                <UserReservations />
+                <UserReservations onStatusChange={handleStatusChange} />
             </Suspense>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center mt-10">
