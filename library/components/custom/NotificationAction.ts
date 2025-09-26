@@ -9,7 +9,7 @@ const getDueDateNotification = async () => {
     const today = new Date();
     const threeDaysLater = new Date();
     threeDaysLater.setDate(today.getDate() + 12);
-    const todayISO = today.toISOString(); // 例: "2025-09-18T00:15:00.000Z"
+    const todayISO = today.toISOString();
     const fiveDaysLaterISO = threeDaysLater.toISOString();
 
     const { data: reservationData, error: reservationError } = await supabase

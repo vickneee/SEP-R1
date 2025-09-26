@@ -1,22 +1,23 @@
 'use client'
 import { Suspense, useState } from "react";
 import UserReservations from "@/app/(dashboard)/customer-dashboard/UserReservations";
+import UserAccountOperations from "./UserAccountOperations";
 import PenaltyStatus from "@/components/custom/PenaltyStatus";
 
 interface UserProfile {
-    created_at: string;
-    email: string;
-    first_name: string;
-    is_active: boolean;
-    last_name: string;
-    penalty_count: number;
-    role: "customer" | "librarian";
-    user_id: string;
+  created_at: string;
+  email: string;
+  first_name: string;
+  is_active: boolean;
+  last_name: string;
+  penalty_count: number;
+  role: "customer" | "librarian";
+  user_id: string;
 }
 
 interface CustomerDashboardClientProps {
-    userProfile: UserProfile;
-    userEmail: string;
+  userProfile: UserProfile;
+  userEmail: string;
 }
 
 export default function CustomerDashboardClient({ userProfile, userEmail }: CustomerDashboardClientProps) {
@@ -44,6 +45,7 @@ export default function CustomerDashboardClient({ userProfile, userEmail }: Cust
                         <PenaltyStatus userId={userProfile.user_id} showDetails={true} refreshTrigger={penaltyRefreshTrigger} />
                     </div>
                 </div>
+              <UserAccountOperations />
             </div>
 
             <h1 className="mt-4 text-orange-500 text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 flex justify-center">
@@ -53,8 +55,7 @@ export default function CustomerDashboardClient({ userProfile, userEmail }: Cust
                 <UserReservations onStatusChange={handleStatusChange} />
             </Suspense>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mt-10">
-            </div>
-        </div>
-    );
+      <div className="flex flex-col sm:flex-row gap-4 justify-center mt-10"></div>
+    </div>
+  );
 }
