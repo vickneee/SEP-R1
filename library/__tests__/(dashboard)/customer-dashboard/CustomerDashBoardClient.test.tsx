@@ -12,6 +12,18 @@ jest.mock('@/utils/supabase/client', () => ({
     }),
 }));
 
+// Mock penalty actions to prevent server-side cookies error
+jest.mock("@/app/penalties/penaltyActions", () => ({
+    checkUserCanReserve: jest.fn().mockResolvedValue({
+        status: {
+            can_reserve: true,
+            overdue_book_count: 0,
+            restriction_reason: null,
+        },
+        error: null,
+    }),
+}));
+
 describe('CustomerDashBoardClient', () => {
     it('renders with a mock user profile', async () => {
         await act(async () => {

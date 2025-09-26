@@ -21,17 +21,25 @@ export async function signinAction(
   prevState: { message?: string; zodErrors?: Record<string, string[]> },
   formData: FormData
 ) {
+  console.log("signinAction called with:", {
+    email: formData.get("email"),
+    hasPassword: !!formData.get("password"),
+    prevState
+  });
+
   const validatedFields = schemaRegister.safeParse({
     password: (formData.get("password") ?? "") as string,
     email: (formData.get("email") ?? "") as string,
   });
 
   if (!validatedFields.success) {
-    return {
-      ...prevState,
+    const errorResponse = {
+      data: null,
       zodErrors: validatedFields.error.flatten().fieldErrors,
       message: "Missing Fields. Failed to Register",
     };
+    console.log("Validation failed, returning:", errorResponse);
+    return errorResponse;
   }
 
   const isTest = process.env.NODE_ENV === "test";
@@ -42,16 +50,31 @@ export async function signinAction(
     supabase = await createClient();
   }
 
+  console.log("Attempting signin with email:", validatedFields.data.email);
   const { error } = await supabase.auth.signInWithPassword(
     validatedFields.data
   );
 
   if (error) {
-    return { ...prevState, message: error?.message || "Signin failed" };
+    const errorResponse = {
+      data: null,
+      zodErrors: null,
+      message: error?.message || "Signin failed"
+    };
+    console.log("Signin failed, returning:", errorResponse);
+    return errorResponse;
   }
 
+  console.log("Signin successful, revalidating path");
   if (process.env.NODE_ENV !== "test") {
     revalidatePath("/private", "layout");
   }
-  return { ...prevState, message: "Signin successful" };
+
+  const successResponse = {
+    data: null,
+    zodErrors: null,
+    message: "Signin successful"
+  };
+  console.log("Returning success response:", successResponse);
+  return successResponse;
 }

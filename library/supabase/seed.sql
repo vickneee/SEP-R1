@@ -117,30 +117,219 @@ INSERT INTO auth.users (
     ''
 ) ON CONFLICT (id) DO NOTHING;
 
+-- Insert customer with penalties (for testing)
+INSERT INTO auth.users (
+    instance_id,
+    id,
+    aud,
+    role,
+    email,
+    encrypted_password,
+    email_confirmed_at,
+    recovery_sent_at,
+    last_sign_in_at,
+    raw_app_meta_data,
+    raw_user_meta_data,
+    created_at,
+    updated_at,
+    confirmation_token,
+    email_change,
+    email_change_token_new,
+    recovery_token
+) VALUES (
+    '00000000-0000-0000-0000-000000000000',
+    '33333333-3333-3333-3333-333333333333',
+    'authenticated',
+    'authenticated',
+    'penalty.user@library.com',
+    crypt('password123', gen_salt('bf')),
+    NOW(),
+    NOW(),
+    NOW(),
+    '{"provider": "email", "providers": ["email"]}',
+    '{"first_name": "Sarah", "last_name": "Overdue", "role": "customer"}',
+    NOW(),
+    NOW(),
+    '',
+    '',
+    '',
+    ''
+) ON CONFLICT (id) DO NOTHING;
+
+-- Insert another customer with different penalty scenarios
+INSERT INTO auth.users (
+    instance_id,
+    id,
+    aud,
+    role,
+    email,
+    encrypted_password,
+    email_confirmed_at,
+    recovery_sent_at,
+    last_sign_in_at,
+    raw_app_meta_data,
+    raw_user_meta_data,
+    created_at,
+    updated_at,
+    confirmation_token,
+    email_change,
+    email_change_token_new,
+    recovery_token
+) VALUES (
+    '00000000-0000-0000-0000-000000000000',
+    '44444444-4444-4444-4444-444444444444',
+    'authenticated',
+    'authenticated',
+    'multiple.penalties@library.com',
+    crypt('password123', gen_salt('bf')),
+    NOW(),
+    NOW(),
+    NOW(),
+    '{"provider": "email", "providers": ["email"]}',
+    '{"first_name": "Mike", "last_name": "Penalties", "role": "customer"}',
+    NOW(),
+    NOW(),
+    '',
+    '',
+    '',
+    ''
+) ON CONFLICT (id) DO NOTHING;
+
 -- The public.users entries should be created automatically by the handle_new_user trigger
 -- But let's ensure they exist (handle_new_user might not trigger during seed)
 INSERT INTO public.users (user_id, email, first_name, last_name, role, is_active, penalty_count) VALUES
 ('11111111-1111-1111-1111-111111111111', 'librarian@library.com', 'Admin', 'Librarian', 'librarian', true, 0),
-('22222222-2222-2222-2222-222222222222', 'customer@library.com', 'John', 'Customer', 'customer', true, 0)
+('22222222-2222-2222-2222-222222222222', 'customer@library.com', 'John', 'Customer', 'customer', true, 0),
+('33333333-3333-3333-3333-333333333333', 'penalty.user@library.com', 'Sarah', 'Overdue', 'customer', true, 2),
+('44444444-4444-4444-4444-444444444444', 'multiple.penalties@library.com', 'Mike', 'Penalties', 'customer', true, 3)
 ON CONFLICT (user_id) DO NOTHING;
 
 -----------------------------
--- Seed Some Sample Reservations (for testing)
+-- Seed Sample Reservations and Penalties (for testing)
 -----------------------------
--- Customer has reserved a couple of books
-INSERT INTO public.reservations (user_id, book_id, reservation_date, due_date, status) VALUES
-('22222222-2222-2222-2222-222222222222', 1, NOW() - INTERVAL '5 days', NOW() + INTERVAL '9 days', 'active'),
-('22222222-2222-2222-2222-222222222222', 3, NOW() - INTERVAL '3 days', NOW() + INTERVAL '11 days', 'active')
+
+-- Regular customer (John) - has some active reservations, no penalties
+INSERT INTO public.reservations (user_id, book_id, reservation_date, due_date, status, extended) VALUES
+('22222222-2222-2222-2222-222222222222', 1, NOW() - INTERVAL '5 days', NOW() + INTERVAL '9 days', 'active', false),
+('22222222-2222-2222-2222-222222222222', 3, NOW() - INTERVAL '3 days', NOW() + INTERVAL '11 days', 'active', false)
 ON CONFLICT DO NOTHING;
 
--- Update available copies to reflect the reservations
--- (This should happen automatically via trigger, but let's ensure consistency)
-UPDATE public.books SET available_copies = available_copies WHERE book_id IN (1, 3);
+-- Sarah Overdue - has overdue reservations with penalties
+INSERT INTO public.reservations (user_id, book_id, reservation_date, due_date, return_date, status, extended) VALUES
+-- Currently overdue book (5 days overdue) - should generate penalty - status 'active' so buttons show
+('33333333-3333-3333-3333-333333333333', 4, NOW() - INTERVAL '12 days', NOW() - INTERVAL '5 days', NULL, 'active', false),
+-- Previously overdue book that was returned late (returned 3 days late)
+('33333333-3333-3333-3333-333333333333', 5, NOW() - INTERVAL '20 days', NOW() - INTERVAL '15 days', NOW() - INTERVAL '12 days', 'returned', false)
+ON CONFLICT DO NOTHING;
+
+-- Mike Penalties - has multiple penalty scenarios
+INSERT INTO public.reservations (user_id, book_id, reservation_date, due_date, return_date, status, extended) VALUES
+-- Very overdue book (10 days overdue) - status 'active' so buttons show
+('44444444-4444-4444-4444-444444444444', 6, NOW() - INTERVAL '20 days', NOW() - INTERVAL '10 days', NULL, 'active', false),
+-- Returned late book (was 7 days late)
+('44444444-4444-4444-4444-444444444444', 7, NOW() - INTERVAL '25 days', NOW() - INTERVAL '18 days', NOW() - INTERVAL '11 days', 'returned', false),
+-- Recently overdue (2 days overdue) - status 'active' so buttons show
+('44444444-4444-4444-4444-444444444444', 8, NOW() - INTERVAL '9 days', NOW() - INTERVAL '2 days', NULL, 'active', false)
+ON CONFLICT DO NOTHING;
+
+-- Insert corresponding overdue tracking records (no payment amounts)
+INSERT INTO public.penalties (user_id, reservation_id, amount, reason, status, created_at) VALUES
+-- Sarah's overdue tracking
+(
+    '33333333-3333-3333-3333-333333333333',
+    (SELECT reservation_id FROM public.reservations WHERE user_id = '33333333-3333-3333-3333-333333333333' AND book_id = 4 LIMIT 1),
+    0.00,
+    'Overdue book: "The Great Gatsby" (5 days overdue)',
+    'pending',
+    NOW() - INTERVAL '4 days'
+),
+(
+    '33333333-3333-3333-3333-333333333333',
+    (SELECT reservation_id FROM public.reservations WHERE user_id = '33333333-3333-3333-3333-333333333333' AND book_id = 5 LIMIT 1),
+    0.00,
+    'Overdue book: "The Catcher in the Rye" (returned 3 days late)',
+    'waived',
+    NOW() - INTERVAL '15 days'
+),
+
+-- Mike's overdue tracking (multiple scenarios)
+(
+    '44444444-4444-4444-4444-444444444444',
+    (SELECT reservation_id FROM public.reservations WHERE user_id = '44444444-4444-4444-4444-444444444444' AND book_id = 6 LIMIT 1),
+    0.00,
+    'Overdue book: "Sapiens: A Brief History of Humankind" (10 days overdue)',
+    'pending',
+    NOW() - INTERVAL '9 days'
+),
+(
+    '44444444-4444-4444-4444-444444444444',
+    (SELECT reservation_id FROM public.reservations WHERE user_id = '44444444-4444-4444-4444-444444444444' AND book_id = 7 LIMIT 1),
+    0.00,
+    'Overdue book: "The Immortal Life of Henrietta Lacks" (returned 7 days late)',
+    'waived',
+    NOW() - INTERVAL '20 days'
+),
+(
+    '44444444-4444-4444-4444-444444444444',
+    (SELECT reservation_id FROM public.reservations WHERE user_id = '44444444-4444-4444-4444-444444444444' AND book_id = 8 LIMIT 1),
+    0.00,
+    'Overdue book: "Educated" (2 days overdue)',
+    'pending',
+    NOW() - INTERVAL '1 days'
+)
+ON CONFLICT DO NOTHING;
+
+-- Update available copies to reflect the active reservations
+-- The returned books should have their copies restored automatically via triggers
+-- Note: All overdue books now use 'active' status, so only checking 'active'
+UPDATE public.books
+SET available_copies = GREATEST(0, available_copies - (
+    SELECT COUNT(*)
+    FROM public.reservations
+    WHERE book_id = public.books.book_id
+    AND status = 'active'
+))
+WHERE book_id IN (1, 3, 4, 6, 8);
+
+-- Update penalty counts based on overdue books (should be handled by triggers, but ensuring consistency)
+-- Note: Overdue books now use 'active' status with past due dates - UI determines visual status
+UPDATE public.users
+SET penalty_count = (
+    SELECT COUNT(*)
+    FROM public.reservations
+    WHERE user_id = public.users.user_id
+    AND status = 'active' AND due_date < NOW()
+)
+WHERE user_id IN ('33333333-3333-3333-3333-333333333333', '44444444-4444-4444-4444-444444444444');
+
+-----------------------------
+-- Test scenario summary
+-----------------------------
+-- Test Users Created:
+-- 1. librarian@library.com (Admin Librarian) - Can manage overdue books and mark as returned
+-- 2. customer@library.com (John Customer) - Normal user, no overdue books
+-- 3. penalty.user@library.com (Sarah Overdue) - Has 1 overdue book: "The Great Gatsby"
+-- 4. multiple.penalties@library.com (Mike Penalties) - Has 2 overdue books: "Sapiens" & "Educated"
+--
+-- Restriction Scenarios:
+-- - Sarah: Cannot reserve new books (1 overdue book must be returned)
+-- - Mike: Cannot reserve new books (2 overdue books must be returned)
+-- - John: Can reserve books normally
+--
+-- Books with Test Reservations (visible in "My Books"):
+-- - Book IDs 1,3: Reserved by John (active - due dates in future)
+-- - Book ID 4: Reserved by Sarah (active status, overdue due date - "The Great Gatsby") - buttons visible
+-- - Book ID 5: Previously reserved by Sarah (returned late - "The Catcher in the Rye")
+-- - Book ID 6: Reserved by Mike (active status, overdue due date - "Sapiens") - buttons visible
+-- - Book ID 7: Previously reserved by Mike (returned late - "Henrietta Lacks")
+-- - Book ID 8: Reserved by Mike (active status, overdue due date - "Educated") - buttons visible
 
 -----------------------------
 -- Success message
 -----------------------------
 DO $$ BEGIN
-    RAISE NOTICE 'Seed data inserted: % books, 2 test users, and sample reservations',
+    RAISE NOTICE 'Seed data inserted: % books, 4 test users (2 with overdue books), sample reservations for UI testing',
         (SELECT COUNT(*) FROM public.books);
+    RAISE NOTICE 'Test accounts: librarian@library.com, customer@library.com, penalty.user@library.com (1 overdue), multiple.penalties@library.com (2 overdue) - all password: password123';
+    RAISE NOTICE 'System now tracks overdue books rather than payment penalties. Users must return overdue books to continue borrowing.';
 END $$;

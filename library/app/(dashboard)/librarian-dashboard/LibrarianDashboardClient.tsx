@@ -118,9 +118,7 @@ export default function LibrarianDashboardClient({ userProfile, userEmail }: Lib
                     <p><strong>Name:</strong> {userProfile.first_name} {userProfile.last_name}</p>
                     <p><strong>Role:</strong> <span className="capitalize font-semibold text-blue-600">{userProfile.role}</span></p>
                     <p><strong>Status:</strong> <span className={userProfile.is_active ? 'text-green-600' : 'text-red-600'}>{userProfile.is_active ? 'Active' : 'Inactive'}</span></p>
-                    {userProfile.penalty_count > 0 && (
-                        <p><strong>Penalties:</strong> <span className="text-red-600">{userProfile.penalty_count}</span></p>
-                    )}
+                    <p><strong>Management:</strong> <a href="/penalties" className="text-blue-600 hover:text-blue-800 underline">View Overdue Books</a></p>
                 </div>
             </div>
 
