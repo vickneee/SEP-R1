@@ -4,7 +4,7 @@ import {
   waitFor,
   fireEvent,
   act,
-} from "../../utils/test-utils"
+} from "../../utils/test-utils";
 import Notification from "@/components/custom/Notification";
 
 jest.mock("@/components/custom/NotificationAction", () => ({
@@ -26,7 +26,7 @@ describe("Notification Component", () => {
     });
   });
 
-  it("renders footer with correct content", async () => {
+  it("renders Notification component with bell-icon", async () => {
     await act(async () => {
       render(<Notification />);
     });

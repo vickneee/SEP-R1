@@ -1,5 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
-import { supabaseAdmin } from "@/utils/supabase/admin";
+import { getAdminClient } from "@/utils/supabase/admin";
 import { NextResponse } from "next/server";
 
 export async function POST() {
@@ -10,7 +10,7 @@ export async function POST() {
     return NextResponse.json({ success: false, error: error?.message });
   }
 
-  const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(
+  const { error: deleteError } = await getAdminClient().auth.admin.deleteUser(
     userData.user.id
   );
   if (deleteError) {

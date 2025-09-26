@@ -31,8 +31,6 @@ export default function UserAccountOperations() {
     INITIAL_STATE
   );
 
-  console.log("formState.message:", formState.message);
-
   const handleDelete = async () => {
     const confirmed = window.confirm(
       "Are you sure you want to delete your account?"
@@ -70,6 +68,7 @@ export default function UserAccountOperations() {
     <div>
       <div className="w-full max-w-md flex flex justify-around py-5">
         <button
+          data-testid="update-button"
           onClick={() => toggleShowForm()}
           className="px-4 py-2 text-sm font-semibold rounded-md transition-colors
                                 bg-green-600 hover:bg-green-700 text-white"
@@ -77,6 +76,7 @@ export default function UserAccountOperations() {
           Update Email Adress
         </button>
         <button
+          data-testid="delete-button"
           onClick={() => handleDelete()}
           className="px-4 py-2 text-sm font-semibold rounded-md transition-colors
                                 bg-red-600 hover:bg-red-700 text-white"

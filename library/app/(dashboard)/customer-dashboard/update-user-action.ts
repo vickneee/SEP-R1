@@ -1,6 +1,6 @@
 "use server";
 import { createClient } from "@/utils/supabase/server";
-import { supabaseAdmin } from "@/utils/supabase/admin";
+import { getAdminClient } from "@/utils/supabase/admin";
 import { z } from "zod";
 
 const schemaRegister = z.object({
@@ -49,7 +49,7 @@ export async function updateUserAction(
       };
     }
 
-    const { data, error } = await supabaseAdmin.auth.admin.updateUserById(
+    const { data, error } = await getAdminClient().auth.admin.updateUserById(
       userData.user.id,
       { email }
     );
