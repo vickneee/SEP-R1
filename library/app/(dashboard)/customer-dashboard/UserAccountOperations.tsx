@@ -62,7 +62,7 @@ export default function UserAccountOperations() {
       setShowForm(false);
     }
     toast(formState.message);
-  }, [formState.message]);
+  }, [formState.message, pathname, router]);
 
   return (
     <div>
@@ -73,7 +73,7 @@ export default function UserAccountOperations() {
           className="px-4 py-2 text-sm font-semibold rounded-md transition-colors
                                 bg-green-600 hover:bg-green-700 text-white"
         >
-          Update Email Adress
+          Update Email Address
         </button>
         <button
           data-testid="delete-button"
