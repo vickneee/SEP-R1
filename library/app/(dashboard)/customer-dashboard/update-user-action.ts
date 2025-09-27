@@ -82,8 +82,9 @@ export async function updateUserAction(
     return {
       data: null,
       zodErrors: null,
-      message:
-        "Email update failed due to an unexpected error. Please try again.",
+      message: `Email update failed due to an unexpected error: ${
+        error instanceof Error ? error.message : String(error)
+      }. Please try again.`,
     };
   }
 }
