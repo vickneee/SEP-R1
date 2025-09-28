@@ -84,7 +84,7 @@ export default function LibrarianDashboardClient({ userProfile, userEmail }: Lib
                 });
 
                 if (!res.ok) {
-                    throw new Error("Failed to add book");
+                    console.log("Failed to add book");
                 }
 
                 const newBook = await res.json();
