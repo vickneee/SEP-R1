@@ -66,11 +66,11 @@ export default function UserAccountOperations() {
 
   return (
     <div>
-      <div className="w-full max-w-md flex flex justify-around py-5">
+      <div className="w-full max-w-md flex justify-around py-5">
         <button
           data-testid="update-button"
           onClick={() => toggleShowForm()}
-          className="px-4 py-2 text-sm font-semibold rounded-md transition-colors
+          className="px-4 py-2 text-sm rounded transition-colors
                                 bg-green-600 hover:bg-green-700 text-white"
         >
           Update Email Address
@@ -78,7 +78,7 @@ export default function UserAccountOperations() {
         <button
           data-testid="delete-button"
           onClick={() => handleDelete()}
-          className="px-4 py-2 text-sm font-semibold rounded-md transition-colors
+          className="px-4 py-2 text-sm rounded transition-colors
                                 bg-red-600 hover:bg-red-700 text-white"
         >
           Delete Account
