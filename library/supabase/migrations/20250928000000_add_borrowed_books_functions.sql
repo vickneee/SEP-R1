@@ -63,6 +63,18 @@ ORDER BY r.due_date ASC;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+-- Extend a reservation due date and mark extended = true
+CREATE OR REPLACE FUNCTION public.extend_reservation(p_reservation_id int)
+RETURNS void AS $$
+BEGIN
+UPDATE public.reservations
+SET due_date = due_date + interval '7 days',  -- extend by 7 days
+    extended = true
+WHERE reservation_id = p_reservation_id
+  AND extended = false; -- only if not already extended
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 -----------------------------
 -- Grants
 -----------------------------
