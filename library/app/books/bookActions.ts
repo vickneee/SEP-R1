@@ -12,7 +12,7 @@ const getAllBooks = async () => {
 
   const { data, error } = await supabase
     .from("books")
-    .select("book_id, title, image, author, category")
+    .select("book_id, title, author, category, image, available_copies, total_copies")
     .order("created_at", { ascending: true });
 
   return {
@@ -30,7 +30,7 @@ const getBooksByAuthor = async (search: string) => {
 
   const { error, data } = await supabase
     .from("books")
-    .select("book_id, title, author, category")
+    .select("book_id, title, author, category, image, available_copies, total_copies")
     .ilike("author", `%${search}%`);
 
   return {
@@ -48,7 +48,7 @@ const getBooksByTitle = async (search: string) => {
 
   const { error, data } = await supabase
     .from("books")
-    .select("book_id, title, author, category, image")
+    .select("book_id, title, author, category, image, available_copies, total_copies")
     .ilike("title", `%${search}%`);
 
   return {
@@ -66,7 +66,7 @@ const getBooksByCategory = async (search: string) => {
 
   const { error, data } = await supabase
     .from("books")
-    .select("book_id, title, author, category")
+    .select("book_id, title, author, category, image, available_copies, total_copies")
     .ilike("category", `%${search}%`);
 
   return {
@@ -157,14 +157,13 @@ const updateBook = async (id: number, updates: BookUpdate) => {
 
 const deleteBook = async (id: number) => {
   const supabase = await createClient();
-  const { data, error } = await supabase
+  
+  const { error } = await supabase
     .from("books")
     .delete()
-    .eq("book_id", id)
-    .select()
-    .single();
+    .eq("book_id", id);
 
-  return { error: error?.message, book: data };
+  return { error: error?.message };
 };
 
 const reserveBook = async (bookId: number, dueDate: string) => {

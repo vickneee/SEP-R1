@@ -11,8 +11,10 @@ export default async function BookPage({ searchParams }: PageProps) {
   const { search } = await loadSearchParams(searchParams);
   const { books } = await getBooksByTitle(search);
 
-  // Ensure books is never null - fallback to empty array
-  const safeBooks = books || [];
+  const safeBooks = (books || []).map(book => ({
+    ...book,
+    image: book.image ?? "",
+  }));
 
   return <Books books={safeBooks} />;
 }
