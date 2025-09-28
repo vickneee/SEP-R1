@@ -1,4 +1,4 @@
-import { SigninForm } from "@/app/components/forms/SigninForm";
+import { SigninForm } from "@/components/forms/SigninForm";
 
 function SignIn() {
   return <SigninForm />;

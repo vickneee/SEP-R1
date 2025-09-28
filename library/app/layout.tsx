@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import NavBar from "@/app/components/sections/navbar/NavBar";
-import Footer from "@/app/components/sections/footer/Footer";
+import NavBar from "@/components/sections/NavBar";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
+import { Toaster } from "react-hot-toast";
+import { Suspense } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,10 +30,13 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <NuqsAdapter>
-          <NavBar />
+          <Suspense fallback={<div>Loading...</div>}>
+            <NavBar />
+          </Suspense>
           <main
             className={`${geistSans.variable} ${geistMono.variable} antialiased`}
           >
+            <Toaster position="bottom-left" />
             {children}
           </main>
         </NuqsAdapter>

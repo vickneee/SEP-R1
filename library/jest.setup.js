@@ -21,6 +21,13 @@ jest.mock("next/navigation", () => ({
   },
 }));
 
+jest.mock("nuqs", () => {
+  const React = jest.requireActual("react");
+  return {
+    useQueryState: () => React.useState(""),
+  };
+});
+
 // Mock Next.js Image component
 jest.mock("next/image", () => ({
   __esModule: true,
@@ -73,11 +80,20 @@ Object.defineProperty(window, "matchMedia", {
 
 // Mock IntersectionObserver
 global.IntersectionObserver = class IntersectionObserver {
-  constructor() {}
-  disconnect() {}
-  observe() {}
-  unobserve() {}
+  constructor() { }
+  disconnect() { }
+  observe() { }
+  unobserve() { }
 };
 
 global.TextEncoder = TextEncoder;
 global.TextDecoder = TextDecoder;
+
+// Mock ResizeObserver
+class ResizeObserver {
+  observe() { }
+  unobserve() { }
+  disconnect() { }
+}
+
+global.ResizeObserver = ResizeObserver

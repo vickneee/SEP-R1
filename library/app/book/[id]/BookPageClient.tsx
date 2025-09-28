@@ -1,16 +1,23 @@
 "use client";
 
-import { reserveBook } from "@/app/actions/clientActions";
-import BookImage from "@/app/components/custom/BookImage";
-import React, {useEffect, useState} from "react";
+import { reserveBook } from "@/app/books/bookActions";
+import { checkUserCanReserve, type UserReservationStatus } from "@/app/penalties/penaltyActions";
+import BookImage from "@/components/custom/BookImage";
+import PenaltyBadge from "@/components/custom/PenaltyBadge";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+import type { Database } from "@/types/database";
 
-export default function BookPageClient({ book: initialBook }: { book: any }) {
+type Book = Database['public']['Tables']['books']['Row'];
+
+export default function BookPageClient({ book: initialBook }: { book: Book }) {
     const router = useRouter();
-    const [book, setBook] = useState(initialBook);
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
     const [isSuccess, setIsSuccess] = useState(false);
+    const [reservationStatus, setReservationStatus] = useState<UserReservationStatus | null>(null);
+    const [statusLoading, setStatusLoading] = useState(true);
 
     useEffect(() => {
         if (message && isSuccess) {
@@ -20,6 +27,24 @@ export default function BookPageClient({ book: initialBook }: { book: any }) {
             return () => clearTimeout(timer);
         }
     }, [message, isSuccess, router]);
+
+    useEffect(() => {
+        loadReservationStatus();
+    }, []);
+
+    const loadReservationStatus = async () => {
+        setStatusLoading(true);
+        try {
+            const result = await checkUserCanReserve();
+            if (!result.error && result.status) {
+                setReservationStatus(result.status);
+            }
+        } catch (error) {
+            console.error("Error checking reservation status:", error);
+        } finally {
+            setStatusLoading(false);
+        }
+    };
 
     const handleReserve = async () => {
         setLoading(true);
@@ -31,6 +56,15 @@ export default function BookPageClient({ book: initialBook }: { book: any }) {
                 setLoading(false);
                 return;
             }
+
+            // Check for penalty restrictions
+            if (reservationStatus && !reservationStatus.can_reserve) {
+                setMessage(reservationStatus.restriction_reason || "You cannot make reservations at this time.");
+                setIsSuccess(false);
+                setLoading(false);
+                return;
+            }
+
             const due_date = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString();
             const result = await reserveBook(initialBook.book_id, due_date);
             console.log("Book ID", initialBook.book_id);
@@ -40,7 +74,7 @@ export default function BookPageClient({ book: initialBook }: { book: any }) {
                 setMessage("Reservation successful!");
                 setIsSuccess(true);
             } else {
-                setMessage("Reservation failed.");
+                setMessage(result.error?.message || "Reservation failed.");
                 setIsSuccess(false);
             }
         } catch {
@@ -58,10 +92,12 @@ export default function BookPageClient({ book: initialBook }: { book: any }) {
             <div className="mt-2 w-[380px] px-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
                 <div className="flex flex-col items-center p-2">
                     {initialBook.image ? (
-                        <img
+                        <Image
                             src={initialBook.image}
                             alt={initialBook.title}
                             className="w-40 h-56 mb-6 mt-4 rounded-md"
+                            width={160}
+                            height={224}
                         />
                     ) : (
                         <BookImage
@@ -84,14 +120,29 @@ export default function BookPageClient({ book: initialBook }: { book: any }) {
                         <p>Available copies: {initialBook.available_copies}</p>
                     </div>
 
+                    {/* Penalty Status Display */}
+                    {reservationStatus && !reservationStatus.can_reserve && (
+                        <div className="mb-4">
+                            <PenaltyBadge className="w-full" />
+                        </div>
+                    )}
+
                     <div className="py-7 flex justify-center">
                         {initialBook.available_copies === 0 ? (
-                            <button className="w-auto px-6 spx-4 py-2 bg-[#552A1B] text-white rounded hover:bg-[#E46A07] transition-colors duration-300">
+                            <button className="w-auto px-6 spx-4 py-2 bg-gray-500 text-white rounded cursor-not-allowed">
                                 Checked out
+                            </button>
+                        ) : reservationStatus && !reservationStatus.can_reserve ? (
+                            <button className="w-auto px-6 spx-4 py-2 bg-red-500 text-white rounded cursor-not-allowed" disabled>
+                                Cannot Reserve (Pending Penalties)
+                            </button>
+                        ) : statusLoading ? (
+                            <button className="w-auto px-6 spx-4 py-2 bg-gray-400 text-white rounded cursor-not-allowed" disabled>
+                                Checking eligibility...
                             </button>
                         ) : (
                             <button
-                                className="w-auto px-6 spx-4 py-2 bg-[#552A1B] text-white rounded hover:bg-[#E46A07] transition-colors duration-300"
+                                className="w-auto px-6 spx-4 py-2 bg-[#552A1B] text-white rounded hover:bg-[#E46A07] transition-colors duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed"
                                 onClick={handleReserve}
                                 disabled={loading}
                             >
