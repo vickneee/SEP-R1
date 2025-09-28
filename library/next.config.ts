@@ -15,8 +15,8 @@ const nextConfig: NextConfig = {
     // Allow Server Actions to work locally
     serverActions: {
       allowedOrigins: [
-        'localhost:3001',
-        '127.0.0.1:3001'
+        'localhost:3000',
+        '127.0.0.1:3000'
       ],
     },
   },

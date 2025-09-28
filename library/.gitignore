@@ -39,3 +39,12 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/.idea
+
+# VS Code - ignore personal settings
+.vscode/settings.json
+.vscode/launch.json
+!.vscode/settings.default.json
+.vscode/
+package-lock.json
