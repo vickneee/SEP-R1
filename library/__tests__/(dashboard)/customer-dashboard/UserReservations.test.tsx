@@ -198,6 +198,8 @@ describe('UserReservations Component', () => {
     it('should extend a reservation successfully', async () => {
         const initialReservation = {
             reservation_id: 1,
+            book_id: 101,
+            user_id: '123',
             reservation_date: new Date().toISOString(),
             due_date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
             return_date: null,
@@ -226,6 +228,8 @@ describe('UserReservations Component', () => {
     it('should not extend a reservation twice', async () => {
         const initialReservation2 = {
             reservation_id: 1,
+            book_id: 101,
+            user_id: '123',
             reservation_date: new Date().toISOString(),
             due_date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
             return_date: null,

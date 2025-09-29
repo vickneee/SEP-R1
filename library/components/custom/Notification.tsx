@@ -30,9 +30,9 @@ export default function NotificationSection() {
     notification[]
   >([]);
 
-  const [dueDateError, setDueDateError] = useState<string | null>(null);
+  const [, setDueDateError] = useState<string | null>(null);
 
-  const [OverdueError, setOverdueError] = useState<string | null>(null);
+  const [, setOverdueError] = useState<string | null>(null);
 
   const [dueDateBookTitles, setDueDateBookTitles] = useState<
     Record<number, string>
@@ -125,8 +125,8 @@ export default function NotificationSection() {
     fetchOverdueNotifications();
   };
 
-  console.log(dueDateError);
-  console.log(OverdueError);
+  // console.log(dueDateError);
+  // console.log(OverdueError);
 
   return (
     <Popover>

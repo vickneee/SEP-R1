@@ -9,7 +9,7 @@ type ReservationWithBook = {
     reservation_date: string;
     due_date: string;
     return_date: string | null;
-    status: "active" | "returned" | "overdue" | "cancelled";
+    status: "active" | "returned" | "extended" | "overdue" | "cancelled";
     extended: boolean;
     books: {
         title: string;
@@ -72,7 +72,7 @@ export default function UserReservations({ onStatusChange }: UserReservationsPro
         }
 
         try {
-            const updated = await extendReservation(reservationId) as ReservationWithBook;
+            const updated = await extendReservation(reservationId) as unknown as ReservationWithBook;
 
             setReservations(reservations.map(r =>
                 r.reservation_id === reservationId ? updated : r
@@ -141,8 +141,6 @@ export default function UserReservations({ onStatusChange }: UserReservationsPro
         return dueDate < today;
     }
 
-
-
     if (loading) {
         return <p className="text-gray-600">Loading reservations...</p>;
     }
@@ -193,9 +191,9 @@ export default function UserReservations({ onStatusChange }: UserReservationsPro
                                 {res.status === 'active' && (
                                     <button onClick={() => handleExtend(res.reservation_id)}
                                             disabled={isExtending[res.reservation_id] || res.extended}
-                                            className="px-4 py-2 text-xs font-semibold rounded-md transition-colors
+                                            className="px-3 py-1 text-xs rounded transition-colors
                                             bg-green-600 hover:bg-green-700 text-white
-                                            disabled:bg-gray-400 disabled:cursor-not-allowed"
+                                            disabled:cursor-not-allowed disabled:text-gray-600 disabled:bg-neutral-50"
                                     >
                                         {isExtending[res.reservation_id]
                                             ? 'Extending...' : res.extended ? 'Extended' : 'Extend'}
@@ -206,7 +204,7 @@ export default function UserReservations({ onStatusChange }: UserReservationsPro
                             <td className="px-4 py-2 text-center">
                                 {res.status === 'active' && (
                                     <button onClick={() => handleReturn(res.reservation_id)}
-                                            disabled={isReturning[res.reservation_id]} className="px-4 py-2 text-xs font-semibold rounded-md transition-colors
+                                            disabled={isReturning[res.reservation_id]} className="px-4 py-1 text-xs rounded transition-colors
                                 bg-blue-600 hover:bg-blue-700 text-white
                                 disabled:bg-gray-400 disabled:cursor-not-allowed">
                                         {isReturning[res.reservation_id] ? 'Returning...' : 'Return'}

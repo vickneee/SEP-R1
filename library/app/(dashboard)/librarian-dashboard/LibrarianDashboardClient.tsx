@@ -2,6 +2,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
+import {Label} from "@/components/ui/label";
 
 interface Book {
     title: string;
@@ -83,7 +84,7 @@ export default function LibrarianDashboardClient({ userProfile, userEmail }: Lib
                 });
 
                 if (!res.ok) {
-                    throw new Error("Failed to add book");
+                    console.log("Failed to add book");
                 }
 
                 const newBook = await res.json();
@@ -118,7 +119,8 @@ export default function LibrarianDashboardClient({ userProfile, userEmail }: Lib
                     <p><strong>Name:</strong> {userProfile.first_name} {userProfile.last_name}</p>
                     <p><strong>Role:</strong> <span className="capitalize font-semibold text-blue-600">{userProfile.role}</span></p>
                     <p><strong>Status:</strong> <span className={userProfile.is_active ? 'text-green-600' : 'text-red-600'}>{userProfile.is_active ? 'Active' : 'Inactive'}</span></p>
-                    <p><strong>Management:</strong> <a href="/penalties" className="text-blue-600 hover:text-blue-800 underline">View Overdue Books</a></p>
+                    <p><strong>Management:</strong> <a href="/penalties" className=" text-blue-600 hover:text-blue-800 underline">View Overdue Books</a></p>
+                    <p><strong>Management:</strong> <a href="/extend-return" className="text-blue-600 hover:text-blue-800 underline">View Extend/Return Books</a></p>
                 </div>
             </div>
 
@@ -176,6 +178,7 @@ export default function LibrarianDashboardClient({ userProfile, userEmail }: Lib
                         required
                         className="border rounded px-3 py-2"
                     />
+                    <Label className="text-gray-700">Publication Year:</Label>
                     <input
                         name="publication_year"
                         type="number"
@@ -183,8 +186,9 @@ export default function LibrarianDashboardClient({ userProfile, userEmail }: Lib
                         value={form.publication_year}
                         onChange={handleChange}
                         required
-                        className="border rounded px-3 py-2"
+                        className="border rounded px-3 py-2 text-gray-600"
                     />
+                    <Label className="text-gray-700">Total Copies:</Label>
                     <input
                         name="total_copies"
                         type="number"
@@ -193,8 +197,9 @@ export default function LibrarianDashboardClient({ userProfile, userEmail }: Lib
                         onChange={handleChange}
                         required
                         min={1}
-                        className="border rounded px-3 py-2"
+                        className="border rounded px-3 py-2 text-gray-600"
                     />
+                    <Label className="text-gray-700">Available Copies:</Label>
                     <input
                         name="available_copies"
                         type="number"
@@ -203,7 +208,7 @@ export default function LibrarianDashboardClient({ userProfile, userEmail }: Lib
                         onChange={handleChange}
                         required
                         min={0}
-                        className="border rounded px-3 py-2"
+                        className="border rounded px-3 py-2 text-gray-600"
                     />
                     <Button type="submit" className="bg-orange-500 text-white" disabled={loading}>
                         {loading ? "Adding..." : "Add Book"}

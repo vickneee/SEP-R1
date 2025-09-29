@@ -2,7 +2,17 @@
 
 import { createClient } from "@/utils/supabase/server";
 
-class ReservationWithBook {
+interface ReservationWithBook {
+    reservation_id: number;
+    user_id: string;
+    book_id: number;
+    due_date: string;
+    status: "active" | "extended" | "returned" |"overdue" | "cancelled";
+    extended: boolean;
+    books: {
+        title: string;
+        author: string;
+    };
 }
 
 export async function extendReservation(reservationId: string | number) {
