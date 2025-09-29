@@ -344,7 +344,7 @@ export type Database = {
         }
         Enums: {
             penalty_status: "pending" | "paid" | "waived"
-            reservation_status: "active" | "returned" | "overdue" | "cancelled"
+            reservation_status: "active" | 'extended' | "returned" | "overdue" | "cancelled"
             user_role: "customer" | "librarian"
         }
         CompositeTypes: {
