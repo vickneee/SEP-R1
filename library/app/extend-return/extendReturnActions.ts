@@ -3,13 +3,6 @@
 import {createClient} from "@/utils/supabase/server";
 import type {BorrowedBook} from "@/types/borrowedBook";
 
-type ExtendReservationRow = {
-    reservation_id: number;
-    due_date: string;
-    extended: boolean;
-    status: "active" | "extended" | "returned" | "overdue" | "cancelled";
-};
-
 export const getAllBorrowedBooks = async (): Promise<{
     borrowedBooks: BorrowedBook[] | null;
     error: string | null;
