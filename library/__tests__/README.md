@@ -1,4 +1,4 @@
-## test scripts
+## Sest Scripts
 
 ```bash
 # Run all tests
