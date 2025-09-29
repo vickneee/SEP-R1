@@ -9,7 +9,7 @@ type ReservationWithBook = {
     reservation_date: string;
     due_date: string;
     return_date: string | null;
-    status: "active" | "returned" | "overdue" | "cancelled";
+    status: "active" | "returned" | "extended" | "overdue" | "cancelled";
     extended: boolean;
     books: {
         title: string;
@@ -72,7 +72,7 @@ export default function UserReservations({ onStatusChange }: UserReservationsPro
         }
 
         try {
-            const updated = await extendReservation(reservationId) as ReservationWithBook;
+            const updated = await extendReservation(reservationId) as unknown as ReservationWithBook;
 
             setReservations(reservations.map(r =>
                 r.reservation_id === reservationId ? updated : r
@@ -140,8 +140,6 @@ export default function UserReservations({ onStatusChange }: UserReservationsPro
         const dueDate = new Date(res.due_date);
         return dueDate < today;
     }
-
-
 
     if (loading) {
         return <p className="text-gray-600">Loading reservations...</p>;
