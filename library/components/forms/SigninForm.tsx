@@ -16,6 +16,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { ZodErrors } from "@/components/custom/ZodErrors";
+import {toast} from "react-hot-toast";
 
 const styles = {
   container: "flex justify-center items-center w-full min-h-[750px]",
@@ -46,8 +47,13 @@ export function SigninForm() {
 
   useEffect(() => {
     if (formState.message === "Signin successful") {
-      // Force full reload so NavBar picks up the session
-      window.location.href = "/private";
+        setTimeout(() => {
+        // Force full reload so NavBar picks up the session
+            window.location.href = "/private";
+        }, 1000); // 1000 ms = 1 seconds
+      toast.success("Signin successful!");
+    } else if (formState.message && formState.message !== "Signin successful") {
+        toast.error("Signin failed: " + formState.message);
     }
   }, [formState]);
 
