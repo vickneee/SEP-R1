@@ -1,6 +1,6 @@
 import * as booksModule from "../../app/books/bookActions";
 import * as supabaseModule from "../../utils/supabase/server";
-import type { Database } from "../../types/database";
+import type { Database } from "@/types/database";
 
 jest.mock("../../utils/supabase/server");
 
