@@ -1,9 +1,8 @@
-import {extendReservation} from "@/app/books/extendedAction";
 import {getAllBorrowedBooks} from "@/app/extend-return/extendReturnActions";
 import ExtendReturnBookPage from "@/app/extend-return/page";
 import React from "react";
-import {findByLabelText, render} from "@testing-library/react";
 import {BorrowedBook} from "@/types/borrowedBook";
+import {render} from "@testing-library/react";
 
 // Mock Supabase client for client-side
 const createMockClient = (reservations: any[]) => ({
@@ -39,19 +38,17 @@ jest.mock("@/app/extend-return/extendReturnActions", () => ({
     getAllBorrowedBooks: jest.fn(),
 }));
 
-const mockedExtendReservation = extendReservation as jest.MockedFunction<typeof extendReservation>;
-const mockedGetAllBorrowedBooks = getAllBorrowedBooks
+const mockedGetAllBorrowedBooks = getAllBorrowedBooks as jest.Mock;
 
 // Test user with reservations
 describe('Extend Return Books Management Component', () => {
 
     beforeEach(() => {
         jest.clearAllMocks();
-    }
-    );
+    });
 
     it('renders all borrowed books for librarian', async () => {
-        // Mock getAllBorrowedBooks to return test data
+        // Mock borrowed books data
         const mockBorrowedBooks: BorrowedBook[] = [
             {
                 reservation_id: 1,
@@ -77,7 +74,7 @@ describe('Extend Return Books Management Component', () => {
             },
         ];
 
-        // @ts-ignore
+        // Mock getAllBorrowedBooks to return test data
         mockedGetAllBorrowedBooks.mockResolvedValue({ borrowedBooks: mockBorrowedBooks, error: null });
 
         mockCreateClient.mockReturnValueOnce(
