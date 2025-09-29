@@ -6,6 +6,6 @@ export type BorrowedBook = {
     book_author: string;
     due_date: string;
     extended: boolean;
-    status: 'active' | 'returned' | 'overdue' | 'cancelled';
+    status: 'active' | 'extended' | 'returned' | 'overdue' | 'cancelled';
     user_id: string;
 };
