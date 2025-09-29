@@ -273,7 +273,7 @@ INSERT INTO auth.users (
     ''
 ) ON CONFLICT (id) DO NOTHING;
 
--- The public.users entries should be created automatically by the handle_new_user trigger
+-- The public.users entries should be created automatically by the handle_new_user trigger,
 -- But let's ensure they exist (handle_new_user might not trigger during seed)
 INSERT INTO public.users (user_id, email, first_name, last_name, role, is_active, penalty_count) VALUES
 ('11111111-1111-1111-1111-111111111111', 'librarian@library.com', 'Admin', 'Librarian', 'librarian', true, 0),
@@ -287,6 +287,9 @@ ON CONFLICT (user_id) DO NOTHING;
 -----------------------------
 -- Seed Sample Reservations and Penalties (for testing)
 -----------------------------
+-- Before inserting reservations
+UPDATE public.books
+SET available_copies = total_copies;
 
 -- Regular customer (John) - has some active reservations, no penalties
 INSERT INTO public.reservations (user_id, book_id, reservation_date, due_date, status, extended) VALUES
