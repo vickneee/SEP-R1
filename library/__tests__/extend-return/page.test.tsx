@@ -5,7 +5,7 @@ import {BorrowedBook} from "@/types/borrowedBook";
 import {render} from "@testing-library/react";
 
 // Mock Supabase client for client-side
-const createMockClient = (reservations: any[]) => ({
+const createMockClient = (reservations: BorrowedBook[]) => ({
     auth: {
         getUser: jest.fn().mockResolvedValue({
             data: {user: {id: 'librarian-123', email: 'librarian@library.com'}},
