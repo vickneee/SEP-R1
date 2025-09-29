@@ -4,13 +4,16 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbopack",
-    "build": "next build --turbopack",
+    "build": "next build",
     "start": "next start",
     "lint": "eslint",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
-    "test:coverage:open": "open-cli coverage/lcov-report/index.html"
+    "test:coverage:open": "open-cli coverage/lcov-report/index.html",
+    "docker:build": "bash docker-build.sh",
+    "docker:run": "docker run -p 3000:3000 --env-file .env.docker library-app",
+    "docker:dev": "docker run -p 3000:3000 --env-file .env.docker -v $(pwd):/app -v /app/node_modules library-app"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",

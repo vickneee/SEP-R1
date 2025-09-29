@@ -1,0 +1,26 @@
+# Exclude everything except the library directory
+*
+!library/
+
+# But within library, exclude these
+library/node_modules
+library/.next
+library/.env*
+library/coverage
+library/jest.config.*
+library/.vscode
+library/.idea
+library/*.log
+library/.DS_Store
+library/Thumbs.db
+
+# Exclude git and other repo files
+.git
+.github
+documents
+.vscode
+.idea
+*.md
+!library/*.md
+.gitignore
+.claude

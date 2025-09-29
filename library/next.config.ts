@@ -11,6 +11,9 @@ const nextConfig: NextConfig = {
     unoptimized: true,
   },
 
+  // Enable standalone output for Docker optimization
+  output: 'standalone',
+
   experimental: {
     // Allow Server Actions to work locally
     serverActions: {

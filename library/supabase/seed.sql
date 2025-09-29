@@ -117,6 +117,45 @@ INSERT INTO auth.users (
     ''
 ) ON CONFLICT (id) DO NOTHING;
 
+-- Insert another normal customer (if not exists)
+INSERT INTO auth.users (
+    instance_id,
+    id,
+    aud,
+    role,
+    email,
+    encrypted_password,
+    email_confirmed_at,
+    recovery_sent_at,
+    last_sign_in_at,
+    raw_app_meta_data,
+    raw_user_meta_data,
+    created_at,
+    updated_at,
+    confirmation_token,
+    email_change,
+    email_change_token_new,
+    recovery_token
+) VALUES (
+    '00000000-0000-0000-0000-000000000000',
+    '55555555-5555-5555-5555-555555555555',
+    'authenticated',
+    'authenticated',
+    'normal.customer@library.com',
+    crypt('password123', gen_salt('bf')),
+    NOW(),
+    NOW(),
+    NOW(),
+    '{"provider": "email", "providers": ["email"]}',
+    '{"first_name": "Alice", "last_name": "Normal", "role": "customer"}',
+    NOW(),
+    NOW(),
+    '',
+    '',
+    '',
+    ''
+) ON CONFLICT (id) DO NOTHING;
+
 -- Insert customer with penalties (for testing)
 INSERT INTO auth.users (
     instance_id,
@@ -195,13 +234,54 @@ INSERT INTO auth.users (
     ''
 ) ON CONFLICT (id) DO NOTHING;
 
+-- Insert another penalty customer (for testing)
+INSERT INTO auth.users (
+    instance_id,
+    id,
+    aud,
+    role,
+    email,
+    encrypted_password,
+    email_confirmed_at,
+    recovery_sent_at,
+    last_sign_in_at,
+    raw_app_meta_data,
+    raw_user_meta_data,
+    created_at,
+    updated_at,
+    confirmation_token,
+    email_change,
+    email_change_token_new,
+    recovery_token
+) VALUES (
+    '00000000-0000-0000-0000-000000000000',
+    '66666666-6666-6666-6666-666666666666',
+    'authenticated',
+    'authenticated',
+    'another.penalty@library.com',
+    crypt('password123', gen_salt('bf')),
+    NOW(),
+    NOW(),
+    NOW(),
+    '{"provider": "email", "providers": ["email"]}',
+    '{"first_name": "Bob", "last_name": "Penalty", "role": "customer"}',
+    NOW(),
+    NOW(),
+    '',
+    '',
+    '',
+    ''
+) ON CONFLICT (id) DO NOTHING;
+
 -- The public.users entries should be created automatically by the handle_new_user trigger
 -- But let's ensure they exist (handle_new_user might not trigger during seed)
 INSERT INTO public.users (user_id, email, first_name, last_name, role, is_active, penalty_count) VALUES
 ('11111111-1111-1111-1111-111111111111', 'librarian@library.com', 'Admin', 'Librarian', 'librarian', true, 0),
 ('22222222-2222-2222-2222-222222222222', 'customer@library.com', 'John', 'Customer', 'customer', true, 0),
 ('33333333-3333-3333-3333-333333333333', 'penalty.user@library.com', 'Sarah', 'Overdue', 'customer', true, 2),
-('44444444-4444-4444-4444-444444444444', 'multiple.penalties@library.com', 'Mike', 'Penalties', 'customer', true, 3)
+('44444444-4444-4444-4444-444444444444', 'multiple.penalties@library.com', 'Mike', 'Penalties', 'customer', true, 3),
+('55555555-5555-5555-5555-555555555555', 'normal.customer@library.com', 'Alice', 'Normal', 'customer', true, 0),
+('66666666-6666-6666-6666-666666666666', 'another.penalty@library.com', 'Bob', 'Penalty', 'customer', true, 1)
 ON CONFLICT (user_id) DO NOTHING;
 
 -----------------------------
@@ -212,6 +292,11 @@ ON CONFLICT (user_id) DO NOTHING;
 INSERT INTO public.reservations (user_id, book_id, reservation_date, due_date, status, extended) VALUES
 ('22222222-2222-2222-2222-222222222222', 1, NOW() - INTERVAL '5 days', NOW() + INTERVAL '9 days', 'active', false),
 ('22222222-2222-2222-2222-222222222222', 3, NOW() - INTERVAL '3 days', NOW() + INTERVAL '11 days', 'active', false)
+ON CONFLICT DO NOTHING;
+
+-- Alice Normal - has one active reservation, no penalties
+INSERT INTO public.reservations (user_id, book_id, reservation_date, due_date, status, extended) VALUES
+('55555555-5555-5555-5555-555555555555', 9, NOW() - INTERVAL '2 days', NOW() + INTERVAL '12 days', 'active', false)
 ON CONFLICT DO NOTHING;
 
 -- Sarah Overdue - has overdue reservations with penalties
@@ -230,6 +315,11 @@ INSERT INTO public.reservations (user_id, book_id, reservation_date, due_date, r
 ('44444444-4444-4444-4444-444444444444', 7, NOW() - INTERVAL '25 days', NOW() - INTERVAL '18 days', NOW() - INTERVAL '11 days', 'returned', false),
 -- Recently overdue (2 days overdue) - status 'active' so buttons show
 ('44444444-4444-4444-4444-444444444444', 8, NOW() - INTERVAL '9 days', NOW() - INTERVAL '2 days', NULL, 'active', false)
+ON CONFLICT DO NOTHING;
+
+-- Bob Penalty - has one overdue reservation
+INSERT INTO public.reservations (user_id, book_id, reservation_date, due_date, return_date, status, extended) VALUES
+('66666666-6666-6666-6666-666666666666', 10, NOW() - INTERVAL '5 days', NOW() - INTERVAL '2 days', NULL, 'active', false)
 ON CONFLICT DO NOTHING;
 
 -- Insert corresponding overdue tracking records (no payment amounts)
@@ -276,6 +366,16 @@ INSERT INTO public.penalties (user_id, reservation_id, amount, reason, status, c
     'Overdue book: "Educated" (2 days overdue)',
     'pending',
     NOW() - INTERVAL '1 days'
+),
+
+-- Bob's overdue tracking
+(
+    '66666666-6666-6666-6666-666666666666',
+    (SELECT reservation_id FROM public.reservations WHERE user_id = '66666666-6666-6666-6666-666666666666' AND book_id = 10 LIMIT 1),
+    0.00,
+    'Overdue book: "The Guns of August" (3 days overdue)',
+    'pending',
+    NOW() - INTERVAL '2 days'
 )
 ON CONFLICT DO NOTHING;
 
@@ -289,7 +389,7 @@ SET available_copies = GREATEST(0, available_copies - (
     WHERE book_id = public.books.book_id
     AND status = 'active'
 ))
-WHERE book_id IN (1, 3, 4, 6, 8);
+WHERE book_id IN (1, 3, 4, 6, 8, 9, 10);
 
 -- Update penalty counts based on overdue books (should be handled by triggers, but ensuring consistency)
 -- Note: Overdue books now use 'active' status with past due dates - UI determines visual status
@@ -300,7 +400,7 @@ SET penalty_count = (
     WHERE user_id = public.users.user_id
     AND status = 'active' AND due_date < NOW()
 )
-WHERE user_id IN ('33333333-3333-3333-3333-333333333333', '44444444-4444-4444-4444-444444444444');
+WHERE user_id IN ('33333333-3333-3333-3333-333333333333', '44444444-4444-4444-4444-444444444444', '66666666-6666-6666-6666-666666666666');
 
 -----------------------------
 -- Test scenario summary
@@ -308,21 +408,26 @@ WHERE user_id IN ('33333333-3333-3333-3333-333333333333', '44444444-4444-4444-44
 -- Test Users Created:
 -- 1. librarian@library.com (Admin Librarian) - Can manage overdue books and mark as returned
 -- 2. customer@library.com (John Customer) - Normal user, no overdue books
--- 3. penalty.user@library.com (Sarah Overdue) - Has 1 overdue book: "The Great Gatsby"
--- 4. multiple.penalties@library.com (Mike Penalties) - Has 2 overdue books: "Sapiens" & "Educated"
+-- 3. normal.customer@library.com (Alice Normal) - Normal user, no overdue books
+-- 4. penalty.user@library.com (Sarah Overdue) - Has 1 overdue book: "The Great Gatsby"
+-- 5. multiple.penalties@library.com (Mike Penalties) - Has 2 overdue books: "Sapiens" & "Educated"
+-- 6. another.penalty@library.com (Bob Penalty) - Has 1 overdue book: "The Guns of August"
 --
 -- Restriction Scenarios:
 -- - Sarah: Cannot reserve new books (1 overdue book must be returned)
 -- - Mike: Cannot reserve new books (2 overdue books must be returned)
--- - John: Can reserve books normally
+-- - Bob: Cannot reserve new books (1 overdue book must be returned)
+-- - John & Alice: Can reserve books normally
 --
 -- Books with Test Reservations (visible in "My Books"):
 -- - Book IDs 1,3: Reserved by John (active - due dates in future)
+-- - Book ID 9: Reserved by Alice (active - due dates in future)
 -- - Book ID 4: Reserved by Sarah (active status, overdue due date - "The Great Gatsby") - buttons visible
 -- - Book ID 5: Previously reserved by Sarah (returned late - "The Catcher in the Rye")
 -- - Book ID 6: Reserved by Mike (active status, overdue due date - "Sapiens") - buttons visible
 -- - Book ID 7: Previously reserved by Mike (returned late - "Henrietta Lacks")
 -- - Book ID 8: Reserved by Mike (active status, overdue due date - "Educated") - buttons visible
+-- - Book ID 10: Reserved by Bob (active status, overdue due date - "The Guns of August") - buttons visible
 
 -----------------------------
 -- Success message
