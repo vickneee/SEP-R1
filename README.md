@@ -32,5 +32,5 @@
 
 ## Docker
 
-This document explains how to build and run the library management system using Docker.
-[Docker](https://github.com/rikudi/SEP-R1/blob/main/library/DOCKER.md)
+This [document](https://github.com/rikudi/SEP-R1/blob/main/library/DOCKER.md) explains how to build and run the library management system using Docker.
+
