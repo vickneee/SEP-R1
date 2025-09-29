@@ -65,13 +65,24 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 -- Extend a reservation due date and mark extended = true
 CREATE OR REPLACE FUNCTION public.extend_reservation(p_reservation_id int)
-RETURNS void AS $$
+RETURNS TABLE (
+       reservation_id INTEGER,
+       user_id UUID,
+       book_id INTEGER,
+       created_at TIMESTAMPTZ,
+       due_date TIMESTAMPTZ,
+       return_date TIMESTAMPTZ,
+       extended BOOLEAN,
+       status public.reservation_status
+) AS $$
 BEGIN
+RETURN QUERY
 UPDATE public.reservations
 SET due_date = due_date + interval '7 days',  -- extend by 7 days
     extended = true
 WHERE reservation_id = p_reservation_id
-  AND extended = false; -- only if not already extended
+  AND extended = false -- only if not already extended
+RETURNING *;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
