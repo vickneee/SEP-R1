@@ -64,6 +64,9 @@ CREATE TABLE IF NOT EXISTS public.reservations (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+ALTER TABLE public.reservations
+    ADD COLUMN IF NOT EXISTS extended BOOLEAN NOT NULL DEFAULT false;
+
 -- Penalties
 CREATE TABLE IF NOT EXISTS public.penalties (
   penalty_id SERIAL PRIMARY KEY,
