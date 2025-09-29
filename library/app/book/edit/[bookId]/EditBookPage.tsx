@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { getBookById, updateBook } from "@/app/books/bookActions";
+import {Label} from "@/components/ui/label";
 
 interface Book {
     book_id?: number;
@@ -173,7 +174,7 @@ export default function EditBookPage({ userProfile, userEmail, bookId }: EditBoo
                         value={form.title}
                         onChange={handleChange}
                         required
-                        className="border rounded px-3 py-2"
+                        className="border rounded px-3 py-2 text-gray-700"
                     />
                     <input
                         name="author"
@@ -181,14 +182,14 @@ export default function EditBookPage({ userProfile, userEmail, bookId }: EditBoo
                         value={form.author}
                         onChange={handleChange}
                         required
-                        className="border rounded px-3 py-2"
+                        className="border rounded px-3 py-2 text-gray-700"
                     />
                     <input
                         name="image"
                         value={form.image ?? ""}
                         onChange={handleChange}
                         required
-                        className="border rounded px-3 py-2"
+                        className="border rounded px-3 py-2 text-gray-700"
                         />
                     <input
                         name="category"
@@ -196,7 +197,7 @@ export default function EditBookPage({ userProfile, userEmail, bookId }: EditBoo
                         value={form.category}
                         onChange={handleChange}
                         required
-                        className="border rounded px-3 py-2"
+                        className="border rounded px-3 py-2 text-gray-700"
                     />
                     <input
                         name="isbn"
@@ -204,7 +205,7 @@ export default function EditBookPage({ userProfile, userEmail, bookId }: EditBoo
                         value={form.isbn}
                         onChange={handleChange}
                         required
-                        className="border rounded px-3 py-2"
+                        className="border rounded px-3 py-2 text-gray-700"
                     />
                     <input
                         name="publisher"
@@ -212,8 +213,9 @@ export default function EditBookPage({ userProfile, userEmail, bookId }: EditBoo
                         value={form.publisher}
                         onChange={handleChange}
                         required
-                        className="border rounded px-3 py-2"
+                        className="border rounded px-3 py-2 text-gray-700"
                     />
+                    <Label className="text-gray-700">Publication Year:</Label>
                     <input
                         name="publication_year"
                         type="number"
@@ -221,8 +223,9 @@ export default function EditBookPage({ userProfile, userEmail, bookId }: EditBoo
                         value={form.publication_year}
                         onChange={handleChange}
                         required
-                        className="border rounded px-3 py-2"
+                        className="border rounded px-3 py-2 text-gray-700"
                     />
+                    <Label className="text-gray-700">Total Copies:</Label>
                     <input
                         name="total_copies"
                         type="number"
@@ -231,8 +234,9 @@ export default function EditBookPage({ userProfile, userEmail, bookId }: EditBoo
                         onChange={handleChange}
                         required
                         min={1}
-                        className="border rounded px-3 py-2"
+                        className="border rounded px-3 py-2 text-gray-700"
                     />
+                    <Label className="text-gray-700">Available Copies:</Label>
                     <input
                         name="available_copies"
                         type="number"
@@ -241,14 +245,14 @@ export default function EditBookPage({ userProfile, userEmail, bookId }: EditBoo
                         onChange={handleChange}
                         required
                         min={0}
-                        className="border rounded px-3 py-2"
+                        className="border rounded px-3 py-2 text-gray-700"
                     />
                     <div className="flex gap-3 mt-4">
                         <Button type="submit" className="bg-orange-500 text-white flex-1" disabled={loading}>
                             {loading ? "Updating..." : "Update Book"}
                         </Button>
-                        <Button 
-                            type="button" 
+                        <Button
+                            type="button"
                             onClick={handleCancel}
                             className="bg-gray-500 text-white flex-1"
                             disabled={loading}
