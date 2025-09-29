@@ -181,7 +181,7 @@ export default function ExtendReturnBooksPage() {
                                                     className={`px-3 py-1 rounded text-xs text-white ${
                                                         actionLoading[book.reservation_id] ||
                                                         book.status !== "active" && book.status !== "overdue"
-                                                            ? "bg-neutral-100 text-gray-600 cursor-not-allowed"
+                                                            ? "bg-neutral-100 text-gray-400 cursor-not-allowed"
                                                             : "bg-green-600 hover:bg-green-700"
                                                     }`}>
                                                 {actionLoading[book.reservation_id] ? 'Extending...' : 'Extend'}
