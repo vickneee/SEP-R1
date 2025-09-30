@@ -12,8 +12,7 @@
     "test:coverage": "jest --coverage",
     "test:coverage:open": "open-cli coverage/lcov-report/index.html",
     "docker:build": "bash docker-build.sh",
-    "docker:run": "docker run -p 3001:3001 --env-file .env.docker library-app",
-    "docker:dev": "docker run -p 3001:3001 --env-file .env.docker -v $(pwd):/app -v /app/node_modules library-app"
+    "docker:run": "docker run -p 3001:3001 --env-file .env.docker library-app"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
