@@ -62,7 +62,6 @@ NODE_ENV=production
 |---------|-------------|
 | `npm run docker:build` | Build Docker image using build script |
 | `npm run docker:run` | Run production container on port 3000 |
-| `npm run docker:dev` | Run container with volume mounting for development |
 
 ## Docker Image Details
 
