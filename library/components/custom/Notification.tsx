@@ -9,11 +9,11 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Bell, CheckIcon } from "lucide-react";
 import {
   getDueDateNotification,
-  getOverdueNotification,
   markReminderSentAsTrue,
 } from "@/components/custom/NotificationAction";
-import {useCallback, useEffect, useState} from "react";
+import { useCallback, useEffect, useState } from "react";
 import { getBookById } from "@/app/books/bookActions";
+import { useNotification } from "@/context/NotificationContext";
 
 type notification = {
   reservation_id: number;
@@ -22,26 +22,16 @@ type notification = {
 };
 
 export default function NotificationSection() {
+  const { refreshKey } = useNotification();
   const [dueDateNotifications, setDueDateNotifications] = useState<
     notification[]
   >([]);
 
-  const [overdueNotifications, setOverdueNotifications] = useState<
-    notification[]
-  >([]);
-
-  const [, setDueDateError] = useState<string | null>(null);
-
-  const [, setOverdueError] = useState<string | null>(null);
+  const [dueDateError, setDueDateError] = useState<string | null>(null);
 
   const [dueDateBookTitles, setDueDateBookTitles] = useState<
     Record<number, string>
   >({});
-  const [overdueBookTitles, setOverdueBookTitles] = useState<
-    Record<number, string>
-  >({});
-
-  const [hasFetchedNotifications, setHasFetchedNotifications] = useState(false);
 
   const fetchDueDateNotifications = async () => {
     const result = await getDueDateNotification();
@@ -52,16 +42,7 @@ export default function NotificationSection() {
     }
   };
 
-  const fetchOverdueNotifications = async () => {
-    const result = await getOverdueNotification();
-    if (result?.error) {
-      setOverdueError(result.error);
-    } else if (result) {
-      setOverdueNotifications(result.notifications || []);
-    }
-  };
-
-  const fetchBookTitles = useCallback( async (bookIds: number[]) => {
+  const fetchBookTitles = useCallback(async (bookIds: number[]) => {
     const results = await Promise.all(
       bookIds.map(async (id) => {
         try {
@@ -76,34 +57,22 @@ export default function NotificationSection() {
     );
 
     return Object.fromEntries(results.map(({ id, title }) => [id, title]));
-  }, []
-  );
+  }, []);
 
-  const loadBookTitles = useCallback( async (
-    bookIds: number[],
-    setTitles: React.Dispatch<React.SetStateAction<Record<number, string>>>
-  ) => {
-    const titles = await fetchBookTitles(bookIds);
-    setTitles(titles);
-  },
-      [fetchBookTitles]
+  const loadBookTitles = useCallback(
+    async (
+      bookIds: number[],
+      setTitles: React.Dispatch<React.SetStateAction<Record<number, string>>>
+    ) => {
+      const titles = await fetchBookTitles(bookIds);
+      setTitles(titles);
+    },
+    [fetchBookTitles]
   );
 
   useEffect(() => {
-    if (!hasFetchedNotifications) {
-      fetchDueDateNotifications();
-      fetchOverdueNotifications();
-      setHasFetchedNotifications(true);
-    }
-  }, [hasFetchedNotifications]);
-
-  useEffect(() => {
-    if (overdueNotifications.length > 0) {
-      const bookIds = overdueNotifications.map((n) => n.book_id);
-      fetchBookTitles(bookIds);
-      loadBookTitles(bookIds, setOverdueBookTitles);
-    }
-  }, [overdueNotifications, loadBookTitles, fetchBookTitles]);
+    fetchDueDateNotifications();
+  }, [refreshKey]);
 
   useEffect(() => {
     if (dueDateNotifications.length > 0) {
@@ -113,8 +82,7 @@ export default function NotificationSection() {
     }
   }, [dueDateNotifications, loadBookTitles, fetchBookTitles]);
 
-  const hasNotifications =
-    dueDateNotifications.length > 0 || overdueNotifications.length > 0;
+  const hasNotifications = dueDateNotifications.length > 0;
 
   const markAsRead = async (reservationId: number) => {
     const result = await markReminderSentAsTrue(reservationId);
@@ -122,11 +90,7 @@ export default function NotificationSection() {
       console.log(result.error);
     }
     fetchDueDateNotifications();
-    fetchOverdueNotifications();
   };
-
-  // console.log(dueDateError);
-  // console.log(OverdueError);
 
   return (
     <Popover>
@@ -135,7 +99,7 @@ export default function NotificationSection() {
           <Bell width={16} data-testid="bell-icon" />
           {hasNotifications && (
             <div className="absolute -top-0 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-white text-xs">
-              {dueDateNotifications.length + overdueNotifications.length}
+              {dueDateNotifications.length}
             </div>
           )}
         </Button>
@@ -147,33 +111,13 @@ export default function NotificationSection() {
         <Separator />
         <ScrollArea>
           <div className="space-y-4 p-4">
+            {dueDateError && (
+              <p className="text-red-500 font-medium">
+                Failed to load notifications: {dueDateError}
+              </p>
+            )}
             {!hasNotifications && <p>You have no notifications.</p>}
 
-            {hasNotifications &&
-              overdueNotifications?.map(
-                ({ reservation_id, book_id, due_date }) => (
-                  <div
-                    key={reservation_id}
-                    className="flex items-center justify-between gap-4"
-                  >
-                    <p>
-                      The book{" "}
-                      <strong>
-                        {overdueBookTitles[book_id] || "Loading..."}
-                      </strong>
-                      was due on{" "}
-                      <strong>
-                        {new Date(due_date).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })}
-                      </strong>
-                      . Please return it as soon as possible.
-                    </p>
-                  </div>
-                )
-              )}
             {hasNotifications &&
               dueDateNotifications?.map(
                 ({ reservation_id, book_id, due_date }) => (

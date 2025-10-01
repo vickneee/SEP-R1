@@ -28,23 +28,6 @@ const getDueDateNotification = async () => {
   }
 };
 
-const getOverdueNotification = async () => {
-  const supabase = await createClient();
-  const { data: userData } = await supabase.auth.getUser();
-  if (userData?.user?.id) {
-    const { data: reservationData, error: reservationError } = await supabase
-      .from("reservations")
-      .select("reservation_id, book_id, due_date")
-      .eq("user_id", userData.user.id)
-      .eq("status", "overdue");
-
-    return {
-      error: reservationError ? reservationError.message : null,
-      notifications: reservationData,
-    };
-  }
-};
-
 const markReminderSentAsTrue = async (id: number) => {
   const supabase = await createClient();
   const { data: userData } = await supabase.auth.getUser();
@@ -63,8 +46,4 @@ const markReminderSentAsTrue = async (id: number) => {
   return { error: error ? error.message : null, reservation: data };
 };
 
-export {
-  getOverdueNotification,
-  getDueDateNotification,
-  markReminderSentAsTrue,
-};
+export { getDueDateNotification, markReminderSentAsTrue };

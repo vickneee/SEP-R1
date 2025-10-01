@@ -5,6 +5,7 @@ import NavBar from "@/components/sections/NavBar";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Toaster } from "react-hot-toast";
 import { Suspense } from "react";
+import { NotificationProvider } from "@/context/NotificationContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,15 +31,17 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <NuqsAdapter>
-          <Suspense fallback={<div>Loading...</div>}>
-            <NavBar />
-          </Suspense>
-          <main
-            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-          >
-            <Toaster position="bottom-right" />
-            {children}
-          </main>
+          <NotificationProvider>
+            <Suspense fallback={<div>Loading...</div>}>
+              <NavBar />
+            </Suspense>
+            <main
+              className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+            >
+              <Toaster position="bottom-right" />
+              {children}
+            </main>
+          </NotificationProvider>
         </NuqsAdapter>
       </body>
     </html>

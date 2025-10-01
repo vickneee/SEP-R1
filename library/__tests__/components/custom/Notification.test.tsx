@@ -9,7 +9,6 @@ import Notification from "@/components/custom/Notification";
 
 jest.mock("@/components/custom/NotificationAction", () => ({
   getDueDateNotification: jest.fn(() => Promise.resolve({ notifications: [] })),
-  getOverdueNotification: jest.fn(() => Promise.resolve({ notifications: [] })),
   markReminderSentAsTrue: jest.fn(() => Promise.resolve({})),
 }));
 
