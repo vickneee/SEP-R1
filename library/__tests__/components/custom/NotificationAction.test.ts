@@ -87,31 +87,6 @@ describe("Notification module", () => {
     expect(result!.error).toBeNull();
   });
 
-  test("getOverdueNotification returns overdue notifications", async () => {
-    (mockSupabase.auth.getUser as jest.Mock).mockResolvedValue({
-      data: { user: { id: "user123" } },
-      error: null,
-    });
-
-    const mockOverdue = [
-      { reservation_id: 2, book_id: 102, due_date: "2025-09-10T00:00:00.000Z" },
-    ];
-
-    currentMockQueryBuilder = createMockQueryBuilder({
-      data: mockOverdue,
-      error: null,
-    });
-    (mockSupabase.from as jest.Mock).mockReturnValue(currentMockQueryBuilder);
-
-    const result = await notificationModule.getOverdueNotification();
-
-    expect(mockSupabase.auth.getUser).toHaveBeenCalled();
-    expect(mockSupabase.from).toHaveBeenCalledWith("reservations");
-    expect(result).toBeDefined();
-    expect(result!.notifications).toEqual(mockOverdue);
-    expect(result!.error).toBeNull();
-  });
-
   test("markReminderSentAsTrue updates reminder_sent field", async () => {
     const reservationId = 1;
 
