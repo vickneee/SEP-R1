@@ -1,10 +1,6 @@
 name: Docker Build and Push
 
 on:
-  push:
-    branches:
-        - main
-  pull_request:
   workflow_dispatch: # manual trigger
 
 jobs:
@@ -33,3 +29,6 @@ jobs:
           push: ${{ github.event_name == 'workflow_dispatch' }}  # push only if manually triggered
           platforms: linux/amd64, linux/arm64
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/library-app:latest
+          build-args: |
+            NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+            NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
