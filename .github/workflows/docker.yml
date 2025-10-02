@@ -2,7 +2,7 @@ name: Docker Build and Push
 
 on:
   push:
-  workflow_dispatch:
+  workflow_dispatch: # manual trigger
 
 jobs:
   build:
@@ -26,7 +26,6 @@ jobs:
         with:
           context: ./library
           file: ./library/Dockerfile
-          push: true
+          push: true # push only when manually triggered
           platforms: linux/amd64, linux/arm64
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/library-app:latest
-
