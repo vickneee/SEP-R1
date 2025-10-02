@@ -14,10 +14,10 @@ RUN npm ci --only=production
 # Rebuild the source code only when needed
 FROM node:20-alpine AS builder
 WORKDIR /app
-COPY library/package*.json ./
+COPY package*.json ./
 # Install all dependencies (including devDependencies) for building
 RUN npm ci
-COPY library/. .
+COPY . .
 
 # Accept build arguments (only public variables safe for client bundle)
 ARG NEXT_PUBLIC_SUPABASE_URL
