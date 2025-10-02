@@ -16,7 +16,7 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 COPY package*.json ./
 # Install all dependencies (including devDependencies) for building
-RUN npm ci
+RUN npm install
 COPY . .
 
 # Accept build arguments (only public variables safe for client bundle)
