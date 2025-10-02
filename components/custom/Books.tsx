@@ -7,6 +7,7 @@ import { Trash2, Edit3 } from "lucide-react";
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import BookImage from "./BookImage";
 import { deleteBook } from "@/app/books/bookActions";
+import Image from "next/image";
 
 interface Book {
   book_id: number;
@@ -80,7 +81,7 @@ export function Books({ books }: BooksProps) {
             {/* Book Image */}
             <CardContent className="flex aspect-square items-center justify-center">
               {book.image ? (
-                <img
+                <Image
                   className="rounded-md"
                   src={book.image}
                   alt={book.title}
