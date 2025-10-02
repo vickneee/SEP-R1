@@ -117,6 +117,8 @@ export default function EditBookPage({ userProfile, userEmail, bookId }: EditBoo
                     available_copies: form.available_copies,
                 });
 
+                console.log(book);
+
                 if (error) {
                     throw new Error(error);
                 }
