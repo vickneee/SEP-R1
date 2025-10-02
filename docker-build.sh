@@ -24,7 +24,7 @@ cd ..
 docker build \
     --build-arg NEXT_PUBLIC_SUPABASE_URL="$NEXT_PUBLIC_SUPABASE_URL" \
     --build-arg NEXT_PUBLIC_SUPABASE_ANON_KEY="$NEXT_PUBLIC_SUPABASE_ANON_KEY" \
-    -f library/Dockerfile \
+    -f Dockerfile \
     -t library-app \
     .
 

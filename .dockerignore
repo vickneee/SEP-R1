@@ -1,26 +1,15 @@
-# Exclude everything except the library directory
-*
-!library/
+# Exclude node_modules and build artifacts
+node_modules
+.next
+coverage
+*.log
+.DS_Store
+Thumbs.db
 
-# But within library, exclude these
-library/node_modules
-library/.next
-library/.env*
-library/coverage
-library/jest.config.*
-library/.vscode
-library/.idea
-library/*.log
-library/.DS_Store
-library/Thumbs.db
-
-# Exclude git and other repo files
-.git
-.github
-documents
+# Exclude local env files
+.env*
 .vscode
 .idea
-*.md
-!library/*.md
-.gitignore
-.claude
+jest.config.*
+documents
+claude
