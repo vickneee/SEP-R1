@@ -24,25 +24,25 @@ jobs:
 
       - name: Install dependencies
         run: npm ci --retry 5 --fetch-timeout=60000
-        working-directory: ./library
+        # working-directory: ./library
 
       - name: Check style
         run: npm run lint
-        working-directory: ./library
+        # working-directory: ./library
 
       - name: Build
         run: npm run build
-        working-directory: ./library
+        # working-directory: ./library
 
       - name: Tests && Coverage
         # Single command runs tests and generate the report
         run: npm run test:coverage
-        working-directory: ./library
+        # working-directory: ./library
 
       - name: Upload coverage report
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4
         with:
           name: code-coverage-report
-          path: ./library/coverage/
+          path: ./coverage/
           retention-days: 30
