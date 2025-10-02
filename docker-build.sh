@@ -20,7 +20,7 @@ set +a
 # Build Docker image with build arguments from environment
 # Only pass public variables that are safe to embed in client bundle
 # Run from repository root to access library/ subdirectory
-cd ..
+
 docker build \
     --build-arg NEXT_PUBLIC_SUPABASE_URL="$NEXT_PUBLIC_SUPABASE_URL" \
     --build-arg NEXT_PUBLIC_SUPABASE_ANON_KEY="$NEXT_PUBLIC_SUPABASE_ANON_KEY" \
