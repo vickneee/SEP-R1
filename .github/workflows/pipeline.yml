@@ -23,7 +23,7 @@ jobs:
           node-version: '20'
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --retry 5 --fetch-timeout=60000
         working-directory: ./library
 
       - name: Check style
