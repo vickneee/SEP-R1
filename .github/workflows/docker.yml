@@ -24,8 +24,9 @@ jobs:
       - name: Build and push multi-arch image
         uses: docker/build-push-action@v4
         with:
-          context: .
-          platforms: linux/amd64, linux/arm64
+          context: ./Library
+          file: ./Library/Dockerfile
           push: true
+          platforms: linux/amd64, linux/arm64
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/library-app:latest
 
