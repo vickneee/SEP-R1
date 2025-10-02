@@ -53,9 +53,8 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 USER nextjs
 
 EXPOSE 3001
-
 ENV PORT=3001
 ENV HOSTNAME=0.0.0.0
 
 # Start the application with standalone server
-CMD ["node", "server.js"]
+CMD ["npm", "start"]
