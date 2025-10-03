@@ -1,90 +1,95 @@
-import {getAllBorrowedBooks} from "@/app/extend-return/extendReturnActions";
-import ExtendReturnBookPage from "@/app/extend-return/page";
 import React from "react";
-import {BorrowedBook} from "@/types/borrowedBook";
-import {render} from "@testing-library/react";
+import { render, waitFor, screen } from "@testing-library/react";
+import ExtendReturnBookPage from "@/app/extend-return/page";
+import { getAllBorrowedBooks } from "@/app/extend-return/extendReturnActions";
+import { extendReservation } from "@/app/books/extendedAction";
+import { createClient } from "@/utils/supabase/client";
 
-// Mock Supabase client for client-side
-const createMockClient = (reservations: BorrowedBook[]) => ({
-    auth: {
-        getUser: jest.fn().mockResolvedValue({
-            data: {user: {id: 'librarian-123', email: 'librarian@library.com'}},
-        }),
-    },
+// --- Mocks ---
+const mockRpc = jest.fn();
 
-    from: jest.fn().mockReturnValue({
-        select: jest.fn().mockReturnThis(),
-        eq: jest.fn().mockReturnThis(),
-        order: jest.fn().mockResolvedValue({
-            data: reservations,
-            error: null,
-        }),
-    }),
-});
+// Mock Supabase client wrapper
+const mockSupabase = {
+    auth: { getUser: jest.fn() },
+    from: jest.fn(),
+    rpc: mockRpc,
+};
 
-// Make createClient a Jest mock
-const mockCreateClient = jest.fn();
-jest.mock('@/utils/supabase/client', () => ({
-    createClient: () => mockCreateClient(),
+jest.mock("@/utils/supabase/client", () => ({
+    createClient: jest.fn(() => mockSupabase),
 }));
 
-// Mock extendReservation API
 jest.mock("@/app/books/extendedAction", () => ({
     extendReservation: jest.fn(),
 }));
 
-// Mock getAllBorrowedBooks API
 jest.mock("@/app/extend-return/extendReturnActions", () => ({
     getAllBorrowedBooks: jest.fn(),
 }));
 
 const mockedGetAllBorrowedBooks = getAllBorrowedBooks as jest.Mock;
 
+beforeEach(() => {
+    jest.clearAllMocks();
+    (createClient as jest.Mock).mockReturnValue(mockSupabase);
+});
+
 // Test user with reservations
 describe('Extend Return Books Management Component', () => {
 
     beforeEach(() => {
         jest.clearAllMocks();
+        (createClient as jest.Mock).mockReturnValue(mockSupabase);
     });
 
-    it('renders all borrowed books for librarian', async () => {
-        // Mock borrowed books data
-        const mockBorrowedBooks: BorrowedBook[] = [
+    it('renders message when no borrowed books', async () => {
+        // Mock getAllBorrowedBooks to return empty data
+        mockedGetAllBorrowedBooks.mockResolvedValue({ borrowedBooks: [], error: null });
+
+       render(<ExtendReturnBookPage/>);
+
+        expect(await screen.findByText('No borrowed books found.')).toBeInTheDocument();
+    });
+
+    it('shows loading state initially', async () => {
+        // Mock getAllBorrowedBooks to return empty data after a delay
+        mockedGetAllBorrowedBooks.mockImplementation(() => new Promise(resolve => {
+            setTimeout(() => resolve({ borrowedBooks: [], error: null }), 100);
+        }));
+        const { getByText } = render(<ExtendReturnBookPage/>);
+
+        expect(getByText('Loading borrowed books...')).toBeInTheDocument();
+
+        // Wait for the async function to complete
+        await waitFor(() => {
+            expect(mockedGetAllBorrowedBooks).toHaveBeenCalled();
+        });
+    });
+
+    it("calls extendReservation when Extend button clicked", async () => {
+        const mockBorrowedBooks = [
             {
                 reservation_id: 1,
-                due_date: '2023-09-15',
-                status: 'active',
+                due_date: "2023-09-15",
+                status: "active",
                 extended: false,
-                user_id: 'user-123',
-                user_email: 'customer@helsinki.com',
-                user_name: 'Customer One',
-                book_title: 'Test Book 1',
-                book_author: 'Author A',
-            },
-            {
-                reservation_id: 2,
-                due_date: '2023-09-20',
-                status: 'active',
-                extended: true,
-                user_id: 'user-456',
-                user_email: 'customer456@gmail.com',
-                user_name: 'Customer Two',
-                book_title: 'Test Book 2',
-                book_author: 'Author B',
+                user_id: "user-123",
+                user_email: "test@test.com",
+                user_name: "Test User",
+                book_title: "Test Book",
+                book_author: "Author",
             },
         ];
 
-        // Mock getAllBorrowedBooks to return test data
         mockedGetAllBorrowedBooks.mockResolvedValue({ borrowedBooks: mockBorrowedBooks, error: null });
 
-        mockCreateClient.mockReturnValueOnce(
-            createMockClient(mockBorrowedBooks)
-        );
+        render(<ExtendReturnBookPage />);
 
-        // Render the component
-        const { findByText } = render(<ExtendReturnBookPage/>);
+        const extendButton = await screen.findByRole('button', { name: /Extend/i });
+        extendButton.click();
 
-        expect(await findByText('Test Book 1')).toBeInTheDocument();
-        expect(await findByText('Test Book 2')).toBeInTheDocument();
+        await waitFor(() => {
+            expect(extendReservation).toHaveBeenCalledWith(1);
+        });
     });
 });
