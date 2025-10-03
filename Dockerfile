@@ -56,5 +56,5 @@ EXPOSE 3001
 ENV PORT=3001
 ENV HOSTNAME=0.0.0.0
 
-# Start the application with standalone server or fallback to npm start
-CMD ["sh", "-c", "if [ -f server.js ]; then node server.js; else npm start; fi"]
+# Start the application with standalone server
+CMD ["node", "server.js"]

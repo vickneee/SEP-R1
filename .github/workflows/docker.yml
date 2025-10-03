@@ -16,9 +16,6 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install dependencies
-        run: npm install
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -30,9 +27,22 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build multi-arch image and push to Docker Hub
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ env.DOCKER_IMAGE }}:latest
+          platforms: linux/amd64,linux/arm64
+          # Use registry caching for faster subsequent builds
+          cache-from: type=registry,ref=${{ env.DOCKER_IMAGE }}:latest
+          cache-to: type=inline
+          # PASS SECRETS AS BUILD ARGUMENTS (REQUIRED by your Dockerfile ARG commands)
+          build-args: |
+            NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
+            NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+
         if: github.event_name == 'workflow_dispatch'  # only build and push if manual
         env:
-          NEXT_PUBLIC_SUPABASE_URL: ${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
-          NEXT_PUBLIC_SUPABASE_ANON_KEY: ${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
+          # DOCKER_IMAGE here to reference it easily in the 'tags' and 'cache-from'
           DOCKER_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/library-app
-        run: npm run docker:build
+
