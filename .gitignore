@@ -1,7 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/node_modules
+library/node_modules
 /.pnp
 .pnp.*
 .yarn/*
@@ -11,10 +11,11 @@
 !.yarn/versions
 
 # testing
-/coverage
+library/coverage
 
 # next.js
 /.next/
+library/.next
 /out/
 
 # production
@@ -48,3 +49,5 @@ next-env.d.ts
 !.vscode/settings.default.json
 .vscode/
 package-lock.json
+
+library/supabase
