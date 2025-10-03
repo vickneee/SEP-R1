@@ -75,7 +75,7 @@ NODE_ENV=production
 ### Build Fails
 - Ensure `.env.docker` exists with valid Supabase credentials
 - Verify Docker Desktop is running
-- Run from the `library/` directory
+- Run from the `root/` directory
 
 ### Container Won't Start
 - Check that port 3000 is available
