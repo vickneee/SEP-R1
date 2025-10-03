@@ -5,7 +5,10 @@ on:
 
 jobs:
   build:
+    if: github.event_name == 'workflow_dispatch' # only run if manually triggered
     runs-on: ubuntu-latest
+    env:
+      DOCKER_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/library-app
 
     steps:
       - name: Checkout code
@@ -20,7 +23,6 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Log in to Docker Hub
-        if: github.event_name == 'workflow_dispatch'  # only login if manual push
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -40,13 +42,6 @@ jobs:
           build-args: |
             NEXT_PUBLIC_SUPABASE_URL=${{ secrets.NEXT_PUBLIC_SUPABASE_URL }}
             NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
-            # Fix for Webpack/QEMU Font Loader errors during multi-arch build:
             NEXT_PRIVATE_NO_FONT_FALLBACK=true
             NEXT_FONT_GOOGLE_MOCK=true # NEW: Mocks the Google Fonts fetch, preventing network errors
             NEXT_FONT_GOOGLE_TIMEOUT=0 # NEW: Forces immediate timeout for network fetch attempts
-
-        if: github.event_name == 'workflow_dispatch'  # only build and push if manual
-        env:
-          # DOCKER_IMAGE here to reference it easily in the 'tags' and 'cache-from'
-          DOCKER_IMAGE: ${{ secrets.DOCKERHUB_USERNAME }}/library-app
-
