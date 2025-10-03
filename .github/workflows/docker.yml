@@ -42,6 +42,7 @@ jobs:
             NEXT_PUBLIC_SUPABASE_ANON_KEY=${{ secrets.NEXT_PUBLIC_SUPABASE_ANON_KEY }}
             # Fix for Webpack/QEMU Font Loader errors during multi-arch build:
             NEXT_PRIVATE_NO_FONT_FALLBACK=true
+            NEXT_FONT_GOOGLE_MOCK=true # NEW: Mocks the Google Fonts fetch, preventing network errors
 
         if: github.event_name == 'workflow_dispatch'  # only build and push if manual
         env:
