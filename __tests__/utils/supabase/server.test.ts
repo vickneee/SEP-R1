@@ -1,5 +1,7 @@
 import { cookies } from "next/headers";
 import { createServerClient } from "@supabase/ssr";
+import type { SupabaseClient } from "@supabase/supabase-js";
+import type { Database } from "@/types/database";
 
 jest.mock("next/headers", () => ({
   cookies: jest.fn(),
@@ -10,7 +12,7 @@ jest.mock("@supabase/ssr", () => ({
 }));
 
 describe("createClient (SSR)", () => {
-  let createClient: () => Promise<any>;
+  let createClient: () => Promise<SupabaseClient<Database>>;
 
   beforeAll(() => {
     process.env.NEXT_PUBLIC_SUPABASE_URL = "https://example.supabase.co";

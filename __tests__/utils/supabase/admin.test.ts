@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { getAdminClient } from "@/utils/supabase/admin";
 
 jest.mock("@supabase/supabase-js", () => ({
   createClient: jest.fn(),
@@ -7,13 +8,10 @@ jest.mock("@supabase/supabase-js", () => ({
 describe("getAdminClient", () => {
   const mockUrl = "https://example.supabase.co";
   const mockKey = "super-secret-key";
-  let getAdminClient: () => any;
 
   beforeAll(() => {
     process.env.NEXT_PUBLIC_SUPABASE_URL = mockUrl;
     process.env.SUPABASE_SERVICE_ROLE_KEY = mockKey;
-
-    getAdminClient = require("@/utils/supabase/admin").getAdminClient;
   });
 
   it("calls createClient with the correct arguments", () => {
