@@ -45,8 +45,8 @@ function AvailableBooks({ books, error }: Props) {
             <div className="flex justify-center mt-10 mb-8 overflow-hidden">
                 <Carousel className="w-full max-w-1/2 sm:max-w-1/2 lg:max-w-3xl xl:max-w-4xl 2xl:max-w-5xl">
                     <CarouselContent className="-ml-1">
-                        {books.map((book) => (
-                            <CarouselItem key={book.book_id} className="pl-1 md:basis-1/2 lg:basis-1/3">
+                        {books.map((book, index) => (
+                            <CarouselItem key={book.book_id ?? index} className="pl-1 md:basis-1/2 lg:basis-1/3">
                                 <div className="p-4">
                                     <Card className="px-4 h-full hover:shadow-lg transition-shadow duration-300 cursor-pointer border-gray-100">
                                         <CardContent className="flex items-center justify-center">
