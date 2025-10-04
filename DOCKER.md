@@ -33,8 +33,8 @@ The `docker-build.sh` script automates the Docker build process with the followi
 ### Build and Run
 
 ```bash
-# Navigate to library directory
-cd library
+# Navigate to the project root
+cd project-root/
 
 # Build the Docker image
 npm run docker:build
@@ -45,7 +45,7 @@ npm run docker:run
 
 ## Environment Configuration
 
-Create `.env.docker` in the `library/` directory:
+Create `.env.docker` in the `project-root/` directory:
 
 ```env
 # Supabase Configuration (Production)
@@ -66,7 +66,7 @@ NODE_ENV=production
 ## Docker Image Details
 
 - **Base Image**: Node.js 20 Alpine Linux
-- **Port**: 3000
+- **Port**: 3001
 - **Build Type**: Standalone Next.js application
 - **Optimization**: Multi-stage build with production dependencies only
 
@@ -75,10 +75,10 @@ NODE_ENV=production
 ### Build Fails
 - Ensure `.env.docker` exists with valid Supabase credentials
 - Verify Docker Desktop is running
-- Run from the `root/` directory
+- Run from the `project-root/` directory
 
 ### Container Won't Start
-- Check that port 3000 is available
+- Check that port 3001 is available
 - Verify environment variables in `.env.docker`
 - Check Docker logs: `docker logs <container-id>`
 
@@ -87,3 +87,22 @@ NODE_ENV=production
 - Only public environment variables (NEXT_PUBLIC_*) are embedded in the client bundle
 - Private keys should never be included in build arguments
 - The build script prevents accidental exposure of sensitive data
+
+## Docker Hub Deployment 
+The Docker image can be pushed to Docker Hub for easy deployment.
+
+## Docker Image pull
+You can pull the pre-built Docker image from Docker Hub:
+
+```bash
+docker pull username/library-app:latest # Replace 'username' with the actual Docker Hub username
+```
+
+## Run the pre-built Docker image
+
+```bash
+docker run -d --name library-app -p 3001:3001 username/library-app:latest # Replace 'username' with the actual Docker Hub username
+```
+Be sure your desktop Docker is running. 
+
+The application Image will be available at `http://localhost:3001`.

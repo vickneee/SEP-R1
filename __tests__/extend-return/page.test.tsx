@@ -4,6 +4,7 @@ import ExtendReturnBookPage from "@/app/extend-return/page";
 import { getAllBorrowedBooks } from "@/app/extend-return/extendReturnActions";
 import { extendReservation } from "@/app/books/extendedAction";
 import { createClient } from "@/utils/supabase/client";
+import userEvent from "@testing-library/user-event";
 
 // --- Mocks ---
 const mockRpc = jest.fn();
@@ -86,7 +87,7 @@ describe('Extend Return Books Management Component', () => {
         render(<ExtendReturnBookPage />);
 
         const extendButton = await screen.findByRole('button', { name: /Extend/i });
-        extendButton.click();
+        await userEvent.click(extendButton);
 
         await waitFor(() => {
             expect(extendReservation).toHaveBeenCalledWith(1);
