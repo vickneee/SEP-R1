@@ -1,5 +1,7 @@
 import { updateSession } from "@/utils/supabase/middleware";
 import { NextResponse } from "next/server";
+import { createServerClient } from "@supabase/ssr";
+import type { NextRequest } from "next/server";
 
 jest.mock("@supabase/ssr", () => ({
   createServerClient: jest.fn(),
@@ -14,7 +16,9 @@ jest.mock("next/server", () => ({
 
 describe("updateSession", () => {
   const mockRequest = {
-    headers: {},
+    headers: {
+      get: () => null,
+    },
     cookies: {
       getAll: jest.fn(() => []),
       set: jest.fn(),
@@ -25,7 +29,7 @@ describe("updateSession", () => {
         return { ...this };
       }),
     },
-  };
+  } as unknown as NextRequest;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -38,10 +42,9 @@ describe("updateSession", () => {
       },
     };
 
-    const { createServerClient } = require("@supabase/ssr");
-    createServerClient.mockReturnValue(mockSupabase);
+    (createServerClient as jest.Mock).mockReturnValue(mockSupabase);
 
-    const response = await updateSession(mockRequest as any);
+    const response = await updateSession(mockRequest as NextRequest);
 
     expect(createServerClient).toHaveBeenCalled();
     expect(mockSupabase.auth.getUser).toHaveBeenCalled();
@@ -58,10 +61,9 @@ describe("updateSession", () => {
       },
     };
 
-    const { createServerClient } = require("@supabase/ssr");
-    createServerClient.mockReturnValue(mockSupabase);
+    (createServerClient as jest.Mock).mockReturnValue(mockSupabase);
 
-    const response = await updateSession(mockRequest as any);
+    const response = await updateSession(mockRequest as NextRequest);
 
     expect(createServerClient).toHaveBeenCalled();
     expect(mockSupabase.auth.getUser).toHaveBeenCalled();

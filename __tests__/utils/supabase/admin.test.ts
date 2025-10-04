@@ -7,14 +7,16 @@ jest.mock("@supabase/supabase-js", () => ({
 describe("getAdminClient", () => {
   const mockUrl = "https://example.supabase.co";
   const mockKey = "super-secret-key";
+  let getAdminClient: () => any;
 
   beforeAll(() => {
     process.env.NEXT_PUBLIC_SUPABASE_URL = mockUrl;
     process.env.SUPABASE_SERVICE_ROLE_KEY = mockKey;
+
+    getAdminClient = require("@/utils/supabase/admin").getAdminClient;
   });
 
-  it("calls createClient with correct arguments", () => {
-    const { getAdminClient } = require("@/utils/supabase/admin");
+  it("calls createClient with the correct arguments", () => {
     getAdminClient();
     expect(createClient).toHaveBeenCalledWith(mockUrl, mockKey);
   });
@@ -22,8 +24,6 @@ describe("getAdminClient", () => {
   it("returns the client instance", () => {
     const mockClient = { from: jest.fn() };
     (createClient as jest.Mock).mockReturnValue(mockClient);
-
-    const { getAdminClient } = require("@/utils/supabase/admin");
     const client = getAdminClient();
     expect(client).toBe(mockClient);
   });

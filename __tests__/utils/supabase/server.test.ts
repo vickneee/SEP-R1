@@ -1,5 +1,5 @@
-process.env.NEXT_PUBLIC_SUPABASE_URL = "https://example.supabase.co";
-process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "anon-public-key";
+import { cookies } from "next/headers";
+import { createServerClient } from "@supabase/ssr";
 
 jest.mock("next/headers", () => ({
   cookies: jest.fn(),
@@ -9,10 +9,17 @@ jest.mock("@supabase/ssr", () => ({
   createServerClient: jest.fn(),
 }));
 
-import { cookies } from "next/headers";
-import { createServerClient } from "@supabase/ssr";
-
 describe("createClient (SSR)", () => {
+  let createClient: () => Promise<any>;
+
+  beforeAll(() => {
+    process.env.NEXT_PUBLIC_SUPABASE_URL = "https://example.supabase.co";
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = "anon-public-key";
+
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    createClient = require("@/utils/supabase/server").createClient;
+  });
+
   it("calls createServerClient with correct arguments and cookie handlers", async () => {
     const mockCookieStore = {
       getAll: jest.fn(() => [{ name: "session", value: "abc" }]),
@@ -24,13 +31,12 @@ describe("createClient (SSR)", () => {
     const mockClient = { auth: {}, from: jest.fn() };
     (createServerClient as jest.Mock).mockReturnValue(mockClient);
 
-    const { createClient } = require("@/utils/supabase/server");
     const client = await createClient();
 
     expect(cookies).toHaveBeenCalled();
     expect(createServerClient).toHaveBeenCalledWith(
-      process.env.NEXT_PUBLIC_SUPABASE_URL,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      "https://example.supabase.co",
+      "anon-public-key",
       {
         cookies: {
           getAll: expect.any(Function),
@@ -39,9 +45,8 @@ describe("createClient (SSR)", () => {
       }
     );
 
-    // cookie handlers work
-    const mockedCreateServerClient = createServerClient as jest.Mock;
-    const cookieHandlers = mockedCreateServerClient.mock.calls[0][2].cookies;
+    const cookieHandlers = (createServerClient as jest.Mock).mock.calls[0][2]
+      .cookies;
 
     expect(cookieHandlers.getAll()).toEqual([
       { name: "session", value: "abc" },
