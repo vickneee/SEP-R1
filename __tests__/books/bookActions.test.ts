@@ -239,3 +239,4 @@ describe("Books module", () => {
     expect(currentMockQueryBuilder.eq).toHaveBeenCalledWith("book_id", 1);
   });
 });
+
