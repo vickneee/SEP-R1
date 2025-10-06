@@ -22,7 +22,14 @@ describe('EditBookRoute', () => {
   const mockCreateClient = createClient as jest.MockedFunction<typeof createClient>;
   const mockRedirect = redirect as jest.MockedFunction<typeof redirect>;
 
-  let mockSupabase: any;
+  interface MockSupabaseClient {
+    auth: {
+      getUser: jest.Mock;
+    };
+    from: jest.Mock;
+  }
+
+  let mockSupabase: MockSupabaseClient;
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -38,9 +45,9 @@ describe('EditBookRoute', () => {
           })),
         })),
       })),
-    };
+    } as MockSupabaseClient;
 
-    mockCreateClient.mockResolvedValue(mockSupabase);
+    mockCreateClient.mockResolvedValue(mockSupabase as any);
   });
 
   describe('Authentication', () => {
@@ -89,14 +96,14 @@ describe('EditBookRoute', () => {
 
       expect(mockRedirect).not.toHaveBeenCalled();
       expect(result).toBeDefined();
-      
-      expect(result.type).toBe(EditBookPage); 
+
+      expect(result.type).toBe(EditBookPage);
       expect(result.props.bookId).toBe('123');
     });
   });
 
   describe('Authorization', () => {
-    it('should redirect to / when user profile does not exist', async () => {
+    it('should redirect to / when user profile does not exist (e.g., first-time user)', async () => {
       const mockUser = {
         id: 'user-123',
         email: 'user@example.com',
@@ -189,8 +196,6 @@ describe('EditBookRoute', () => {
       const result = await EditBookRoute(props);
 
       expect(mockRedirect).not.toHaveBeenCalled();
-      expect(result).toBeDefined();
-
       expect(result.type).toBe(EditBookPage);
       expect(result.props.bookId).toBe('123');
     });
@@ -237,7 +242,7 @@ describe('EditBookRoute', () => {
       });
     });
 
-    it('should handle missing user email', async () => {
+    it('should handle missing user email gracefully', async () => {
       const mockUser = {
         id: 'user-123',
         email: undefined,
@@ -323,15 +328,8 @@ describe('EditBookRoute', () => {
 
   describe('Params Handling', () => {
     it('should correctly extract bookId from params', async () => {
-      const mockUser = {
-        id: 'user-123',
-        email: 'librarian@example.com',
-      };
-
-      const mockUserProfile = {
-        user_id: 'user-123',
-        role: 'librarian',
-      };
+      const mockUser = { id: 'user-123', email: 'librarian@example.com' };
+      const mockUserProfile = { user_id: 'user-123', role: 'librarian' };
 
       mockSupabase.auth.getUser.mockResolvedValue({
         data: { user: mockUser },
