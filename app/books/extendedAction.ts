@@ -2,7 +2,7 @@
 
 import { createClient } from "@/utils/supabase/server";
 
-interface ReservationWithBook {
+export interface ReservationWithBook {
     reservation_id: number;
     user_id: string;
     book_id: number;
