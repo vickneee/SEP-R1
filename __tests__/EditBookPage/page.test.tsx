@@ -47,7 +47,7 @@ describe('EditBookRoute', () => {
       })),
     } as MockSupabaseClient;
 
-    mockCreateClient.mockResolvedValue(mockSupabase as any);
+    mockCreateClient.mockResolvedValue(mockSupabase as unknown as ReturnType<typeof createClient>);
   });
 
   describe('Authentication', () => {
