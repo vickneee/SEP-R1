@@ -1,4 +1,4 @@
-import {render, screen, act, waitFor} from "../../utils/test-utils";
+import { render, screen, act, waitFor } from "../../utils/test-utils";
 import LibrarianDashboardClient from "@/app/(dashboard)/librarian-dashboard/LibrarianDashboardClient";
 import userEvent from "@testing-library/user-event";
 
@@ -16,7 +16,7 @@ describe("CustomerDashBoardClient", () => {
                     penalty_count: 0,
                     role: "librarian",
                     user_id: "123",
-                }} userEmail="test@example.com"/>
+                }} userEmail="test@example.com" />
             );
         });
         await waitFor(() => {
@@ -44,12 +44,12 @@ describe("CustomerDashBoardClient", () => {
                 penalty_count: 0,
                 role: "librarian",
                 user_id: "lib-1",
-            }} userEmail="librarian@example.com"/>
+            }} userEmail="librarian@example.com" />
         );
         // Only fill in the title
         await userEvent.type(screen.getByPlaceholderText("Title"), "Test Book");
 
-        await userEvent.click(screen.getByRole("button", {name: /add book/i}));
+        await userEvent.click(screen.getByRole("button", { name: /add book/i }));
 
         // Fetch should not be called because the form is invalid
         expect(fetchSpy).not.toHaveBeenCalled();
@@ -57,7 +57,7 @@ describe("CustomerDashBoardClient", () => {
         fetchSpy.mockRestore();
     });
 
-    it ("submits the form when all required fields are filled", async () => {
+    it("submits the form when all required fields are filled", async () => {
         const fetchSpy = jest.spyOn(global, "fetch").mockResolvedValue({
             ok: true,
             json: async () => ({ message: "Book added successfully" }),
@@ -73,7 +73,7 @@ describe("CustomerDashBoardClient", () => {
                 penalty_count: 0,
                 role: "librarian",
                 user_id: "lib-1",
-            }} userEmail="ville.kalle@library.com"/>
+            }} userEmail="ville.kalle@library.com" />
         );
 
         // Fill in all required fields
@@ -90,7 +90,7 @@ describe("CustomerDashBoardClient", () => {
         await userEvent.clear(screen.getByPlaceholderText("Available Copies"));
         await userEvent.type(screen.getByPlaceholderText("Available Copies"), "1");
 
-        await userEvent.click(screen.getByRole("button", {name: /add book/i}));
+        await userEvent.click(screen.getByRole("button", { name: /add book/i }));
 
         // Wait for any asynchronous actions to complete
         await waitFor(() => {
@@ -113,5 +113,5 @@ describe("CustomerDashBoardClient", () => {
         });
 
         fetchSpy.mockRestore();
-    });
+    }, 10000); // Increase timeout to 10 seconds for coverage runs
 });
