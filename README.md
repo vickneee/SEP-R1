@@ -1,11 +1,11 @@
 # SEP-R1
-## Ohjelmistotuotantoprojekti - Software Engineering Project - Ryhmä 1
-### Members
-- Monami Kirjavainen
-- Victoria Vavulina
-- Riku Kaartoaho
-- Riku Toivanen
+## Ohjelmistotuotantoprojekti - Ryhmä 1 - Software Engineering Project - Group 1
 
+### Overview
+Library Hub is an accessible, user-friendly, and efficient digital library catalogue
+system that simplifies the process of searching, borrowing, and returning books. The project aims to increase the efficiency of the library system by automating routine operations and
+providing real-time updates on book availability, which supports user engagement and positive
+outcomes.
 
 ## Technology Stack
 
@@ -30,7 +30,22 @@
 ### Project Management
 - **Project Management Software:** Jira
 
+## Database 
+
+This [document](https://github.com/rikudi/SEP-R1/blob/main/DOCKER.md) is Supabase CLI Guide.
+
+Database schema:
+
+![Database](public/database_10_10_2025.png)
+
 ## Docker
 
 This [document](https://github.com/rikudi/SEP-R1/blob/main/DOCKER.md) explains how to build and run the library management system using Docker.
+
+### Members
+- Monami Kirjavainen
+- Victoria Vavulina
+- Riku Kaartoaho
+- Riku Toivanen
+
 
