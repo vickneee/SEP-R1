@@ -24,7 +24,7 @@ outcomes.
 
 ### CI/CD
 - Docker
-- Github Actions
+- GitHub Actions
 - Vercel
 
 ### Project Management
@@ -32,7 +32,7 @@ outcomes.
 
 ## Database 
 
-This [document](https://github.com/rikudi/SEP-R1/blob/main/DOCKER.md) is Supabase CLI Guide.
+This [document](https://github.com/vickneee/SEP-R1/blob/main/DOCKER.md) is Supabase CLI Guide.
 
 Database schema:
 
@@ -40,9 +40,9 @@ Database schema:
 
 ## Docker
 
-This [document](https://github.com/rikudi/SEP-R1/blob/main/DOCKER.md) explains how to build and run the library management system using Docker.
+This [document](https://github.com/vickneee/SEP-R1/blob/main/DOCKER.md) explains how to build and run the library management system using Docker.
 
-### Members
+## Members
 - Monami Kirjavainen
 - Victoria Vavulina
 - Riku Kaartoaho
