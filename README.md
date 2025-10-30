@@ -47,5 +47,3 @@ This [document](https://github.com/rikudi/SEP-R1/blob/main/DOCKER.md) explains h
 - Victoria Vavulina
 - Riku Kaartoaho
 - Riku Toivanen
-
-
