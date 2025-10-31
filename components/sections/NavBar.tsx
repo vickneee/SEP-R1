@@ -11,6 +11,7 @@ import useSupabaseSession from "@/hooks/useSupabaseSession";
 import Notification from "@/components/custom/Notification";
 import { getUserProfile } from "@/app/[locale]/private/userProfile-action";
 import { useEffect, useState } from "react";
+import LanguageSwitcher from "@/components/custom/LanguageSwitcher";
 
 function NavBar() {
   const router = useRouter();
@@ -116,9 +117,7 @@ function NavBar() {
               >
                 Private
               </Link>
-              <Link href="/" className="hover:underline hover:text-orange-500">
-                Languages
-              </Link>
+              <LanguageSwitcher />
 
               <div className="ml-[-20] flex-shrink-0">
                 {!loading &&

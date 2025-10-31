@@ -1,7 +1,7 @@
 "use client";
 
 import { reserveBook } from "@/app/[locale]/books/bookActions";
-import { checkUserCanReserve, type UserReservationStatus } from "@/app/penalties/penaltyActions";
+import { checkUserCanReserve, type UserReservationStatus } from "@/app/[locale]/penalties/penaltyActions";
 import BookImage from "@/components/custom/BookImage";
 import PenaltyBadge from "@/components/custom/PenaltyBadge";
 import React, { useEffect, useState } from "react";
