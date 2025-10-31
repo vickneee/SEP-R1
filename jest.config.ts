@@ -1,4 +1,4 @@
-import type { Config } from "jest";
+import type { Config } from "@jest/types";
 import nextJest from "next/jest.js";
 
 const createJestConfig = nextJest({
@@ -9,7 +9,7 @@ const createJestConfig = nextJest({
 const esModules = ["nuqs"].join("|");
 
 // Add any custom config to be passed to Jest
-const config: Config = {
+const config: Config.InitialOptions = {
   // Add more setup options before each test is run
   setupFilesAfterEnv: ["<rootDir>/jest.setup.js"],
 
