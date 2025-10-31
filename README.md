@@ -32,7 +32,7 @@ outcomes.
 
 ## Database 
 
-This [document](https://github.com/vickneee/SEP-R1/blob/main/DOCKER.md) is Supabase CLI Guide.
+This [document](https://github.com/vickneee/SEP-R1/blob/main/supabase/README.md) is Supabase CLI Guide.
 
 Database schema:
 
