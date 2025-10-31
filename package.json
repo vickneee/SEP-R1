@@ -4,8 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "concurrently \"next dev --turbopack\" \"i18nexus listen\"",
-    "build": "i18nexus pull && next build",
-    "start": "i18nexus pull && next start",
+    "build": "if [ -n \"$I18NEXUS_API_KEY\" ]; then i18nexus pull -k \"$I18NEXUS_API_KEY\"; else echo \"Skipping i18nexus pull: I18NEXUS_API_KEY not set\"; fi && next build",
+    "start": "if [ -n \"$I18NEXUS_API_KEY\" ]; then i18nexus pull -k \"$I18NEXUS_API_KEY\"; else echo \"Skipping i18nexus pull: I18NEXUS_API_KEY not set\"; fi && next start",
     "lint": "eslint",
     "test": "jest",
     "test:watch": "jest --watch",
