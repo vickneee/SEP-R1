@@ -1,17 +1,18 @@
 'use client';
-import {useParams} from "next/navigation";
+
 import initTranslations from "@/app/i18n"; // Importing the translation initializer
-import {useEffect, useState} from "react"; // Importing useEffect and useState
+import {useEffect, useState} from "react";
+import {useLocaleParams} from "@/hooks/useLocaleParams"; // Importing useLocaleParams
 
 function Footer() {
-    const params = useParams() as { locale?: string } | null; // Type assertion for params
+    const params = useLocaleParams() as { locale?: string } | null; // Type assertion for params
     const locale = params?.locale ?? 'en'; // Default to 'en' if locale is not provided
     const [t, setT] = useState(() => (key: string) => key); // Initial dummy translation function
 
     // Load translations when locale changes
     useEffect(() => {
         const loadTranslations = async () => {
-            const translations = await initTranslations(locale, ['home']);
+            const translations = await initTranslations(locale, ['Footer']);
             setT(() => translations.t);
         };
         loadTranslations();
