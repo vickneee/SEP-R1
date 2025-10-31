@@ -2,14 +2,15 @@
 import Image from "next/image";
 import {useQueryState} from "nuqs";
 import {useRouter, useParams} from "next/navigation";
-import initTranslations from "@/app/i18n";
+import initTranslations from "@/app/i18n"; // Importing the translation initializer
 import {useEffect, useState} from "react";
 
 function Hero() {
-    const params = useParams() as { locale?: string } | null;
-    const locale = params?.locale ?? 'en';
-    const [t, setT] = useState(() => (key: string) => key);
+    const params = useParams() as { locale?: string } | null; // Type assertion for params
+    const locale = params?.locale ?? 'en'; // Default to 'en' if locale is not provided
+    const [t, setT] = useState(() => (key: string) => key); // Initial dummy translation function
 
+    // Load translations when locale changes
     useEffect(() => {
         const loadTranslations = async () => {
             const translations = await initTranslations(locale, ['home']);

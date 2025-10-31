@@ -42,12 +42,12 @@ jest.mock('@/utils/supabase/client', () => ({
 }));
 
 // Mock extendReservation API
-jest.mock("@/app/books/extendedAction", () => ({
+jest.mock("@/app/[locale]/books/extendedAction", () => ({
     extendReservation: jest.fn(),
 }));
 
 // Mock penalty actions to prevent server-side cookies error
-jest.mock("@/app/penalties/penaltyActions", () => ({
+jest.mock("@/app/[locale]/penalties/penaltyActions", () => ({
     checkUserCanReserve: jest.fn(),
 }));
 

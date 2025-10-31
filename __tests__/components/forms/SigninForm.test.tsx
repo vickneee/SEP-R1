@@ -1,7 +1,7 @@
 import { SigninForm } from "@/components/forms/SigninForm";
 import { render, screen, act, waitFor } from "../../utils/test-utils";
 
-jest.mock("@/app/(auth)/signin/auth-actions", () => ({
+jest.mock("@/app/[locale]/(auth)/signin/auth-actions", () => ({
   signinAction: jest.fn(),
 }));
 

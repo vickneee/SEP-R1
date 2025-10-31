@@ -13,7 +13,7 @@ jest.mock('@/utils/supabase/client', () => ({
 }));
 
 // Mock penalty actions to prevent server-side cookies error
-jest.mock("@/app/penalties/penaltyActions", () => ({
+jest.mock("@/app/[locale]/penalties/penaltyActions", () => ({
     checkUserCanReserve: jest.fn().mockResolvedValue({
         status: {
             can_reserve: true,

@@ -13,7 +13,7 @@ jest.mock('@/utils/supabase/server', () => ({
   createClient: jest.fn(),
 }));
 
-jest.mock('@/app/book/edit/[bookId]/EditBookPage', () => ({
+jest.mock('@/app/[locale]/book/edit/[bookId]/EditBookPage', () => ({
   __esModule: true,
   default: jest.fn(() => <div>Edit Book Page</div>),
 }));

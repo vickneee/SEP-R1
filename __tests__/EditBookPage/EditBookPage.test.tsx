@@ -11,7 +11,7 @@ jest.mock('next/navigation', () => ({
   }),
 }));
 
-jest.mock('@/app/books/bookActions', () => ({
+jest.mock('@/app/[locale]/books/bookActions', () => ({
   getBookById: jest.fn(),
   updateBook: jest.fn(),
 }));
