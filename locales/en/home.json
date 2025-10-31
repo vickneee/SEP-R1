@@ -1,4 +1,7 @@
 {
+  "hero_btn_search": "Search",
   "hero_header_1": "Discover Your Next",
-  "hero_header_2": "Great Read"
+  "hero_header_2": "Great Read",
+  "hero_p1": "Browse thousands of books, reserve your favorites, and manage your reading journey all in one place.",
+  "hero_placeholder_1": "Search by title, author, or ISBN..."
 }
