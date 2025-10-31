@@ -1,8 +1,8 @@
 import React from "react";
 import { render, waitFor, screen } from "@testing-library/react";
-import ExtendReturnBookPage from "@/app/extend-return/page";
-import { getAllBorrowedBooks } from "@/app/extend-return/extendReturnActions";
-import { extendReservation } from "@/app/books/extendedAction";
+import ExtendReturnBookPage from "@/app/[locale]/extend-return/page";
+import { getAllBorrowedBooks } from "@/app/[locale]/extend-return/extendReturnActions";
+import { extendReservation } from "@/app/[locale]/books/extendedAction";
 import { createClient } from "@/utils/supabase/client";
 import userEvent from "@testing-library/user-event";
 
@@ -20,11 +20,11 @@ jest.mock("@/utils/supabase/client", () => ({
     createClient: jest.fn(() => mockSupabase),
 }));
 
-jest.mock("@/app/books/extendedAction", () => ({
+jest.mock("@/app/[locale]/books/extendedAction", () => ({
     extendReservation: jest.fn(),
 }));
 
-jest.mock("@/app/extend-return/extendReturnActions", () => ({
+jest.mock("@/app/[locale]/extend-return/extendReturnActions", () => ({
     getAllBorrowedBooks: jest.fn(),
 }));
 

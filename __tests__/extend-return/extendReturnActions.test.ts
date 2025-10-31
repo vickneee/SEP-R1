@@ -1,4 +1,4 @@
-import {getAllBorrowedBooks} from "@/app/extend-return/extendReturnActions";
+import {getAllBorrowedBooks} from "@/app/[locale]/extend-return/extendReturnActions";
 import {createClient} from "@/utils/supabase/server";
 
 jest.mock("@/utils/supabase/server", () => ({

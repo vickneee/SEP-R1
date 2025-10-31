@@ -1,8 +1,8 @@
-import { POST } from "@/app/api/books/[reservationId]/extend/route";
-import { extendReservation } from "@/app/books/extendedAction";
+import { POST } from "@/app/[locale]/api/books/[reservationId]/extend/route";
+import { extendReservation } from "@/app/[locale]/books/extendedAction";
 import { NextRequest } from "next/server";
 
-jest.mock("@/app/books/extendedAction", () => ({
+jest.mock("@/app/[locale]/books/extendedAction", () => ({
     extendReservation: jest.fn(),
 }));
 

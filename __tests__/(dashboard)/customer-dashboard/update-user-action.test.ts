@@ -7,7 +7,7 @@ import { createClient } from "@/utils/supabase/server";
 import * as supabaseModule from "@/utils/supabase/server";
 import { getAdminClient } from "@/utils/supabase/admin";
 import * as adminModule from "@/utils/supabase/admin";
-import { updateUserAction } from "@/app/(dashboard)/customer-dashboard/update-user-action";
+import { updateUserAction } from "@/app/[locale]/(dashboard)/customer-dashboard/update-user-action";
 
 type SupabaseClientType = Awaited<ReturnType<typeof createClient>>;
 type SupabaseAdminType = ReturnType<typeof getAdminClient>;

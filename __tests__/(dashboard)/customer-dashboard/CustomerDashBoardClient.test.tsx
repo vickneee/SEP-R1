@@ -1,5 +1,5 @@
 import {render, screen, act, waitFor} from '../../utils/test-utils';
-import CustomerDashboardClient from "@/app/(dashboard)/customer-dashboard/CustomerDashboardClient";
+import CustomerDashboardClient from "@/app/[locale]/(dashboard)/customer-dashboard/CustomerDashboardClient";
 
 jest.mock('@/utils/supabase/client', () => ({
     createClient: () => ({
@@ -13,7 +13,7 @@ jest.mock('@/utils/supabase/client', () => ({
 }));
 
 // Mock penalty actions to prevent server-side cookies error
-jest.mock("@/app/penalties/penaltyActions", () => ({
+jest.mock("@/app/[locale]/penalties/penaltyActions", () => ({
     checkUserCanReserve: jest.fn().mockResolvedValue({
         status: {
             can_reserve: true,

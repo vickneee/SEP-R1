@@ -1,5 +1,10 @@
 import {render, screen, waitFor} from "@testing-library/react";
-import Home from "@/app/page";
+import Home from "@/app/[locale]/page";
+
+jest.mock('next/navigation', () => ({
+    useParams: jest.fn(() => ({ locale: 'en' })),
+    useRouter: jest.fn(() => ({ push: jest.fn() })),
+}));
 
 // Mock data
 const mockBooks = [

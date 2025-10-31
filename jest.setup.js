@@ -21,6 +21,10 @@ jest.mock("next/navigation", () => ({
   },
 }));
 
+// Add TextEncoder/TextDecoder for Node
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder;
+
 jest.mock("nuqs", () => {
   const React = jest.requireActual("react");
   return {

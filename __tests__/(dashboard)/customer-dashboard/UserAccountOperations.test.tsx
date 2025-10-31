@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, act } from "../../utils/test-utils";
-import UserAccountOperations from "@/app/(dashboard)/customer-dashboard/UserAccountOperations";
+import UserAccountOperations from "@/app/[locale]/(dashboard)/customer-dashboard/UserAccountOperations";
 
 jest.mock("next/navigation", () => ({
   useRouter: () => ({

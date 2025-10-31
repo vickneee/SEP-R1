@@ -7,7 +7,7 @@ import { createClient } from "@/utils/supabase/server";
 import * as supabaseModule from "@/utils/supabase/server";
 import { getAdminClient } from "@/utils/supabase/admin";
 import * as adminModule from "@/utils/supabase/admin";
-import { POST } from "@/app/api/delete-user/route";
+import { POST } from "@/app/[locale]/api/delete-user/route";
 
 type SupabaseClientType = Awaited<ReturnType<typeof createClient>>;
 type SupabaseAdminType = ReturnType<typeof getAdminClient>;

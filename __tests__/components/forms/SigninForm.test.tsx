@@ -1,7 +1,12 @@
 import { SigninForm } from "@/components/forms/SigninForm";
 import { render, screen, act, waitFor } from "../../utils/test-utils";
 
-jest.mock("@/app/(auth)/signin/auth-actions", () => ({
+jest.mock('next/navigation', () => ({
+    useParams: jest.fn(() => ({ locale: 'en' })),
+    useRouter: jest.fn(() => ({ push: jest.fn() })),
+}));
+
+jest.mock("@/app/[locale]/(auth)/signin/auth-actions", () => ({
   signinAction: jest.fn(),
 }));
 

@@ -1,9 +1,9 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import OverdueBooksPage from "../../app/penalties/page";
-import * as penaltyActions from "../../app/penalties/penaltyActions";
+import OverdueBooksPage from "../../app/[locale]/penalties/page";
+import * as penaltyActions from "../../app/[locale]/penalties/penaltyActions";
 
 // Mock the penalty actions
-jest.mock("../../app/penalties/penaltyActions");
+jest.mock("../../app/[locale]/penalties/penaltyActions");
 
 const mockOverdueBooks = [
     {

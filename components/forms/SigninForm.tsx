@@ -1,8 +1,9 @@
 "use client";
 import Link from "next/link";
-import { useActionState } from "react";
-import { signinAction } from "@/app/(auth)/signin/auth-actions";
+import {useActionState, useState} from "react";
+import { signinAction } from "@/app/[locale]/(auth)/signin/auth-actions";
 import { useEffect } from "react";
+import initTranslations from "@/app/i18n"; // Importing the translation initializer
 
 import {
   CardTitle,
@@ -17,6 +18,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { ZodErrors } from "@/components/custom/ZodErrors";
 import {toast} from "react-hot-toast";
+import {useParams} from "next/navigation";
 
 const styles = {
   container: "flex justify-center items-center w-full min-h-[750px]",
@@ -42,6 +44,19 @@ const INITIAL_STATE = {
 };
 
 export function SigninForm() {
+    const params = useParams() as { locale?: string } | null; // Type assertion for params
+    const locale = params?.locale ?? 'en'; // Default to 'en' if locale is not provided
+    const [t, setT] = useState(() => (key: string) => key); // Initial dummy translation function
+
+    // Load translations when locale changes
+    useEffect(() => {
+        const loadTranslations = async () => {
+            const translations = await initTranslations(locale, ['Signin']);
+            setT(() => translations.t);
+        };
+        loadTranslations();
+    }, [locale]);
+
   // @ts-expect-error - useActionState type inference is incorrect
   const [formState, formAction] = useActionState(signinAction, INITIAL_STATE);
 
@@ -63,7 +78,7 @@ export function SigninForm() {
       <form action={formAction}>
         <Card className={styles.card}>
           <CardHeader className={styles.header}>
-            <CardTitle className={styles.title}>Sign In</CardTitle>
+            <CardTitle className={styles.title}>{t('sign_in_0')}</CardTitle>
             <CardDescription className={styles.description}>
               Enter your details to sign in to your account
             </CardDescription>

@@ -1,4 +1,4 @@
-import * as penaltyModule from "../../app/penalties/penaltyActions";
+import * as penaltyModule from "../../app/[locale]/penalties/penaltyActions";
 import * as supabaseModule from "../../utils/supabase/server";
 
 jest.mock("../../utils/supabase/server");

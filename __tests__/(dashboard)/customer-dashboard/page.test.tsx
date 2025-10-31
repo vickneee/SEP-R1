@@ -1,5 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
-import * as CustomerDashboardModule from "@/app/(dashboard)/customer-dashboard/page"
+import * as CustomerDashboardModule from "@/app/[locale]/(dashboard)/customer-dashboard/page"
 const CustomerDashboard = CustomerDashboardModule.default;
 
 jest.mock("next/navigation", () => ({

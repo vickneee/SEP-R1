@@ -1,4 +1,4 @@
-import { registerUserAction } from "@/app/(auth)/signup/auth-actions";
+import { registerUserAction } from "@/app/[locale]/(auth)/signup/auth-actions";
 
 describe("Supabase signup auth actions", () => {
   const password = "StrongPassword!!!";

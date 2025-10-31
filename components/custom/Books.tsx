@@ -6,7 +6,7 @@ import { Trash2, Edit3 } from "lucide-react";
 
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import BookImage from "./BookImage";
-import { deleteBook } from "@/app/books/bookActions";
+import { deleteBook } from "@/app/[locale]/books/bookActions";
 import Image from "next/image";
 
 interface Book {

@@ -1,24 +1,36 @@
-import { render, screen } from '../../utils/test-utils'
+import {render, screen} from '../../utils/test-utils'
 import userEvent from '@testing-library/user-event'
 import Hero from '@/components/sections/Hero'
+import {act, waitFor} from "@/__tests__/utils/test-utils";
+
+// --- Mock next/navigation ---
+jest.mock('next/navigation', () => ({
+    useParams: jest.fn(() => ({locale: 'en'})),
+    useRouter: jest.fn(() => ({push: jest.fn()})),
+}));
 
 describe('Hero Component', () => {
-    it('renders hero section with correct content', () => {
-        render(<Hero />)
 
-        // Test main heading
-        expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument()
-        expect(screen.getByText('Discover Your Next')).toBeInTheDocument()
-        expect(screen.getByText('Great Read')).toBeInTheDocument()
+    it('renders hero section with correct content', async () => {
+        await act(async () => {
+            render(<Hero/>);
+        });
+        await waitFor(() => {
 
-        // Test description text
-        expect(screen.getByText(/Browse thousands of books/)).toBeInTheDocument()
-        expect(screen.getByText(/reserve your favorites/)).toBeInTheDocument()
-        expect(screen.getByText(/manage your reading journey/)).toBeInTheDocument()
+            // Test main heading
+            expect(screen.getByRole('heading', {level: 1})).toBeInTheDocument()
+            expect(screen.getByText('Discover Your Next')).toBeInTheDocument()
+            expect(screen.getByText('Great Read')).toBeInTheDocument()
+
+            // Test description text
+            expect(screen.getByText(/Browse thousands of books/)).toBeInTheDocument()
+            expect(screen.getByText(/reserve your favorites/)).toBeInTheDocument()
+            expect(screen.getByText(/manage your reading journey/)).toBeInTheDocument()
+        })
     })
 
     it('displays search functionality', () => {
-        render(<Hero />)
+        render(<Hero/>);
 
         // Test search input
         const searchInput = screen.getByPlaceholderText(/Search by title, author, or ISBN/)
@@ -26,13 +38,15 @@ describe('Hero Component', () => {
         expect(searchInput).toHaveAttribute('type', 'text')
 
         // Test search button
-        const searchButton = screen.getByRole('button', { name: /search/i })
+        const searchButton = screen.getByRole('button', {name: /search/i})
         expect(searchButton).toBeInTheDocument()
     })
 
     it('allows user to type in search input', async () => {
         const user = userEvent.setup()
-        render(<Hero />)
+        await act(async () => {
+            render(<Hero/>);
+        });
 
         const searchInput = screen.getByPlaceholderText(/Search by title, author, or ISBN/)
 
@@ -41,25 +55,29 @@ describe('Hero Component', () => {
         expect(searchInput).toHaveValue('Harry Potter')
     })
 
-    it('has correct styling classes', () => {
-        render(<Hero />)
+    it('has correct styling classes', async () => {
+        await act(async () => {
+            render(<Hero/>);
+        });
+        await waitFor(() => {
 
-        // Test main section exists - use a more reliable selector
-        const heroSection = screen.getByText('Discover Your Next').closest('section')
-        expect(heroSection).toBeInTheDocument()
-        expect(heroSection).toHaveClass('relative', 'w-full')
+            // Test main section exists - use a more reliable selector
+            const heroSection = screen.getByText('Discover Your Next').closest('section')
+            expect(heroSection).toBeInTheDocument()
+            expect(heroSection).toHaveClass('relative', 'w-full')
 
-        // Test heading has correct text color classes
-        const heading = screen.getByRole('heading', { level: 1 })
-        expect(heading).toHaveClass('text-gray-200')
+            // Test heading has correct text color classes
+            const heading = screen.getByRole('heading', {level: 1})
+            expect(heading).toHaveClass('text-gray-200')
 
-        // Test highlighted text has orange color
-        const highlightedText = screen.getByText('Great Read')
-        expect(highlightedText).toHaveClass('text-orange-500')
+            // Test highlighted text has orange color
+            const highlightedText = screen.getByText('Great Read')
+            expect(highlightedText).toHaveClass('text-orange-500')
+        })
     })
 
     it('renders background image with correct attributes', () => {
-        render(<Hero />)
+        render(<Hero/>);
 
         // Test background image
         const backgroundImage = screen.getByAltText('Bookshelf background')
@@ -70,10 +88,10 @@ describe('Hero Component', () => {
     })
 
     it('has accessible structure', () => {
-        render(<Hero />)
+        render(<Hero/>);
 
         // Test semantic structure
-        expect(screen.getByRole('heading', { level: 1 })).toBeInTheDocument()
+        expect(screen.getByRole('heading', {level: 1})).toBeInTheDocument()
         expect(screen.getByRole('textbox')).toBeInTheDocument()
         expect(screen.getByRole('button')).toBeInTheDocument()
     })

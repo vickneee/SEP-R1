@@ -1,6 +1,6 @@
-import { registerUserAction } from "@/app/(auth)/signup/auth-actions";
+import { registerUserAction } from "@/app/[locale]/(auth)/signup/auth-actions";
 
-import { signinAction } from "@/app/(auth)/signin/auth-actions";
+import { signinAction } from "@/app/[locale]/(auth)/signin/auth-actions";
 
 describe("Supabase signin auth actions", () => {
   const email = "testuser@example.com";
