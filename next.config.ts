@@ -1,6 +1,5 @@
 import path from 'path';
 import type {NextConfig} from "next";
-import i18nConfig from './i18nConfig.js'; // optional import here for reference
 
 const nextConfig: NextConfig = {
     /* config options here */
