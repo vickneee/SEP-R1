@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { checkUserCanReserve, type UserReservationStatus } from "@/app/penalties/penaltyActions";
+import { checkUserCanReserve, type UserReservationStatus } from "@/app/[locale]/penalties/penaltyActions";
 
 interface OverdueBadgeProps {
   userId?: string;

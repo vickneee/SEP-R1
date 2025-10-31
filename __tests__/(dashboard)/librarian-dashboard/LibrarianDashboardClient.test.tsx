@@ -1,5 +1,5 @@
 import { render, screen, act, waitFor } from "../../utils/test-utils";
-import LibrarianDashboardClient from "@/app/(dashboard)/librarian-dashboard/LibrarianDashboardClient";
+import LibrarianDashboardClient from "@/app/[locale]/(dashboard)/librarian-dashboard/LibrarianDashboardClient";
 import userEvent from "@testing-library/user-event";
 
 describe("CustomerDashBoardClient", () => {

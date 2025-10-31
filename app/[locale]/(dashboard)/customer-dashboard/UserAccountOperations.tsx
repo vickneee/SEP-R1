@@ -6,7 +6,7 @@ import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { ZodErrors } from "@/components/custom/ZodErrors";
 import { useActionState } from "react";
-import { updateUserAction } from "@/app/(dashboard)/customer-dashboard/update-user-action";
+import { updateUserAction } from "@/app/[locale]/(dashboard)/customer-dashboard/update-user-action";
 import { useEffect } from "react";
 import { toast } from "react-hot-toast";
 

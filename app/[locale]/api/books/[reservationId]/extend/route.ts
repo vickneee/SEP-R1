@@ -1,5 +1,5 @@
 import {NextRequest, NextResponse} from "next/server";
-import { extendReservation } from "@/app/books/extendedAction";
+import { extendReservation } from "@/app/[locale]/books/extendedAction";
 
 export async function POST(request: NextRequest,
                            context: { params: Promise<{ reservationId: string }> }

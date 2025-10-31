@@ -1,5 +1,5 @@
-import { extendReservation } from "@/app/books/extendedAction";
-import type { ReservationWithBook } from "@/app/books/extendedAction";
+import { extendReservation } from "@/app/[locale]/books/extendedAction";
+import type { ReservationWithBook } from "@/app/[locale]/books/extendedAction";
 
 import { createClient } from "@/utils/supabase/server";
 

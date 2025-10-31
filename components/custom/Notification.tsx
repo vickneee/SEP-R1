@@ -12,7 +12,7 @@ import {
   markReminderSentAsTrue,
 } from "@/components/custom/NotificationAction";
 import { useCallback, useEffect, useState } from "react";
-import { getBookById } from "@/app/books/bookActions";
+import { getBookById } from "@/app/[locale]/books/bookActions";
 import { useNotification } from "@/context/NotificationContext";
 
 type notification = {

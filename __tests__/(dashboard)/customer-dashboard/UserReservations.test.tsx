@@ -1,9 +1,9 @@
 import {render, screen, act, waitFor} from '../../utils/test-utils'
-import UserReservations from '@/app/(dashboard)/customer-dashboard/UserReservations';
-import CustomerDashboardClient from '@/app/(dashboard)/customer-dashboard/CustomerDashboardClient';
+import UserReservations from '@/app/[locale]/(dashboard)/customer-dashboard/UserReservations';
+import CustomerDashboardClient from '@/app/[locale]/(dashboard)/customer-dashboard/CustomerDashboardClient';
 import {fireEvent} from "@testing-library/dom";
-import {extendReservation} from "@/app/books/extendedAction";
-import {checkUserCanReserve} from "@/app/penalties/penaltyActions";
+import {extendReservation} from "@/app/[locale]/books/extendedAction";
+import {checkUserCanReserve} from "@/app/[locale]/penalties/penaltyActions";
 
 type Reservation = {
     reservation_id: number;

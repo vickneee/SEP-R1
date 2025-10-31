@@ -1,5 +1,5 @@
 import { createClient } from "@/utils/supabase/server";
-import * as LibrarianDashboardModule from "@/app/(dashboard)/librarian-dashboard/page";
+import * as LibrarianDashboardModule from "@/app/[locale]/(dashboard)/librarian-dashboard/page";
 const LibrarianDashboard = LibrarianDashboardModule.default;
 
 jest.mock("next/navigation", () => ({

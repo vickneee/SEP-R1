@@ -1,6 +1,6 @@
 import { getUserProfile } from "./userProfile-action";
-import LibrarianDashboard from "@/app/(dashboard)/librarian-dashboard/page";
-import CustomerDashboard from "@/app/(dashboard)/customer-dashboard/page";
+import LibrarianDashboard from "@/app/[locale]/(dashboard)/librarian-dashboard/page";
+import CustomerDashboard from "@/app/[locale]/(dashboard)/customer-dashboard/page";
 
 export default async function PrivatePage() {
   const userProfile = await getUserProfile();

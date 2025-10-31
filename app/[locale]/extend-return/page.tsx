@@ -1,9 +1,9 @@
 "use client";
 
 import {useEffect, useState} from "react";
-import {getAllBorrowedBooks} from "@/app/extend-return/extendReturnActions";
+import {getAllBorrowedBooks} from "@/app/[locale]/extend-return/extendReturnActions";
 import {BorrowedBook} from "@/types/borrowedBook";
-import {extendReservation} from "@/app/books/extendedAction";
+import {extendReservation} from "@/app/[locale]/books/extendedAction";
 import {createClient} from "@/utils/supabase/client";
 
 export default function ExtendReturnBooksPage() {

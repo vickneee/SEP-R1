@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation';
-import EditBookRoute from '@/app/book/edit/[bookId]/page';
+import EditBookRoute from '@/app/[locale]/book/edit/[bookId]/page';
 import { createClient } from '@/utils/supabase/server';
-import EditBookPage from '@/app/book/edit/[bookId]/EditBookPage';
+import EditBookPage from '@/app/[locale]/book/edit/[bookId]/EditBookPage';
 
 jest.mock('next/navigation', () => ({
   redirect: jest.fn((url) => {

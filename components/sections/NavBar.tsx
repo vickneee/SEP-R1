@@ -9,7 +9,7 @@ import Link from "next/link";
 import LocalButton from "@/components/ui/localButton";
 import useSupabaseSession from "@/hooks/useSupabaseSession";
 import Notification from "@/components/custom/Notification";
-import { getUserProfile } from "@/app/private/userProfile-action";
+import { getUserProfile } from "@/app/[locale]/private/userProfile-action";
 import { useEffect, useState } from "react";
 
 function NavBar() {

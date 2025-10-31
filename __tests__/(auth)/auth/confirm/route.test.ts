@@ -1,4 +1,4 @@
-import { GET } from "@/app/(auth)/auth/confirm/route";
+import { GET } from "@/app/[locale]/(auth)/auth/confirm/route";
 import { NextRequest } from "next/server";
 import { redirect } from "next/navigation";
 

@@ -2,7 +2,7 @@
 
 import { createClient } from "@/utils/supabase/client";
 import { useEffect, useState } from "react";
-import { extendReservation } from "@/app/books/extendedAction";
+import { extendReservation } from "@/app/[locale]/books/extendedAction";
 import { useNotification } from "@/context/NotificationContext";
 
 type ReservationWithBook = {

@@ -1,6 +1,6 @@
 "use client";
 
-import { reserveBook } from "@/app/books/bookActions";
+import { reserveBook } from "@/app/[locale]/books/bookActions";
 import { checkUserCanReserve, type UserReservationStatus } from "@/app/penalties/penaltyActions";
 import BookImage from "@/components/custom/BookImage";
 import PenaltyBadge from "@/components/custom/PenaltyBadge";

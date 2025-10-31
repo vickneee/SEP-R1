@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
-import { getBookById, updateBook } from "@/app/books/bookActions";
+import { getBookById, updateBook } from "@/app/[locale]/books/bookActions";
 import {Label} from "@/components/ui/label";
 
 interface Book {

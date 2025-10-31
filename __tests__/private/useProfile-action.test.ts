@@ -1,6 +1,6 @@
 jest.mock("@/utils/supabase/server");
 
-import * as userProfileModule from "@/app/private/userProfile-action";
+import * as userProfileModule from "@/app/[locale]/private/userProfile-action";
 import * as supabaseModule from "@/utils/supabase/server";
 
 import { createClient } from "@/utils/supabase/server";

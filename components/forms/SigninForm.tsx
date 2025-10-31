@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useActionState } from "react";
-import { signinAction } from "@/app/(auth)/signin/auth-actions";
+import { signinAction } from "@/app/[locale]/(auth)/signin/auth-actions";
 import { useEffect } from "react";
 
 import {

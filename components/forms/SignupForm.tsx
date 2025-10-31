@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useActionState } from "react";
-import { registerUserAction } from "@/app/(auth)/signup/auth-actions";
+import { registerUserAction } from "@/app/[locale]/(auth)/signup/auth-actions";
 import { toast } from "react-hot-toast";
 import { useEffect } from "react";
 

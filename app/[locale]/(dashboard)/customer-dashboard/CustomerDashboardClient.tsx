@@ -1,6 +1,6 @@
 'use client'
 import { Suspense, useState } from "react";
-import UserReservations from "@/app/(dashboard)/customer-dashboard/UserReservations";
+import UserReservations from "@/app/[locale]/(dashboard)/customer-dashboard/UserReservations";
 import UserAccountOperations from "./UserAccountOperations";
 import PenaltyStatus from "@/components/custom/PenaltyStatus";
 

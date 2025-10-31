@@ -1,5 +1,5 @@
 import {render, screen, act, waitFor} from '../../utils/test-utils';
-import CustomerDashboardClient from "@/app/(dashboard)/customer-dashboard/CustomerDashboardClient";
+import CustomerDashboardClient from "@/app/[locale]/(dashboard)/customer-dashboard/CustomerDashboardClient";
 
 jest.mock('@/utils/supabase/client', () => ({
     createClient: () => ({
