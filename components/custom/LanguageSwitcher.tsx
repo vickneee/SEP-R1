@@ -3,7 +3,7 @@ import { useParams } from 'next/navigation';
 import Link from 'next/link';
 
 export default function LanguageSwitcher() {
-  const params = useParams();
+  const params = useParams?.() ?? { locale: 'en' };
   const locale = params?.locale ?? 'en';
 
   const languages = ['en', 'ru', 'ja'];
