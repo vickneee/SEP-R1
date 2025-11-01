@@ -47,7 +47,7 @@ function Hero() {
                 </h1>
                 <p className="text-gray-200 md:text-lg max-w-116 mx-auto mb-6 mt-2 drop-shadow-md">
                     {/*Adding translation key*/}
-                    {t('hero_p1')}</p>
+                    {t('hero_p_1')}</p>
                 {/* Search Bar */}
                 <div className="relative flex sm:flex-row items-center justify-center">
                     <input id="search" name="search" type="text" value={search}

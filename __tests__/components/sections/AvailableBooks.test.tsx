@@ -1,5 +1,13 @@
 import { render, screen } from '../../utils/test-utils'
 import AvailableBooks, { Book } from "@/components/sections/AvailableBooks";
+import {act} from "react";
+import {waitFor} from "@/__tests__/utils/test-utils";
+
+// --- Mock next/navigation ---
+jest.mock('next/navigation', () => ({
+    useParams: jest.fn(() => ({locale: 'en'})),
+    useRouter: jest.fn(() => ({push: jest.fn()})),
+}));
 
 describe('AvailableBooks Component', () => {
     const mockBooks: Book[] = [
@@ -33,23 +41,31 @@ describe('AvailableBooks Component', () => {
         }
     ]
 
-    it('renders Available Books heading', () => {
-        render(<AvailableBooks books={mockBooks} error={null} />)
+    it('renders Available Books heading', async () => {
+        await act(async () => {
+            render (<AvailableBooks books={mockBooks} error={null} />);
+        });
 
         // Test main heading exists
+        await waitFor(() => {
         expect(screen.getByRole('heading', { level: 2 })).toBeInTheDocument()
         expect(screen.getByText('Available Books')).toBeInTheDocument()
+        })
     })
 
-    it('renders list of books', () => {
-        render(<AvailableBooks books={mockBooks} error={null} />)
+    it('renders list of books', async () => {
+        await act(async () => {
+            render (<AvailableBooks books={mockBooks} error={null} />);
+        });
 
         // Test that book titles are rendered
+        await waitFor(() => {
         expect(screen.getByText('Book One')).toBeInTheDocument()
         expect(screen.getByText('Book Two')).toBeInTheDocument()
 
         // Test that authors are rendered
         expect(screen.getByText('Author A')).toBeInTheDocument()
         expect(screen.getByText('Author B')).toBeInTheDocument()
+        })
     })
 })
