@@ -1,6 +1,15 @@
 import {getAllBorrowedBooks} from "@/app/[locale]/extend-return/extendReturnActions";
 import {createClient} from "@/utils/supabase/server";
 
+jest.mock('next/navigation', () => ({
+    useParams: () => ({ locale: 'en' }),
+    useRouter: () => ({
+        push: jest.fn(),
+        replace: jest.fn(),
+        prefetch: jest.fn(),
+    }),
+}));
+
 jest.mock("@/utils/supabase/server", () => ({
     createClient: jest.fn(),
 }));
@@ -27,7 +36,7 @@ describe("getAllBorrowedBooks", () => {
 
         expect(result).toEqual({
             borrowedBooks: null,
-            error: "User not authenticated",
+            error: "borrowed_error_not_authenticated",
         });
     });
 
@@ -52,7 +61,7 @@ describe("getAllBorrowedBooks", () => {
 
         expect(result).toEqual({
             borrowedBooks: null,
-            error: "Only librarians can view borrowed books",
+            error: "borrowed_error_not_librarian",
         });
     });
 
