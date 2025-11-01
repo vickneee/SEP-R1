@@ -12,6 +12,10 @@ import {
 } from "@/components/ui/carousel"
 import type { Database } from "@/types/database";
 
+import initTranslations from "@/app/i18n"; // Importing the translation initializer
+import {useEffect, useState} from "react"; // Importing useEffect and useState
+import {useLocaleParams} from "@/hooks/useLocaleParams";
+
 export type Book = Database['public']['Tables']['books']['Row'];
 
 interface Props {
@@ -20,6 +24,18 @@ interface Props {
 }
 
 function AvailableBooks({ books, error }: Props) {
+    const params = useLocaleParams() as { locale?: string } | null; // Type assertion for params
+    const locale = params?.locale ?? 'en'; // Default to 'en' if locale is not provided
+    const [t, setT] = useState(() => (key: string) => key); // Initial dummy translation function
+
+    // Load translations when locale changes
+    useEffect(() => {
+        const loadTranslations = async () => {
+            const translations = await initTranslations(locale, ['Home']);
+            setT(() => translations.t);
+        };
+        loadTranslations();
+    }, [locale]);
 
     if (error) {
         return (
@@ -40,7 +56,7 @@ function AvailableBooks({ books, error }: Props) {
     return (
         <div className="w-full h-[750px] sm:px-8 md:px-16 py-12">
             <h2 className="mt-12 text-orange-500 text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 flex justify-center">
-                Available Books
+                {t('available_books_header_2')}
             </h2>
             <div className="flex justify-center mt-10 mb-8 overflow-hidden">
                 <Carousel className="w-full max-w-1/2 sm:max-w-1/2 lg:max-w-3xl xl:max-w-4xl 2xl:max-w-5xl">

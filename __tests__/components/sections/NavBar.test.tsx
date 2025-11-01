@@ -2,12 +2,13 @@ import {render, screen, waitFor} from '../../utils/test-utils'
 import NavBar from "@/components/sections/NavBar";
 import {act} from "react";
 
-jest.mock('@supabase/ssr');
-
-// Mock the useRouter hook
+// --- Mock next/navigation ---
 jest.mock('next/navigation', () => ({
-    useRouter: jest.fn(() => ({})),
+    useParams: jest.fn(() => ({locale: 'en'})),
+    useRouter: jest.fn(() => ({push: jest.fn()})),
 }));
+
+jest.mock('@supabase/ssr');
 
 // Mock the server-side APIs to avoid errors
 jest.mock('next/headers', () => ({
@@ -20,6 +21,7 @@ jest.mock('next/headers', () => ({
 }));
 
 describe('NavBar Component', () => {
+
     it('renders navbar section with correct content', async () => {
         await act(async () => {
             render(<NavBar/>);
@@ -37,11 +39,9 @@ describe('NavBar Component', () => {
         });
 
         // Test search input
-        await waitFor(() => {
-            const searchInput = screen.getByPlaceholderText(/Search title, authors, or categories/)
+            const searchInput = await screen.getByPlaceholderText(/Search by title, author, or categories.../)
             expect(searchInput).toBeInTheDocument()
             expect(searchInput).toHaveAttribute('type', 'text')
-        });
     });
 
     it('has accessible structure', async () => {
@@ -50,10 +50,8 @@ describe('NavBar Component', () => {
         });
 
         // Test semantic structure
-        await waitFor(() => {
             expect(screen.getByRole('textbox')).toBeInTheDocument(); // Search input
             const signInButton = screen.getByRole('button', { name: /Sign In/i });
             expect(signInButton).toBeInTheDocument();
-        });
     });
 });

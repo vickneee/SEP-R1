@@ -1,19 +1,20 @@
 "use client";
 import Image from "next/image";
 import {useQueryState} from "nuqs";
-import {useRouter, useParams} from "next/navigation";
+import {useRouter} from "next/navigation";
 import initTranslations from "@/app/i18n"; // Importing the translation initializer
-import {useEffect, useState} from "react";
+import {useEffect, useState} from "react"; // Importing useEffect and useState
+import {useLocaleParams} from "@/hooks/useLocaleParams"; // Importing useLocaleParams
 
 function Hero() {
-    const params = useParams() as { locale?: string } | null; // Type assertion for params
+    const params = useLocaleParams() as { locale?: string } | null; // Type assertion for params
     const locale = params?.locale ?? 'en'; // Default to 'en' if locale is not provided
     const [t, setT] = useState(() => (key: string) => key); // Initial dummy translation function
 
     // Load translations when locale changes
     useEffect(() => {
         const loadTranslations = async () => {
-            const translations = await initTranslations(locale, ['home']);
+            const translations = await initTranslations(locale, ['Home']);
             setT(() => translations.t);
         };
         loadTranslations();
@@ -36,22 +37,26 @@ function Hero() {
             {/* Content */}
             <div className="relative z-10 text-center">
                 <h1 className="text-4xl md:text-6xl font-bold drop-shadow-md text-gray-200">
+                    {/*Adding translation key*/}
                     {t('hero_header_1')}
                     <br/>
-                    <span className="text-orange-500">{t('hero_header_2')} </span>
+                    <span className="text-orange-500">
+                        {/*Adding translation key*/}
+                        {t('hero_header_2')}
+                    </span>
                 </h1>
                 <p className="text-gray-200 md:text-lg max-w-116 mx-auto mb-6 mt-2 drop-shadow-md">
-                    Browse thousands of books, reserve your favorites, and manage your
-                    reading journey all in one place. </p>
+                    {/*Adding translation key*/}
+                    {t('hero_p_1')}</p>
                 {/* Search Bar */}
                 <div className="relative flex sm:flex-row items-center justify-center">
                     <input id="search" name="search" type="text" value={search}
-                           onChange={(e) => setSearch(e.target.value)} placeholder="Search by title, author, or ISBN..."
-                           className="w-full rounded-sm max-w-lg px-6 py-3 text-lg text-gray-800 placeholder-gray-500 bg-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-600 transition-colors duration-300"/>
-                    <div className="absolute right-10 top-1.5 h-full ml-4 flex-shrink-0 hidden sm:block">
+                           onChange={(e) => setSearch(e.target.value)} placeholder={t('hero_placeholder_1')}
+                           className="absolute w-full rounded-sm max-w-lg px-6 py-3 text-lg text-gray-800 placeholder-gray-500 bg-gray-200 focus:outline-none focus:ring-2 focus:ring-orange-600 transition-colors duration-300"/>
+                    <div className="relative right-10 top-1.5 h-full ml-4 flex-shrink-0 hidden sm:block">
                         <button onClick={() => handleClick()}
-                                className="w-auto px-6 spx-4 py-2 bg-[#552A1B] text-white rounded hover:bg-[#E46A07] transition-colors duration-300">
-                            Search
+                                className="relative right-[-230] bottom-1.5 px-6 spx-4 py-2 bg-[#552A1B] text-white rounded hover:bg-[#E46A07] transition-colors duration-300">
+                            {t('hero_btn_search')}
                         </button>
                     </div>
                 </div>
