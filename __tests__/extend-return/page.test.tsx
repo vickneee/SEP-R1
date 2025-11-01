@@ -30,6 +30,15 @@ jest.mock("@/app/[locale]/extend-return/extendReturnActions", () => ({
 
 const mockedGetAllBorrowedBooks = getAllBorrowedBooks as jest.Mock;
 
+jest.mock('next/navigation', () => ({
+    useParams: () => ({ locale: 'en' }),
+    useRouter: () => ({
+        push: jest.fn(),
+        replace: jest.fn(),
+        prefetch: jest.fn(),
+    }),
+}));
+
 beforeEach(() => {
     jest.clearAllMocks();
     (createClient as jest.Mock).mockReturnValue(mockSupabase);
@@ -59,7 +68,7 @@ describe('Extend Return Books Management Component', () => {
         }));
         const { getByText } = render(<ExtendReturnBookPage/>);
 
-        expect(getByText('Loading borrowed books...')).toBeInTheDocument();
+        expect(getByText('borrowed_loading')).toBeInTheDocument();
 
         // Wait for the async function to complete
         await waitFor(() => {
