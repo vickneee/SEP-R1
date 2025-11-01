@@ -19,5 +19,8 @@
   "borrowed_status_extending": "延長中...",
   "borrowed_btn_extend": "延長",
   "borrowed_status_returning": "返却中...",
-  "borrowed_btn_return": "返却"
+  "borrowed_btn_return": "返却",
+  "borrowed_auth_error": "ユーザーが認証されていません",
+  "borrowed_role_error": "司書のみが借りた本を表示できます",
+  "borrowed_fetch_fail": "借りた本の取得に失敗しました"
 }

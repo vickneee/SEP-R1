@@ -19,5 +19,8 @@
   "borrowed_status_extending": "Extending...",
   "borrowed_btn_extend": "Extend",
   "borrowed_status_returning": "Returning...",
-  "borrowed_btn_return": "Return"
+  "borrowed_btn_return": "Return",
+  "borrowed_auth_error": "User not authenticated",
+  "borrowed_role_error": "Only librarians can view borrowed books",
+  "borrowed_fetch_fail": "Failed to fetch borrowed books"
 }
