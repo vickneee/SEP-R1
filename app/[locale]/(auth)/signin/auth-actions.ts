@@ -2,32 +2,23 @@
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/utils/supabase/server";
 import { createMockClient } from "@/utils/supabase/mock";
-import { z } from "zod";
-
-const schemaRegister = z.object({
-  password: z
-    .string()
-    .min(6, { message: "Password must be at least 6 characters" })
-    .max(100, { message: "Password must be under 100 characters" }),
-  email: z
-    .string()
-    .nonempty({ message: "Please enter your email address" })
-    .email({
-      message: "Please enter a valid email address",
-    }),
-});
+import initTranslations from "@/app/i18n";
+import { getSigninSchema } from "@/components/schemas/signinSchema";
 
 export async function signinAction(
   prevState: { message?: string; zodErrors?: Record<string, string[]> },
   formData: FormData
 ) {
+  const locale = formData.get("locale")?.toString() || "en";
+  const { t } = await initTranslations(locale, ["Signin"]);
+  const schemaSignin = getSigninSchema(t);
   console.log("signinAction called with:", {
     email: formData.get("email"),
     hasPassword: !!formData.get("password"),
-    prevState
+    prevState,
   });
 
-  const validatedFields = schemaRegister.safeParse({
+  const validatedFields = schemaSignin.safeParse({
     password: (formData.get("password") ?? "") as string,
     email: (formData.get("email") ?? "") as string,
   });
@@ -36,7 +27,7 @@ export async function signinAction(
     const errorResponse = {
       data: null,
       zodErrors: validatedFields.error.flatten().fieldErrors,
-      message: "Missing Fields. Failed to Register",
+      message: t("signup_error_missing_fields"),
     };
     console.log("Validation failed, returning:", errorResponse);
     return errorResponse;
@@ -59,7 +50,7 @@ export async function signinAction(
     const errorResponse = {
       data: null,
       zodErrors: null,
-      message: error?.message || "Signin failed"
+      message: error?.message || t("signin_error_prefix"),
     };
     console.log("Signin failed, returning:", errorResponse);
     return errorResponse;
@@ -73,7 +64,7 @@ export async function signinAction(
   const successResponse = {
     data: null,
     zodErrors: null,
-    message: "Signin successful"
+    message: t("signin_success_message"),
   };
   console.log("Returning success response:", successResponse);
   return successResponse;

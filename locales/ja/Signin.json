@@ -1,4 +1,15 @@
 {
-  "sign_in_0": "サインイン",
-  "sign_in_1": "アカウントにサインインするために詳細を入力してください"
+  "signin_title": "サインイン",
+  "signin_prompt_enter_details": "アカウントにサインインするために詳細を入力してください。",
+  "signin_label_email": "Eメール",
+  "signin_label_password": "パスワード",
+  "signin_text_no_account": "アカウントをお持ちでない方はこちら。",
+  "signin_success_message": "正常にサインインしました。",
+  "signin_error_prefix": "サインイン失敗：",
+  "signup_error_missing_fields": "必須項目が未入力のため、登録に失敗しました。",
+  "validation_password_min_length": "パスワードは6文字以上で入力してください。",
+  "validation_password_max_length": "パスワードは100文字を超えないようにしてください。",
+  "validation_email_required": "メールアドレスを入力してください。",
+  "validation_email_invalid": "有効なメールアドレスを入力してください。",
+  "signup_label": "サインアップ"
 }

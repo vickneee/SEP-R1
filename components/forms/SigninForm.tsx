@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import {useActionState, useState} from "react";
+import { useActionState, useState } from "react";
 import { signinAction } from "@/app/[locale]/(auth)/signin/auth-actions";
 import { useEffect } from "react";
 import initTranslations from "@/app/i18n"; // Importing the translation initializer
@@ -17,8 +17,8 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { ZodErrors } from "@/components/custom/ZodErrors";
-import {toast} from "react-hot-toast";
-import {useParams} from "next/navigation";
+import { toast } from "react-hot-toast";
+import { useParams } from "next/navigation";
 
 const styles = {
   container: "flex justify-center items-center w-full min-h-[750px]",
@@ -44,31 +44,31 @@ const INITIAL_STATE = {
 };
 
 export function SigninForm() {
-    const params = useParams() as { locale?: string } | null; // Type assertion for params
-    const locale = params?.locale ?? 'en'; // Default to 'en' if locale is not provided
-    const [t, setT] = useState(() => (key: string) => key); // Initial dummy translation function
+  const params = useParams() as { locale?: string } | null; // Type assertion for params
+  const locale = params?.locale ?? "en"; // Default to 'en' if locale is not provided
+  const [t, setT] = useState(() => (key: string) => key); // Initial dummy translation function
 
-    // Load translations when locale changes
-    useEffect(() => {
-        const loadTranslations = async () => {
-            const translations = await initTranslations(locale, ['Signin']);
-            setT(() => translations.t);
-        };
-        loadTranslations();
-    }, [locale]);
+  // Load translations when locale changes
+  useEffect(() => {
+    const loadTranslations = async () => {
+      const translations = await initTranslations(locale, ["Signin"]);
+      setT(() => translations.t);
+    };
+    loadTranslations();
+  }, [locale]);
 
   // @ts-expect-error - useActionState type inference is incorrect
   const [formState, formAction] = useActionState(signinAction, INITIAL_STATE);
 
   useEffect(() => {
     if (formState.message === "Signin successful") {
-        setTimeout(() => {
+      setTimeout(() => {
         // Force full reload so NavBar picks up the session
-            window.location.href = "/private";
-        }, 1000); // 1000 ms = 1 seconds
+        window.location.href = "/private";
+      }, 1000); // 1000 ms = 1 seconds
       toast.success("Signin successful!");
     } else if (formState.message && formState.message !== "Signin successful") {
-        toast.error("Signin failed: " + formState.message);
+      toast.error("Signin failed: " + formState.message);
     }
   }, [formState]);
 
@@ -76,19 +76,22 @@ export function SigninForm() {
   return (
     <div className={styles.container}>
       <form action={formAction}>
+        {/*Passes the current locale to the server action via formData for proper translation handling*/}
+        <input type="hidden" name="locale" value={locale} />
         <Card className={styles.card}>
           <CardHeader className={styles.header}>
-            <CardTitle className={styles.title}>{t('sign_in_0')}</CardTitle>
+            <CardTitle className={styles.title}>{t("signin_title")}</CardTitle>
             <CardDescription className={styles.description}>
-              Enter your details to sign in to your account
+              {t("signin_prompt_enter_details")}
             </CardDescription>
           </CardHeader>
           <CardContent className={styles.content}>
             <div className={styles.fieldGroup}>
               <Label className={styles.label} htmlFor="email">
-                Email
+                {t("signin_label_email")}
               </Label>
-              <Input className={styles.input}
+              <Input
+                className={styles.input}
                 id="email"
                 name="email"
                 type="email"
@@ -98,27 +101,28 @@ export function SigninForm() {
             </div>
             <div className={styles.fieldGroup}>
               <Label className={styles.label} htmlFor="password">
-                Password
+                {t("signin_label_password")}
               </Label>
-              <Input className={styles.input}
+              <Input
+                className={styles.input}
                 id="password"
                 name="password"
                 type="password"
-                placeholder="Password"
+                placeholder={t("signin_label_password")}
               />
               <ZodErrors error={formState?.zodErrors?.password} />
             </div>
           </CardContent>
           <CardFooter className={styles.footer}>
             <button type="submit" className={styles.button}>
-              Sign In
+              {t("signin_title")}
             </button>
           </CardFooter>
         </Card>
         <div className={styles.prompt}>
-          Don&apos;t have an account?
+          {t("signin_text_no_account")}
           <Link className={styles.link} href="/signup">
-            Sign Up
+            {t("signup_label")}
           </Link>
         </div>
       </form>

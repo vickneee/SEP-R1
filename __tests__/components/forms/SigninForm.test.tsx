@@ -1,9 +1,9 @@
 import { SigninForm } from "@/components/forms/SigninForm";
 import { render, screen, act, waitFor } from "../../utils/test-utils";
 
-jest.mock('next/navigation', () => ({
-    useParams: jest.fn(() => ({ locale: 'en' })),
-    useRouter: jest.fn(() => ({ push: jest.fn() })),
+jest.mock("next/navigation", () => ({
+  useParams: jest.fn(() => ({ locale: "en" })),
+  useRouter: jest.fn(() => ({ push: jest.fn() })),
 }));
 
 jest.mock("@/app/[locale]/(auth)/signin/auth-actions", () => ({
@@ -20,6 +20,14 @@ jest.mock("react", () => {
     ],
   };
 });
+
+// --- Mock next/navigation ---
+jest.mock("next/navigation", () => ({
+  useParams: jest.fn(() => ({ locale: "en" })),
+  useRouter: jest.fn(() => ({ push: jest.fn() })),
+  useSearchParams: () => new URLSearchParams(),
+  usePathname: () => "/",
+}));
 
 describe("SigninForm", () => {
   it("renders SigninForm", async () => {
