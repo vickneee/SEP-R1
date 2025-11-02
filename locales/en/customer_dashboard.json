@@ -46,5 +46,6 @@
   "dashboard_status_active_capital": "Active",
   "dashboard_status_inactive": "Inactive",
   "dashboard_label_new_email": "New Email Address",
-  "dashboard_button_submit": "Submit"
+  "dashboard_button_submit": "Submit",
+  "dashboard_role": "Customer"
 }

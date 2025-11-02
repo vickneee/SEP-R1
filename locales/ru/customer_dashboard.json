@@ -46,5 +46,6 @@
   "dashboard_status_active_capital": "Активен",
   "dashboard_status_inactive": "Неактивен",
   "dashboard_label_new_email": "Новый адрес эл. почты",
-  "dashboard_button_submit": "Отправить"
+  "dashboard_button_submit": "Отправить",
+  "dashboard_role": "Клиент"
 }

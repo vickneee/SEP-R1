@@ -46,5 +46,6 @@
   "dashboard_status_active_capital": "有効",
   "dashboard_status_inactive": "無効",
   "dashboard_label_new_email": "新しいメールアドレス",
-  "dashboard_button_submit": "送信"
+  "dashboard_button_submit": "送信",
+  "dashboard_role": "顧客"
 }

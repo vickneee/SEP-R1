@@ -61,13 +61,16 @@ export function SigninForm() {
   const [formState, formAction] = useActionState(signinAction, INITIAL_STATE);
 
   useEffect(() => {
-    if (formState.message === "Signin successful") {
+    if (formState.message === t("signin_success_message")) {
       setTimeout(() => {
         // Force full reload so NavBar picks up the session
         window.location.href = "/private";
       }, 1000); // 1000 ms = 1 seconds
-      toast.success("Signin successful!");
-    } else if (formState.message && formState.message !== "Signin successful") {
+      toast.success(t("signin_success_message"));
+    } else if (
+      formState.message &&
+      formState.message !== t("signin_success_message")
+    ) {
       toast.error("Signin failed: " + formState.message);
     }
   }, [formState]);

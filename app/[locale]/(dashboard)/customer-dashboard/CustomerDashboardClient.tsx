@@ -66,7 +66,7 @@ export default function CustomerDashboardClient({
           </p>
           <p>
             <strong>{t("dashboard_label_role")}</strong>{" "}
-            <span className="capitalize">{userProfile.role}</span>
+            <span className="capitalize">{t("dashboard_role")}</span>
           </p>
           <p>
             <strong>{t("dashboard_label_status")}</strong>{" "}
