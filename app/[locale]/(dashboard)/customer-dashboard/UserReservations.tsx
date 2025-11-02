@@ -233,7 +233,7 @@ export default function UserReservations({
                   {new Date(res.reservation_date).toLocaleDateString(locale)}
                 </td>
                 <td className="px-6 py-4 text-left">
-                    {new Date(res.reservation_date).toLocaleDateString(locale)}
+                    {new Date(res.due_date).toLocaleDateString(locale)}
                 </td>
                 <td className="px-6 py-4 text-left">
                   {res.return_date
