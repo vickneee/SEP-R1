@@ -3,7 +3,7 @@
 import {getAllOverdueBooks, markBookReturned, processOverdueBooks} from "./penaltyActions";
 
 import initTranslations from "@/app/i18n"; // Importing the translation initializer
-import {useEffect, useState} from "react"; // Importing useEffect and useState
+import {useCallback, useEffect, useState} from "react"; // Importing useEffect and useState
 import {useLocaleParams} from "@/hooks/useLocaleParams"; // Importing useLocaleParams
 
 type OverdueBook = {
@@ -38,11 +38,7 @@ export default function OverdueBooksPage() {
     const [feedback, setFeedback] = useState("");
     const [error, setError] = useState("");
 
-    useEffect(() => {
-        loadOverdueBooks();
-    }, []);
-
-    const loadOverdueBooks = async () => {
+    const loadOverdueBooks = useCallback(async () => {
         setLoading(true);
         setError("");
         try {
@@ -58,9 +54,13 @@ export default function OverdueBooksPage() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [t]);
 
-    const handleMarkReturned = async (reservationId: number) => {
+    useEffect(() => {
+        loadOverdueBooks();
+    }, [loadOverdueBooks]);
+
+    const handleMarkReturned = useCallback(async (reservationId: number) => {
         setActionLoading({...actionLoading, [reservationId]: true});
         setFeedback("");
         setError("");
@@ -80,7 +80,7 @@ export default function OverdueBooksPage() {
         } finally {
             setActionLoading({...actionLoading, [reservationId]: false});
         }
-    };
+    }, [actionLoading, overdueBooks, t]);
 
     const handleProcessOverdue = async () => {
         setProcessingOverdue(true);
