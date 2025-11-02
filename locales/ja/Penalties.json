@@ -36,5 +36,7 @@
   "restrictedNotice": "⚠️ 制限:",
   "returnOverdueToContinue": "延滞本を返却してから貸出を続けてください",
   "loadReservationFail": "予約状況の読み込みに失敗しました",
-  "noOverdueBooks": "✓ 延滞本はありません"
+  "noOverdueBooks": "✓ 延滞本はありません",
+  "processedPrefix": "処理済み",
+  "processedSuffix": "件の延滞本"
 }
