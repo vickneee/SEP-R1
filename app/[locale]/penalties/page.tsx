@@ -194,7 +194,7 @@ export default function OverdueBooksPage() {
                                     </div>
                                 </td>
                                 <td className="px-6 py-4 text-sm text-gray-600">
-                                    {new Date(book.due_date).toLocaleDateString()}
+                                    {new Date(book.due_date).toLocaleDateString(locale)}
                                 </td>
                                 <td className="px-6 py-4">
                     <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
