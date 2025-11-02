@@ -71,9 +71,9 @@ export function SigninForm() {
       formState.message &&
       formState.message !== t("signin_success_message")
     ) {
-      toast.error("Signin failed: " + formState.message);
+      toast.error(formState.message);
     }
-  }, [formState]);
+  }, [formState, t]);
 
   // console.log(formState, "client");
   return (
