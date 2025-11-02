@@ -119,7 +119,7 @@ export default function UserReservations({
       if (onStatusChange) {
         onStatusChange();
       }
-      //triger notification component to update
+      // Trigger notification component to update
       triggerRefresh();
     } catch (err) {
       console.error(err);
@@ -230,14 +230,14 @@ export default function UserReservations({
                 <td className="px-6 py-4 text-left">{res.books.title}</td>
                 <td className="px-6 py-4 text-left">{res.books.author}</td>
                 <td className="px-6 py-4 text-left">
-                  {new Date(res.reservation_date).toISOString().slice(0, 10)}
+                  {new Date(res.reservation_date).toLocaleDateString(locale)}
                 </td>
                 <td className="px-6 py-4 text-left">
-                  {new Date(res.due_date).toISOString().slice(0, 10)}
+                    {new Date(res.due_date).toLocaleDateString(locale)}
                 </td>
                 <td className="px-6 py-4 text-left">
                   {res.return_date
-                    ? new Date(res.return_date).toISOString().slice(0, 10)
+                    ? new Date(res.reservation_date).toLocaleDateString(locale)
                     : "-"}
                 </td>
                 <td className="px-4 py-2">
@@ -253,7 +253,7 @@ export default function UserReservations({
                     {res.status === "returned"
                       ? t("dashboard_status_returned")
                       : isOverdue(res)
-                      ? "overdue"
+                      ? t("dashboard_status_overdue")
                       : t("dashboard_status_active")}
                   </span>
                 </td>

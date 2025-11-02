@@ -211,7 +211,7 @@ export default function ExtendReturnBooksPage() {
                   </td>
                   <td className="px-6 py-4">
                     {book.extended ? (
-                      <span className="text-sm">Extended</span>
+                      <span className="text-sm">{t("borrowed_status_extended")}</span>
                     ) : (
                       (book.status === "active" ||
                         book.status === "overdue") && (

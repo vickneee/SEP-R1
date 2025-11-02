@@ -1,7 +1,10 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
 import { checkUserCanReserve, type UserReservationStatus } from "@/app/[locale]/penalties/penaltyActions";
+
+import initTranslations from "@/app/i18n"; // Importing the translation initializer
+import {useCallback, useEffect, useState} from "react"; // Importing useEffect and useState
+import {useLocaleParams} from "@/hooks/useLocaleParams"; // Importing useLocaleParams
 
 interface OverdueStatusProps {
   userId?: string;
@@ -11,6 +14,19 @@ interface OverdueStatusProps {
 }
 
 export default function OverdueStatus({ userId, showDetails = false, className = "", refreshTrigger }: OverdueStatusProps) {
+    const params = useLocaleParams() as { locale?: string } | null; // Type assertion for params
+    const locale = params?.locale ?? "en"; // Default to 'en' if locale is not provided
+    const [t, setT] = useState(() => (key: string) => key); // Initial dummy translation function
+
+    // Load translations when locale changes
+    useEffect(() => {
+        const loadTranslations = async () => {
+            const translations = await initTranslations(locale, ["Penalties"]);
+            setT(() => translations.t);
+        };
+        loadTranslations();
+    }, [locale]);
+
   const [reservationStatus, setReservationStatus] = useState<UserReservationStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -30,11 +46,11 @@ export default function OverdueStatus({ userId, showDetails = false, className =
       setReservationStatus(statusResult.status);
     } catch (err) {
       console.error("Error loading reservation status:", err);
-      setError("Failed to load reservation status");
+      setError(t("loadReservationFail"));
     } finally {
       setLoading(false);
     }
-  }, [userId]);
+  }, [userId, t]);
 
   useEffect(() => {
     loadReservationStatus();
@@ -51,7 +67,7 @@ export default function OverdueStatus({ userId, showDetails = false, className =
   if (loading) {
     return (
       <div className={`text-gray-500 text-sm ${className}`}>
-        Loading status...
+          {t("loading_status")}
       </div>
     );
   }
@@ -59,16 +75,16 @@ export default function OverdueStatus({ userId, showDetails = false, className =
   if (error) {
     return (
       <div className={`text-red-500 text-sm ${className}`}>
-        Error: {error}
+          {t("error")}{error}
       </div>
     );
   }
 
-  // If user can reserve (no overdue books), show nothing or success message
+  // If a user can reserve (no overdue books), show nothing or success message
   if (reservationStatus?.can_reserve) {
     return showDetails ? (
       <div className={`text-green-600 text-sm ${className}`}>
-        ✓ No overdue books
+          {t("noOverdueBooks")}{error}
       </div>
     ) : null;
   }
@@ -81,7 +97,7 @@ export default function OverdueStatus({ userId, showDetails = false, className =
       <div className="flex items-center gap-2">
         <div className="bg-red-100 text-red-700 px-2 py-1 rounded text-sm flex items-center gap-1">
           <span className="font-semibold">{overdueCount}</span>
-          <span>overdue book{overdueCount !== 1 ? 's' : ''}</span>
+          <span> {error}{t("processedSuffix_2")} {overdueCount !== 1 ? t("s") : ''}</span>
         </div>
       </div>
 

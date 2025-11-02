@@ -8,6 +8,7 @@ export const getAllBorrowedBooks = async (locale: string = 'en'): Promise<{
     borrowedBooks: BorrowedBook[] | null;
     error: string | null;
 }> => {
+
     const { t } = await initTranslations(locale, ['ExtendReturn']);
 
     try {

@@ -1,7 +1,7 @@
 import { render, screen, act, waitFor } from "../../utils/test-utils";
 import UserReservations from "@/app/[locale]/(dashboard)/customer-dashboard/UserReservations";
 import CustomerDashboardClient from "@/app/[locale]/(dashboard)/customer-dashboard/CustomerDashboardClient";
-import { fireEvent } from "@testing-library/dom";
+import {fireEvent} from "@testing-library/dom";
 import { extendReservation } from "@/app/[locale]/books/extendedAction";
 import { checkUserCanReserve } from "@/app/[locale]/penalties/penaltyActions";
 
@@ -194,18 +194,15 @@ describe("UserReservations Component", () => {
   });
 
   it("renders reservation due date", async () => {
-    const dueDate = new Date(
-      Date.now() + 5 * 24 * 60 * 60 * 1000
-    ).toISOString();
+      const fixedDueDate = new Date(Date.now() + 5 * 24 * 60 * 60 * 1000);
+      const dueString = fixedDueDate.toLocaleDateString("en-US");
 
     mockCreateClient.mockReturnValueOnce(
       createMockClient([
         {
           reservation_id: 1,
           reservation_date: new Date().toISOString(),
-          due_date: new Date(
-            Date.now() + 5 * 24 * 60 * 60 * 1000
-          ).toISOString(), //
+          due_date: fixedDueDate.toISOString(),
           return_date: null,
           status: "active",
           extended: false,
@@ -216,12 +213,17 @@ describe("UserReservations Component", () => {
 
     render(<UserReservations />);
 
-    const formatted = dueDate.split("T")[0]; // "2025-09-25"
-    await waitFor(() => {
-      expect(
-        screen.getByText(new RegExp(formatted.replace(/-/g, "[-/]"), "i"))
-      ).toBeInTheDocument();
-    });
+      // Find the row for "Test Book"
+      const row = await screen.findByText("Test Book").then((el) => el.closest("tr"));
+      expect(row).not.toBeNull();
+
+      // Get the due date cell by column index (3rd td, 0-based)
+      const cells = row!.querySelectorAll("td");
+      const dueCell = cells[3];
+
+      await waitFor(() => {
+          expect(dueCell).toHaveTextContent(dueString);
+      });
   });
 
   it("should extend a reservation successfully", async () => {
