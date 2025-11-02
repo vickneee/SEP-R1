@@ -8,7 +8,7 @@ export default async function PrivatePage({
 }: {
   params: { locale: string };
 }) {
-  const locale = params.locale ?? "en";
+  const locale = params?.locale ?? "en";
   const { t } = await initTranslations(locale, ["private"]);
   const userProfile = await getUserProfile();
 
