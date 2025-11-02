@@ -1,10 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import { registerUserAction } from "@/app/[locale]/(auth)/signup/auth-actions";
 import { toast } from "react-hot-toast";
 import { useEffect } from "react";
+import initTranslations from "@/app/i18n"; // Importing the translation initializer
 
 import {
   CardTitle,
@@ -18,6 +19,7 @@ import {
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { ZodErrors } from "@/components/custom/ZodErrors";
+import { useParams } from "next/navigation";
 
 const styles = {
   container: "flex justify-center items-center w-full max-w-4xl min-h-[850px]",
@@ -49,11 +51,23 @@ type FormState = {
 };
 
 export function SignupForm() {
+  const params = useParams() as { locale?: string } | null; // Type assertion for params
+  const locale = params?.locale ?? "en"; // Default to 'en' if locale is not provided
+  const [t, setT] = useState(() => (key: string) => key); // Initial dummy translation function
   const [formState, formAction] = useActionState(
     registerUserAction,
     INITIAL_STATE
   );
   console.log(formState, "client");
+
+  // Load translations when locale changes
+  useEffect(() => {
+    const loadTranslations = async () => {
+      const translations = await initTranslations(locale, ["signup"]);
+      setT(() => translations.t);
+    };
+    loadTranslations();
+  }, [locale]);
 
   useEffect(() => {
     if (formState.message) {
@@ -62,12 +76,6 @@ export function SignupForm() {
         return (
           <div className="flex flex-col items-center gap-2">
             <span>{formState.message}</span>
-            {formState.message ==
-            "Registration successful! You can now sign in." ? (
-              <Link href="/signin" className={styles.button}>
-                Sign In
-              </Link>
-            ) : null}
           </div>
         );
       });
@@ -77,43 +85,52 @@ export function SignupForm() {
   return (
     <div className={styles.container}>
       <form action={formAction}>
+        {/*Passes the current locale to the server action via formData for proper translation handling*/}
+        <input type="hidden" name="locale" value={locale} />
         <Card className={styles.card}>
           <CardHeader className={styles.header}>
-            <CardTitle className={styles.title}>Sign Up</CardTitle>
+            <CardTitle className={styles.title}>
+              {/*Adding translation key*/}
+              {t("signup_title")}
+            </CardTitle>
             <CardDescription className={styles.description}>
-              Enter your details to create a new account
+              {/*Adding translation key*/}
+              {t("signup_form_title_create_account")}
             </CardDescription>
           </CardHeader>
           <CardContent className={styles.content}>
             <div className={styles.fieldGroup}>
               <Label className={styles.label} htmlFor="first_name">
-                First Name
+                {/*Adding translation key*/}
+                {t("signup_label_first_name")}
               </Label>
               <Input
                 className={styles.input}
                 id="first_name"
                 name="first_name"
                 type="text"
-                placeholder="John"
+                placeholder={t("signup_placeholder_first_name")}
               />
               <ZodErrors error={formState?.zodErrors?.first_name} />
             </div>
             <div className={styles.fieldGroup}>
               <Label className={styles.label} htmlFor="last_name">
-                Last Name
+                {/*Adding translation key*/}
+                {t("signup_label_last_name")}
               </Label>
               <Input
                 className={styles.input}
                 id="last_name"
                 name="last_name"
                 type="text"
-                placeholder="Doe"
+                placeholder={t("signup_placeholder_last_name")}
               />
               <ZodErrors error={formState?.zodErrors?.last_name} />
             </div>
             <div className={styles.fieldGroup}>
               <Label className={styles.label} htmlFor="email">
-                Email
+                {/*Adding translation key*/}
+                {t("signup_label_email")}
               </Label>
               <Input
                 className={styles.input}
@@ -126,28 +143,32 @@ export function SignupForm() {
             </div>
             <div className={styles.fieldGroup}>
               <Label className={styles.label} htmlFor="password">
-                Password
+                {/*Adding translation key*/}
+                {t("signup_label_password")}
               </Label>
               <Input
                 className={styles.input}
                 id="password"
                 name="password"
                 type="password"
-                placeholder="Password"
+                placeholder={t("signup_label_password")}
               />
               <ZodErrors error={formState?.zodErrors?.password} />
             </div>
           </CardContent>
           <CardFooter className={styles.footer}>
             <button type="submit" className={styles.button}>
-              Sign Up
+              {/*Adding translation key*/}
+              {t("signup_title")}
             </button>
           </CardFooter>
         </Card>
         <div className={styles.prompt}>
-          Have an account?
+          {/*Adding translation key*/}
+          {t("signup_text_have_account")}
           <Link className={styles.link} href="/signin">
-            Sign In
+            {/*Adding translation key*/}
+            {t("signup_signin_link")}
           </Link>
         </div>
       </form>

@@ -1,1 +1,27 @@
-{}
+{
+  "signup_title": "Зарегистрироваться",
+  "signup_form_title_create_account": "Введите свои данные, чтобы создать новый аккаунт",
+  "signup_label_first_name": "Имя",
+  "signup_placeholder_first_name": "Иван",
+  "signup_label_last_name": "Фамилия",
+  "signup_placeholder_last_name": "Иванов",
+  "signup_label_email": "Электронная почта",
+  "signup_label_password": "Пароль",
+  "signup_text_have_account": "У вас уже есть аккаунт?",
+  "signup_msg_registration_success": "Регистрация не выполнена из-за непредвиденной ошибки. Пожалуйста, попробуйте ещё раз.",
+  "signup_error_unexpected": "Регистрация не выполнена из-за непредвиденной ошибки. Пожалуйста, попробуйте ещё раз.",
+  "signup_error_no_user_data": "Регистрация не выполнена: данные пользователя не получены. Пожалуйста, попробуйте ещё раз.",
+  "signup_error_email_exists": "Учетная запись с этим адресом электронной почты уже существует. Пожалуйста, войдите в систему.",
+  "signup_error_generic_prefix": "Регистрация не удалась:",
+  "signup_error_generic_suffix": ". Пожалуйста, попробуйте еще раз.",
+  "signup_error_missing_fields": "Некоторые поля не заполнены. Регистрация не удалась.",
+  "signup_validation_first_name_required": "Имя обязательно для заполнения.",
+  "signup_validation_first_name_max_length": "Имя должно содержать не более 50 символов.",
+  "signup_validation_last_name_required": "Пожалуйста, введите фамилию.",
+  "signup_validation_last_name_max_length": "Фамилия должна содержать не более 50 символов",
+  "signup_validation_password_min_length": "Пароль должен содержать не менее 8 символов",
+  "signup_validation_password_max_length": "Пароль должен содержать не более 100 символов",
+  "signup_validation_email_required": "Пожалуйста, введите свой адрес электронной почты",
+  "signup_validation_email_invalid": "Введите корректный email-адрес",
+  "signup_signin_link": "Вход в систему"
+}

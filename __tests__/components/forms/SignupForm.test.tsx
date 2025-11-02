@@ -16,6 +16,14 @@ jest.mock("react", () => {
   };
 });
 
+// --- Mock next/navigation ---
+jest.mock("next/navigation", () => ({
+  useParams: jest.fn(() => ({ locale: "en" })),
+  useRouter: jest.fn(() => ({ push: jest.fn() })),
+  useSearchParams: () => new URLSearchParams(),
+  usePathname: () => "/",
+}));
+
 describe("SignupForm", () => {
   it("renders SignupForm", async () => {
     await act(async () => {

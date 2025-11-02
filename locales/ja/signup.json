@@ -1,1 +1,27 @@
-{}
+{
+  "signup_title": "サインアップ",
+  "signup_form_title_create_account": "新規登録するには、以下の項目を入力してください。",
+  "signup_label_first_name": "名",
+  "signup_placeholder_first_name": "真紀子",
+  "signup_label_last_name": "姓",
+  "signup_placeholder_last_name": "田中",
+  "signup_label_email": "Eメール",
+  "signup_label_password": "パスワード",
+  "signup_text_have_account": "すでにアカウントをお持ちですか？",
+  "signup_msg_registration_success": "登録が完了しました！ログインできます。",
+  "signup_error_unexpected": "予期せぬエラーにより、登録に失敗しました。もう一度お試しください。",
+  "signup_error_no_user_data": "登録に失敗しました：ユーザー情報が受信されませんでした。もう一度お試しください",
+  "signup_error_email_exists": "このメールアドレスではすでに登録されています。ログインしてください。",
+  "signup_error_generic_prefix": "登録に失敗しました。",
+  "signup_error_generic_suffix": "もう一度お試しください。",
+  "signup_error_missing_fields": "未入力の項目があります。登録に失敗しました。",
+  "signup_validation_first_name_required": "名が入力されていません。",
+  "signup_validation_first_name_max_length": "名は50文字以内でご入力ください。",
+  "signup_validation_last_name_required": "姓は必須項目です。",
+  "signup_validation_last_name_max_length": "姓は50文字以内で入力してください",
+  "signup_validation_password_min_length": "パスワードは8文字以上で入力してください",
+  "signup_validation_password_max_length": "パスワードは100文字以内で入力してください",
+  "signup_validation_email_required": "メールアドレスを入力してください",
+  "signup_validation_email_invalid": "有効なメールアドレスを入力してください",
+  "signup_signin_link": "サインイン"
+}

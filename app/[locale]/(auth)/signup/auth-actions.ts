@@ -1,28 +1,8 @@
 "use server";
 import { createClient } from "@/utils/supabase/server";
 import { createMockClient } from "@/utils/supabase/mock";
-import { z } from "zod";
-
-const schemaRegister = z.object({
-  first_name: z
-    .string()
-    .min(1, { message: "First name is required" })
-    .max(50, { message: "First name must be under 50 characters" }),
-  last_name: z
-    .string()
-    .min(1, { message: "Last name is required" })
-    .max(50, { message: "Last name must be under 50 characters" }),
-  password: z
-    .string()
-    .min(8, { message: "Password must be at least 8 characters" })
-    .max(100, { message: "Password must be under 100 characters" }),
-  email: z
-    .string()
-    .min(1, { message: "Please enter your email address" })
-    .email({
-      message: "Please enter a valid email address",
-    }),
-});
+import initTranslations from "@/app/i18n";
+import { getRegisterSchema } from "@/components/schemas/registerationSchema";
 
 type FormState = {
   data: unknown;
@@ -34,6 +14,11 @@ export async function registerUserAction(
   prevState: FormState,
   formData: FormData
 ) {
+  console.log("📦 locale from formData:", formData.get("locale"));
+  const locale = formData.get("locale")?.toString() || "en";
+  const { t } = await initTranslations(locale, ["signup"]);
+  const schemaRegister = getRegisterSchema(t);
+
   const validatedFields = schemaRegister.safeParse({
     first_name: (formData.get("first_name") ?? "") as string,
     last_name: (formData.get("last_name") ?? "") as string,
@@ -45,7 +30,7 @@ export async function registerUserAction(
     return {
       ...prevState,
       zodErrors: validatedFields.error.flatten().fieldErrors,
-      message: "Missing Fields. Failed to Register",
+      message: t("signup_error_missing_fields"),
     };
   }
 
@@ -84,17 +69,16 @@ export async function registerUserAction(
       console.error("❌ Signup failed:", error);
       return {
         ...prevState,
-        message: `Registration failed: ${
+        message: `${t("signup_error_generic_prefix")} ${
           error.message || "Unknown error"
-        }. Please try again.`,
+        }${t("signup_error_generic_suffix")}`,
       };
     }
 
     if (data.user && data.user.identities?.length === 0) {
       return {
         ...prevState,
-        message:
-          "An account with this email already exists. Please sign in instead.",
+        message: t("signup_error_email_exists"),
       };
     }
 
@@ -102,8 +86,7 @@ export async function registerUserAction(
       console.error("❌ No user returned from signUp");
       return {
         ...prevState,
-        message:
-          "Registration failed: No user data received. Please try again.",
+        message: t("signup_error_no_user_data"),
       };
     }
 
@@ -111,14 +94,13 @@ export async function registerUserAction(
 
     return {
       ...prevState,
-      message: "Registration successful! You can now sign in.",
+      message: t("signup_msg_registration_success"),
     };
   } catch (error) {
     console.error("❌ Unexpected error during registration:", error);
     return {
       ...prevState,
-      message:
-        "Registration failed due to an unexpected error. Please try again.",
+      message: t("signup_error_unexpected"),
     };
   }
 }
