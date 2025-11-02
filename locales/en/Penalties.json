@@ -36,7 +36,11 @@
   "restrictedNotice": "⚠️ Restricted:",
   "returnOverdueToContinue": "Return overdue books to continue borrowing",
   "loadReservationFail": "Failed to load reservation status",
+  "loading_status": "Loading status...",
+  "error" : "Error: ",
   "noOverdueBooks": "✓ No overdue books",
   "processedPrefix": "Processed",
-  "processedSuffix": "overdue books"
+  "processedSuffix": "overdue books",
+  "processedSuffix_2": "overdue book",
+  "s": "s"
 }

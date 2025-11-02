@@ -36,7 +36,11 @@
   "restrictedNotice": "⚠️ Ограничение:",
   "returnOverdueToContinue": "Верните просроченные книги, чтобы продолжить заимствование",
   "loadReservationFail": "Не удалось загрузить статус бронирования",
+  "loading_status": "Загрузка состояния...",
+  "error" : "Ошибка: ",
   "noOverdueBooks": "✓ Просроченных книг нет",
   "processedPrefix": "Обработано",
-  "processedSuffix": "просроченных книг"
+  "processedSuffix": "просроченных книг",
+  "processedSuffix_2": "просроченных книг",
+  "s": "ы"
 }
