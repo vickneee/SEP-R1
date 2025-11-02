@@ -1,9 +1,11 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import Link from "next/link";
+import { useParams } from "next/navigation";
+import initTranslations from "@/app/i18n";
 
 interface Book {
   title: string;
@@ -37,6 +39,56 @@ export default function LibrarianDashboardClient({
   userProfile,
   userEmail,
 }: LibrarianDashboardClientProps) {
+  const params = useParams();
+  const locale = (params?.locale as string) ?? "en";
+
+  const [translatorSource, setTranslatorSource] = useState<any>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const res: any = await initTranslations(locale, ["LibrarianDashboardClient"]);
+        if (mounted) setTranslatorSource(res);
+      } catch (err) {
+        console.error("Failed to initialize translations:", err);
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, [locale]);
+
+  const tr = (key: string, vars?: Record<string, any>) => {
+    try {
+      if (!translatorSource) return key;
+
+      if (typeof translatorSource === "function") {
+        return translatorSource(key, vars);
+      }
+
+      if (translatorSource && typeof translatorSource.t === "function") {
+        return translatorSource.t(key, vars);
+      }
+
+      if (translatorSource.t && typeof translatorSource.t === "object" && key in translatorSource.t) {
+        return translatorSource.t[key];
+      }
+
+      const ns =
+        translatorSource.resources?.[locale]?.LibrarianDashboardClient ??
+        translatorSource.resources?.LibrarianDashboardClient;
+      if (ns && typeof ns === "object" && key in ns) return ns[key];
+
+      if (typeof translatorSource === "object" && key in translatorSource) return translatorSource[key];
+
+      return key;
+    } catch (err) {
+      console.error("Translation error:", err);
+      return key;
+    }
+  };
+
   const [books, setBooks] = useState<Book[]>([]);
   const [form, setForm] = useState<Book>({
     title: "",
@@ -74,8 +126,8 @@ export default function LibrarianDashboardClient({
       form.isbn &&
       form.publisher &&
       form.publication_year &&
-      form.total_copies &&
-      form.available_copies
+      form.total_copies !== undefined &&
+      form.available_copies !== undefined
     ) {
       setLoading(true);
       try {
@@ -104,7 +156,7 @@ export default function LibrarianDashboardClient({
         });
       } catch (error) {
         console.error("Error adding book:", error);
-        alert("Error adding book.");
+        alert(tr("error_add_book"));
       } finally {
         setLoading(false);
       }
@@ -116,62 +168,60 @@ export default function LibrarianDashboardClient({
       {/* User Information Section */}
       <div className="bg-gray-100 p-6 rounded-lg shadow-md mb-8 w-full max-w-md mx-auto">
         <h2 className="text-xl font-bold mb-4 text-gray-800">
-          Librarian Dashboard
+          {tr("dashboard_title")}
         </h2>
         <div className="space-y-2 text-left">
           <p>
-            <strong>Email:</strong> {userEmail}
+            <strong>{tr("email_label")}:</strong> {userEmail}
           </p>
           <p>
-            <strong>Name:</strong> {userProfile.first_name}{" "}
-            {userProfile.last_name}
+            <strong>{tr("name_label")}</strong>{" "}
+            {userProfile.first_name} {userProfile.last_name}
           </p>
           <p>
-            <strong>Role:</strong>{" "}
+            <strong>{tr("role_label")}</strong>{" "}
             <span className="capitalize font-semibold text-blue-600">
-              Librarian
+              {tr("role_librarian")}
             </span>
           </p>
           <p>
-            <strong>Status:</strong>{" "}
+            <strong>{tr("status_label")}</strong>{" "}
             <span
-              className={
-                userProfile.is_active ? "text-green-600" : "text-red-600"
-              }
+              className={userProfile.is_active ? "text-green-600" : "text-red-600"}
             >
-              {userProfile.is_active ? "Active" : "Inactive"}
+              {userProfile.is_active ? tr("status_active") : tr("status_inactive")}
             </span>
           </p>
           <p>
-            <strong>Management:</strong>{" "}
+            <strong>{tr("management_section")}:</strong>{" "}
             <Link
               href="/penalties"
               className=" text-blue-600 hover:text-blue-800 underline"
             >
-              View Overdue Books
+              {tr("view_overdue_books")}
             </Link>
           </p>
           <p>
-            <strong>Management:</strong>{" "}
+            <strong>{tr("management_section")}:</strong>{" "}
             <Link
               href="/extend-return"
               className="text-blue-600 hover:text-blue-800 underline"
             >
-              View Extend/Return Books
+              {tr("view_extend_return_books")}
             </Link>
           </p>
         </div>
       </div>
 
       <div className="max-w-md mx-auto">
-        <h1 className="text-2xl font-bold mb-4">Add a Book</h1>
+        <h1 className="text-2xl font-bold mb-4">{tr("add_book_button")}</h1>
         <form
           onSubmit={handleSubmit}
           className="flex flex-col gap-3 bg-white p-6 rounded shadow"
         >
           <input
             name="title"
-            placeholder="Title"
+            placeholder={tr("book_title_label")}
             value={form.title}
             onChange={handleChange}
             required
@@ -179,7 +229,7 @@ export default function LibrarianDashboardClient({
           />
           <input
             name="author"
-            placeholder="Author"
+            placeholder={tr("book_author_label")}
             value={form.author}
             onChange={handleChange}
             required
@@ -187,7 +237,7 @@ export default function LibrarianDashboardClient({
           />
           <input
             name="image"
-            placeholder="Image URL"
+            placeholder={tr("book_image_url_label")}
             value={form.image}
             onChange={handleChange}
             required
@@ -195,7 +245,7 @@ export default function LibrarianDashboardClient({
           />
           <input
             name="category"
-            placeholder="Category"
+            placeholder={tr("book_category_label")}
             value={form.category}
             onChange={handleChange}
             required
@@ -203,7 +253,7 @@ export default function LibrarianDashboardClient({
           />
           <input
             name="isbn"
-            placeholder="ISBN"
+            placeholder={tr("book_isbn_label")}
             value={form.isbn}
             onChange={handleChange}
             required
@@ -211,38 +261,38 @@ export default function LibrarianDashboardClient({
           />
           <input
             name="publisher"
-            placeholder="Publisher"
+            placeholder={tr("book_publisher_label")}
             value={form.publisher}
             onChange={handleChange}
             required
             className="border rounded px-3 py-2"
           />
-          <Label className="text-gray-700">Publication Year:</Label>
+          <Label className="text-gray-700">{tr("book_publication_year_label")}</Label>
           <input
             name="publication_year"
             type="number"
-            placeholder="Publication Year"
+            placeholder={String(new Date().getFullYear())}
             value={form.publication_year}
             onChange={handleChange}
             required
             className="border rounded px-3 py-2 text-gray-600"
           />
-          <Label className="text-gray-700">Total Copies:</Label>
+          <Label className="text-gray-700">{tr("book_total_copies_label")}</Label>
           <input
             name="total_copies"
             type="number"
-            placeholder="Total Copies"
+            placeholder={tr("book_total_copies_label")}
             value={form.total_copies}
             onChange={handleChange}
             required
             min={1}
             className="border rounded px-3 py-2 text-gray-600"
           />
-          <Label className="text-gray-700">Available Copies:</Label>
+          <Label className="text-gray-700">{tr("book_available_copies_label")}</Label>
           <input
             name="available_copies"
             type="number"
-            placeholder="Available Copies"
+            placeholder={tr("book_available_copies_label")}
             value={form.available_copies}
             onChange={handleChange}
             required
@@ -254,10 +304,10 @@ export default function LibrarianDashboardClient({
             className="bg-orange-500 text-white"
             disabled={loading}
           >
-            {loading ? "Adding..." : "Add Book"}
+            {loading ? "Adding..." : tr("book_add_button")}
           </Button>
         </form>
-        <h2 className="text-xl font-semibold mt-8 mb-2">Added books</h2>
+        <h2 className="text-xl font-semibold mt-8 mb-2">{tr("added_books_section")}</h2>
         <ul>
           {books.map((book, idx) => (
             <li key={idx} className="flex items-center mb-4">
@@ -270,16 +320,16 @@ export default function LibrarianDashboardClient({
               />
               <div>
                 <strong>{book.title}</strong> by {book.author} <br />
-                <em>Category:</em> {book.category}
+                <em>{tr("book_category_colon_label")}</em> {book.category}
                 <br />
-                <span>ISBN: {book.isbn}</span>
+                <span>{tr("book_isbn_colon_label")} {book.isbn}</span>
                 <br />
-                <span>Publisher: {book.publisher}</span>
+                <span>{tr("book_publisher_colon_label")} {book.publisher}</span>
                 <br />
-                <span>Year: {book.publication_year}</span>
+                <span>{tr("book_year_colon_label")} {book.publication_year}</span>
                 <br />
                 <span>
-                  Copies: {book.available_copies}/{book.total_copies}
+                  {tr("book_copies_colon_label")} {book.available_copies}/{book.total_copies}
                 </span>
               </div>
             </li>
