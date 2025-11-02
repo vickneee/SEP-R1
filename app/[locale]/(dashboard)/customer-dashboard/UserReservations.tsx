@@ -119,7 +119,7 @@ export default function UserReservations({
       if (onStatusChange) {
         onStatusChange();
       }
-      //triger notification component to update
+      // Trigger notification component to update
       triggerRefresh();
     } catch (err) {
       console.error(err);
@@ -253,7 +253,7 @@ export default function UserReservations({
                     {res.status === "returned"
                       ? t("dashboard_status_returned")
                       : isOverdue(res)
-                      ? "overdue"
+                      ? t("dashboard_status_overdue")
                       : t("dashboard_status_active")}
                   </span>
                 </td>
