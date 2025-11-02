@@ -3,11 +3,13 @@ import LibrarianDashboard from "@/app/[locale]/(dashboard)/librarian-dashboard/p
 import CustomerDashboard from "@/app/[locale]/(dashboard)/customer-dashboard/page";
 import initTranslations from "@/app/i18n"; // Importing the translation initializer
 type Props = {
-  params: { locale?: string };
+  params: {
+    locale: string;
+  };
 };
 
 export default async function PrivatePage({ params }: Props) {
-  const locale = params?.locale ?? "en";
+  const locale = params.locale ?? "en";
   const { t } = await initTranslations(locale, ["Signin"]);
   const userProfile = await getUserProfile();
 
