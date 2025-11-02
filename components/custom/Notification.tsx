@@ -66,7 +66,7 @@ export default function NotificationSection() {
     );
 
     return Object.fromEntries(results.map(({ id, title }) => [id, title]));
-  }, []);
+  }, [t]);
 
   const loadBookTitles = useCallback(
     async (
