@@ -9,7 +9,7 @@ export default async function PrivatePage({
   params: { locale: string };
 }) {
   const locale = params.locale ?? "en";
-  const { t } = await initTranslations(locale, ["Signin"]);
+  const { t } = await initTranslations(locale, ["private"]);
   const userProfile = await getUserProfile();
 
   if (!userProfile) {
