@@ -1,1 +1,27 @@
-{}
+{
+  "signup_title": "Sign Up",
+  "signup_form_title_create_account": "Enter your details to create a new account",
+  "signup_label_first_name": "First Name",
+  "signup_placeholder_first_name": "John",
+  "signup_label_last_name": "Last Name",
+  "signup_placeholder_last_name": "Doe",
+  "signup_label_email": "Email",
+  "signup_label_password": "Password",
+  "signup_text_have_account": "Have an account?",
+  "signup_msg_registration_success": "Registration successful! You can now sign in.",
+  "signup_error_unexpected": "Registration failed due to an unexpected error. Please try again.",
+  "signup_error_no_user_data": "Registration failed: No user data received. Please try again.",
+  "signup_error_email_exists": "An account with this email already exists. Please sign in instead.",
+  "signup_error_generic_prefix": "Registration failed:",
+  "signup_error_generic_suffix": ". Please try again.",
+  "signup_error_missing_fields": "Missing Fields. Failed to Register",
+  "signup_validation_first_name_required": "First name is required",
+  "signup_validation_first_name_max_length": "First name must be under 50 characters",
+  "signup_validation_last_name_required": "Last name is required",
+  "signup_validation_last_name_max_length": "Last name must be under 50 characters",
+  "signup_validation_password_min_length": "Password must be at least 8 characters",
+  "signup_validation_password_max_length": "Password must be under 100 characters",
+  "signup_validation_email_required": "Please enter your email address",
+  "signup_validation_email_invalid": "Please enter a valid email address",
+  "signup_signin_link": "Sign In"
+}
