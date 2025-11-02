@@ -1,0 +1,7 @@
+{
+  "error_delete_book": "Failed to delete book.",
+  "unexpected_delete_error": "An unexpected error occurred while deleting the book.",
+  "library_collection": "Library Collection",
+  "book_unavailable": "Currently unavailable",
+  "see_details": "See details"
+}

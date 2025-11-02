@@ -1,6 +1,6 @@
 "use client";
 
-import { Key } from "react";
+import React, { Key, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Trash2, Edit3 } from "lucide-react";
 
@@ -8,6 +8,8 @@ import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import BookImage from "./BookImage";
 import { deleteBook } from "@/app/[locale]/books/bookActions";
 import Image from "next/image";
+import { useParams } from "next/navigation";
+import initTranslations from "@/app/i18n";
 
 interface Book {
   book_id: number;
@@ -24,6 +26,55 @@ interface BooksProps {
 
 export function Books({ books }: BooksProps) {
   const router = useRouter();
+  const params = useParams();
+  const locale = (params?.locale as string) ?? "en";
+
+  const [translatorSource, setTranslatorSource] = useState<any>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    (async () => {
+      try {
+        const res: any = await initTranslations(locale, ["Books"]);
+        if (mounted) setTranslatorSource(res);
+      } catch (err) {
+        console.error("Failed to initialize translations:", err);
+      }
+    })();
+    return () => {
+      mounted = false;
+    };
+  }, [locale]);
+
+  const tr = (key: string, vars?: Record<string, any>) => {
+    try {
+      if (!translatorSource) return key;
+
+      if (typeof translatorSource === "function") {
+        return translatorSource(key, vars);
+      }
+
+      if (translatorSource && typeof translatorSource.t === "function") {
+        return translatorSource.t(key, vars);
+      }
+
+      if (translatorSource.t && typeof translatorSource.t === "object" && key in translatorSource.t) {
+        return translatorSource.t[key];
+      }
+
+      const ns =
+        translatorSource.resources?.[locale]?.Books ??
+        translatorSource.resources?.Books;
+      if (ns && typeof ns === "object" && key in ns) return ns[key];
+
+      if (typeof translatorSource === "object" && key in translatorSource) return translatorSource[key];
+
+      return key;
+    } catch (err) {
+      console.error("Translation error:", err);
+      return key;
+    }
+  };
 
   const handleClick = (id: Key) => {
     router.push(`/book/${id}`);
@@ -39,20 +90,20 @@ export function Books({ books }: BooksProps) {
     try {
       const result = await deleteBook(Number(bookId));
       if (result.error) {
-        alert("Failed to delete book: " + result.error);
+        alert(`${tr("error_delete_book")} ${result.error ?? ""}`.trim());
       } else {
         window.location.reload();
       }
     } catch (error) {
       console.error(error);
-      alert("An unexpected error occurred while deleting the book.");
+      alert(tr("unexpected_delete_error"));
     }
   };
 
   return (
     <div className="flex flex-col gap-10 max-w-3xl mx-auto">
       <h1 className="mt-12 text-orange-500 text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 text-center">
-        Library Collection
+        {tr("library_collection")}
       </h1>
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 mb-16">
         {books.map((book) => (
@@ -104,7 +155,7 @@ export function Books({ books }: BooksProps) {
             {/* Unavailable notice */}
             {book.available_copies === 0 && (
               <p className="text-center text-red-600 font-semibold mt-2">
-                Currently unavailable
+                {tr("book_unavailable")}
               </p>
             )}
 
@@ -119,7 +170,7 @@ export function Books({ books }: BooksProps) {
                 }`}
                 disabled={book.available_copies === 0}
               >
-                See details
+                {tr("see_details")}
               </button>
             </div>
           </Card>

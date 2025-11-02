@@ -1,0 +1,7 @@
+{
+  "error_delete_book": "本の削除に失敗しました。",
+  "unexpected_delete_error": "本の削除中に予期しないエラーが発生しました。",
+  "library_collection": "図書コレクション",
+  "book_unavailable": "現在利用できません",
+  "see_details": "詳細を見る"
+}
