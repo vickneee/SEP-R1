@@ -1,6 +1,7 @@
 "use server";
 
 import { createClient } from "@/utils/supabase/server";
+import initTranslations from "@/app/i18n"; // Import translations
 
 const getDueDateNotification = async () => {
   const supabase = await createClient();
@@ -28,12 +29,13 @@ const getDueDateNotification = async () => {
   }
 };
 
-const markReminderSentAsTrue = async (id: number) => {
+const markReminderSentAsTrue = async (id: number, locale: string = "en") => {
+  const { t } = await initTranslations(locale, ["notification"]);
   const supabase = await createClient();
   const { data: userData } = await supabase.auth.getUser();
   if (!userData?.user?.id) {
     return {
-      error: "User not found",
+      error: t("notification_error_user_not_found"),
       reservation: [],
     };
   }

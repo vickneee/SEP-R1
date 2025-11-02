@@ -20,6 +20,14 @@ jest.mock("@/utils/supabase/client", () => ({
   }),
 }));
 
+// --- Mock next/navigation ---
+jest.mock("next/navigation", () => ({
+  useParams: jest.fn(() => ({ locale: "en" })),
+  useRouter: jest.fn(() => ({ push: jest.fn() })),
+  useSearchParams: () => new URLSearchParams(),
+  usePathname: () => "/",
+}));
+
 global.fetch = jest.fn(() =>
   Promise.resolve({
     json: () => Promise.resolve({ success: true }),

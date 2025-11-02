@@ -9,6 +9,8 @@ import { useActionState } from "react";
 import { updateUserAction } from "@/app/[locale]/(dashboard)/customer-dashboard/update-user-action";
 import { useEffect } from "react";
 import { toast } from "react-hot-toast";
+import initTranslations from "@/app/i18n"; // Importing the translation initializer
+import { useParams } from "next/navigation";
 
 const INITIAL_STATE: FormState = {
   data: null,
@@ -23,6 +25,9 @@ type FormState = {
 };
 
 export default function UserAccountOperations() {
+  const params = useParams() as { locale?: string } | null; // Type assertion for params
+  const locale = params?.locale ?? "en"; // Default to 'en' if locale is not provided
+  const [t, setT] = useState(() => (key: string) => key); // Initial dummy translation function
   const router = useRouter();
   const pathname = usePathname();
   const [showForm, setShowForm] = useState(false);
@@ -32,9 +37,7 @@ export default function UserAccountOperations() {
   );
 
   const handleDelete = async () => {
-    const confirmed = window.confirm(
-      "Are you sure you want to delete your account?"
-    );
+    const confirmed = window.confirm(t("dashboard_confirm_delete_account"));
     if (!confirmed) return;
     const res = await fetch("/api/delete-user", { method: "POST" });
     const { success } = await res.json();
@@ -56,6 +59,17 @@ export default function UserAccountOperations() {
     }
   };
 
+  // Load translations when locale changes
+  useEffect(() => {
+    const loadTranslations = async () => {
+      const translations = await initTranslations(locale, [
+        "customer_dashboard",
+      ]);
+      setT(() => translations.t);
+    };
+    loadTranslations();
+  }, [locale]);
+
   useEffect(() => {
     if (formState.message?.includes("successful")) {
       router.push(pathname);
@@ -73,7 +87,7 @@ export default function UserAccountOperations() {
           className="px-4 py-2 text-sm rounded transition-colors
                                 bg-green-600 hover:bg-green-700 text-white"
         >
-          Update Email Address
+          {t("dashboard_button_update_email")}
         </button>
         <button
           data-testid="delete-button"
@@ -81,18 +95,20 @@ export default function UserAccountOperations() {
           className="px-4 py-2 text-sm rounded transition-colors
                                 bg-red-600 hover:bg-red-700 text-white"
         >
-          Delete Account
+          {t("dashboard_button_delete_account")}
         </button>
       </div>
       {showForm && (
         <form action={formAction}>
+          {/*Passes the current locale to the server action via formData for proper translation handling*/}
+          <input type="hidden" name="locale" value={locale} />
           <Separator />
           <div className="flex flex-col py-5 space-y-8">
             <label
               className="font-bold text-lg text-gray-700 text-center w-full"
               htmlFor="email"
             >
-              New Email Address
+              {t("dashboard_label_new_email")}
             </label>
             <Input
               className="bg-white text-gray-700 text-lg h-10"
@@ -106,7 +122,7 @@ export default function UserAccountOperations() {
               type="submit"
               className="text-lg px-6 py-1 bg-[#552A1B] text-white rounded hover:bg-[#E46A07] transition-colors duration-300"
             >
-              Submit
+              {t("dashboard_button_submit")}
             </button>
           </div>
         </form>

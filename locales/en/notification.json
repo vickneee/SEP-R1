@@ -1,0 +1,14 @@
+{
+  "notification_error_fetch_book_failed": "Failed to fetch book",
+  "notification_book_untitled": "Untitled",
+  "notification_book_unknown_title": "Unknown Title",
+  "notification_title": "Notifications",
+  "notification_error_loading_failed": "Failed to load notifications:",
+  "notification_empty_message": "You have no notifications.",
+  "notification_book_label": "The book",
+  "notification_loading": "Loading...",
+  "notification_due_date_prefix": "is due on",
+  "dateLocale": "en-US",
+  "notification_due_date_suffix": ". Please make sure to return it by then.",
+  "notification_error_user_not_found": "User not found"
+}

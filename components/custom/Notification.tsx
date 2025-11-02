@@ -14,6 +14,8 @@ import {
 import { useCallback, useEffect, useState } from "react";
 import { getBookById } from "@/app/[locale]/books/bookActions";
 import { useNotification } from "@/context/NotificationContext";
+import initTranslations from "@/app/i18n"; // Importing the translation initializer
+import { useParams } from "next/navigation";
 
 type notification = {
   reservation_id: number;
@@ -22,6 +24,9 @@ type notification = {
 };
 
 export default function NotificationSection() {
+  const params = useParams() as { locale?: string } | null; // Type assertion for params
+  const locale = params?.locale ?? "en"; // Default to 'en' if locale is not provided
+  const [t, setT] = useState(() => (key: string) => key); // Initial dummy translation function
   const { refreshKey } = useNotification();
   const [dueDateNotifications, setDueDateNotifications] = useState<
     notification[]
@@ -47,11 +52,15 @@ export default function NotificationSection() {
       bookIds.map(async (id) => {
         try {
           const res = await getBookById(id);
-          if (res.error) throw new Error("Failed to fetch book");
-          return { id, title: res.book.title || "Untitled" };
+          if (res.error)
+            throw new Error(t("notification_error_fetch_book_failed"));
+          return {
+            id,
+            title: res.book.title || t("notification_book_untitled"),
+          };
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
         } catch (error) {
-          return { id, title: "Unknown Title" };
+          return { id, title: t("notification_book_unknown_title") };
         }
       })
     );
@@ -69,6 +78,15 @@ export default function NotificationSection() {
     },
     [fetchBookTitles]
   );
+
+  // Load translations when locale changes
+  useEffect(() => {
+    const loadTranslations = async () => {
+      const translations = await initTranslations(locale, ["notification"]);
+      setT(() => translations.t);
+    };
+    loadTranslations();
+  }, [locale]);
 
   useEffect(() => {
     fetchDueDateNotifications();
@@ -106,17 +124,17 @@ export default function NotificationSection() {
       </PopoverTrigger>
       <PopoverContent className="w-[400px]" sideOffset={37}>
         <div className="flex p-4">
-          <h3 className="text-lg font-medium">Notifications</h3>
+          <h3 className="text-lg font-medium">{t("notification_title")}</h3>
         </div>
         <Separator />
         <ScrollArea>
           <div className="space-y-4 p-4">
             {dueDateError && (
               <p className="text-red-500 font-medium">
-                Failed to load notifications: {dueDateError}
+                {t("notification_error_loading_failed")} {dueDateError}
               </p>
             )}
-            {!hasNotifications && <p>You have no notifications.</p>}
+            {!hasNotifications && <p>{t("notification_empty_message")}</p>}
 
             {hasNotifications &&
               dueDateNotifications?.map(
@@ -126,19 +144,23 @@ export default function NotificationSection() {
                     className="flex items-center justify-between gap-4"
                   >
                     <p>
-                      The book{" "}
+                      {t("notification_book_label")}
                       <strong>
-                        {dueDateBookTitles[book_id] || "Loading..."}
+                        {dueDateBookTitles[book_id] ||
+                          t("notification_loading")}
                       </strong>{" "}
-                      is due on{" "}
+                      {t("notification_due_date_prefix")}
                       <strong>
-                        {new Date(due_date).toLocaleDateString("en-US", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })}
+                        {new Date(due_date).toLocaleDateString(
+                          t("dateLocale"),
+                          {
+                            year: "numeric",
+                            month: "long",
+                            day: "numeric",
+                          }
+                        )}
                       </strong>
-                      . Please make sure to return it by then.
+                      {t("notification_due_date_suffix")}
                     </p>
                     <Button
                       onClick={() => markAsRead(reservation_id)}

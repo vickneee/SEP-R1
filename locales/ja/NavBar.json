@@ -2,7 +2,7 @@
   "nav_btn_log_out": "ログアウト",
   "nav_btn_sign_in": "サインイン",
   "nav_link_private": "プライベート",
-  "nav_name": "ライブラリハブ",
+  "nav_name": "LibraryHub",
   "nav_search_label": "検索",
-  "nav_search_placeholder": "タイトル、著者、またはカテゴリで検索..."
+  "nav_search_placeholder": "タイトル、著者名、またはカテゴリで検索..."
 }

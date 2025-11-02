@@ -1,14 +1,8 @@
 "use server";
 import { createClient } from "@/utils/supabase/server";
 import { getAdminClient } from "@/utils/supabase/admin";
-import { z } from "zod";
-
-const schemaRegister = z.object({
-  email: z
-    .string()
-    .min(1, { message: "Please enter your email address" })
-    .email({ message: "Please enter a valid email address" }),
-});
+import initTranslations from "@/app/i18n"; // Import translations
+import { getUpdateEmailSchema } from "@/components/schemas/updateEmailSchema";
 
 type FormState = {
   data: unknown;
@@ -20,7 +14,10 @@ export async function updateUserAction(
   prevState: FormState,
   formData: FormData
 ): Promise<FormState> {
-  const validatedField = schemaRegister.safeParse({
+  const locale = formData.get("locale")?.toString() || "en";
+  const { t } = await initTranslations(locale, ["customer_dashboard"]);
+  const schemaUpdateEmail = getUpdateEmailSchema(t);
+  const validatedField = schemaUpdateEmail.safeParse({
     email: (formData.get("email") ?? "") as string,
   });
 
@@ -28,7 +25,7 @@ export async function updateUserAction(
     return {
       data: null,
       zodErrors: validatedField.error.flatten().fieldErrors,
-      message: "Missing new email address. Failed to update email",
+      message: t("dashboard_error_missing_email"),
     };
   }
 
@@ -43,8 +40,8 @@ export async function updateUserAction(
       return {
         data: null,
         zodErrors: null,
-        message: `There is no user data: ${
-          userDataError?.message || "Unknown error"
+        message: `${t("dashboard_error_no_user_data_short")} ${
+          userDataError?.message || t("dashboard_error_unknown")
         }`,
       };
     }
@@ -58,9 +55,9 @@ export async function updateUserAction(
       return {
         data: null,
         zodErrors: null,
-        message: `Email update failed: ${
-          error.message || "Unknown error"
-        }. Please try again.`,
+        message: `${t("dashboard_error_email_update_failed_prefix")} ${
+          error.message || t("dashboard_error_unknown")
+        }${t("dashboard_error_try_again")}`,
       };
     }
 
@@ -68,23 +65,22 @@ export async function updateUserAction(
       return {
         data: null,
         zodErrors: null,
-        message:
-          "Email update failed: No user data received. Please try again.",
+        message: t("dashboard_error_no_user_data"),
       };
     }
 
     return {
       data,
       zodErrors: null,
-      message: "Email update successful!",
+      message: t("dashboard_success_email_updated"),
     };
   } catch (error) {
     return {
       data: null,
       zodErrors: null,
-      message: `Email update failed due to an unexpected error: ${
+      message: `${t("dashboard_error_email_unexpected")} ${
         error instanceof Error ? error.message : String(error)
-      }. Please try again.`,
+      }${t("dashboard_error_try_again")}`,
     };
   }
 }

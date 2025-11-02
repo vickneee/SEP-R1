@@ -1,0 +1,6 @@
+{
+  "private_error_generic": "エラー",
+  "private_error_user_not_found": "ユーザープロファイルが見つかりません。",
+  "private_error_access_denied": "アクセスが拒否されました",
+  "private_error_invalid_user_role": "無効なユーザー権限です。"
+}
