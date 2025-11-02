@@ -1,6 +1,6 @@
 {
   "signin_title": "Войти",
-  "ssignin_prompt_enter_details": "Введите свои данные, чтобы войти в свою учетную запись",
+  "signin_prompt_enter_details": "Введите свои данные, чтобы войти в свою учетную запись",
   "signin_label_email": "Электронная почта",
   "signin_label_password": "Пароль",
   "signin_text_no_account": "Нет аккаунта?",
