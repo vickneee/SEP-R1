@@ -1,14 +1,15 @@
 import { getUserProfile } from "./userProfile-action";
 import LibrarianDashboard from "@/app/[locale]/(dashboard)/librarian-dashboard/page";
 import CustomerDashboard from "@/app/[locale]/(dashboard)/customer-dashboard/page";
-import initTranslations from "@/app/i18n"; // Importing the translation initializer
-type Props = {
+import initTranslations from "@/app/i18n";
+
+interface PageProps {
   params: {
     locale: string;
   };
-};
+}
 
-export default async function PrivatePage({ params }: Props) {
+export default async function PrivatePage({ params }: PageProps) {
   const locale = params.locale ?? "en";
   const { t } = await initTranslations(locale, ["Signin"]);
   const userProfile = await getUserProfile();
@@ -24,21 +25,16 @@ export default async function PrivatePage({ params }: Props) {
     );
   }
 
-  return (
-    <div>
-      {/* Render the appropriate dashboard based on user role */}
-      {userProfile.role === "librarian" ? (
-        <LibrarianDashboard />
-      ) : userProfile.role === "customer" ? (
-        <CustomerDashboard />
-      ) : (
-        <div className="max-w-2xl mx-auto p-6">
-          <h1 className="text-2xl font-bold mb-4">
-            {t("private_error_access_denied")}
-          </h1>
-          <p>{t("private_error_invalid_user_role")}</p>
-        </div>
-      )}
+  return userProfile.role === "librarian" ? (
+    <LibrarianDashboard />
+  ) : userProfile.role === "customer" ? (
+    <CustomerDashboard />
+  ) : (
+    <div className="max-w-2xl mx-auto p-6">
+      <h1 className="text-2xl font-bold mb-4">
+        {t("private_error_access_denied")}
+      </h1>
+      <p>{t("private_error_invalid_user_role")}</p>
     </div>
   );
 }
