@@ -100,7 +100,7 @@ function NavBar() {
                                 {/*</div>*/}
                                 <div className="flex items-center">
                                     <input id="search" name="search"
-                                           className="relative block w-full border border-gray-300 rounded-md py-2 pl-4 pr-4 leading-5 bg-white placeholder-gray-400 focus:ring-1 focus:ring-orange-500 focus:outline-none focus:border-orange-500 text-sm"
+                                           className="relative block w-full border border-gray-300 rounded-md py-2 pl-4 pr-4 leading-5 bg-white placeholder-gray-400 focus:ring-1 focus:ring-orange-500 focus:outline-none focus:border-orange-500 text-xs"
                                            placeholder={t('nav_search_placeholder')} type="text"
                                            value={search} onChange={(e) => setSearch(e.target.value)}/>
                                     <button type="button"
