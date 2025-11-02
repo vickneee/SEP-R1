@@ -3,8 +3,12 @@ import LibrarianDashboard from "@/app/[locale]/(dashboard)/librarian-dashboard/p
 import CustomerDashboard from "@/app/[locale]/(dashboard)/customer-dashboard/page";
 import initTranslations from "@/app/i18n";
 
-export default async function PrivatePage(props: any) {
-  const resolvedParams = await props.params;
+type PrivatePageProps = {
+  params: Promise<{ locale: string }>;
+};
+
+export default async function PrivatePage({ params }: PrivatePageProps) {
+  const resolvedParams = await params;
   const locale = resolvedParams?.locale ?? "en";
   const { t } = await initTranslations(locale, ["private"]);
   const userProfile = await getUserProfile();
