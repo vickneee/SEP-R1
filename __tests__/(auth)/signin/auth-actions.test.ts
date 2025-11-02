@@ -2,6 +2,14 @@ import { registerUserAction } from "@/app/[locale]/(auth)/signup/auth-actions";
 
 import { signinAction } from "@/app/[locale]/(auth)/signin/auth-actions";
 
+// --- Mock next/navigation ---
+jest.mock("next/navigation", () => ({
+  useParams: jest.fn(() => ({ locale: "en" })),
+  useRouter: jest.fn(() => ({ push: jest.fn() })),
+  useSearchParams: () => new URLSearchParams(),
+  usePathname: () => "/",
+}));
+
 describe("Supabase signin auth actions", () => {
   const email = "testuser@example.com";
   const password = "normalPassword!";

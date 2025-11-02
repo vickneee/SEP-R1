@@ -14,7 +14,6 @@ export async function registerUserAction(
   prevState: FormState,
   formData: FormData
 ) {
-  console.log("📦 locale from formData:", formData.get("locale"));
   const locale = formData.get("locale")?.toString() || "en";
   const { t } = await initTranslations(locale, ["signup"]);
   const schemaRegister = getRegisterSchema(t);

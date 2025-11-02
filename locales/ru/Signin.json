@@ -1,4 +1,15 @@
 {
-  "sign_in_0": "Войти",
-  "sign_in_1": "Введите свои данные, чтобы войти в свою учетную запись"
+  "signin_title": "Войти",
+  "ssignin_prompt_enter_details": "Введите свои данные, чтобы войти в свою учетную запись",
+  "signin_label_email": "Электронная почта",
+  "signin_label_password": "Пароль",
+  "signin_text_no_account": "Нет аккаунта?",
+  "signin_success_message": "Вход выполнен успешно!",
+  "signin_error_prefix": "Ошибка входа:",
+  "signup_error_missing_fields": "Не заполнены обязательные поля. Регистрация не выполнена.",
+  "validation_password_min_length": "Пароль должен содержать не менее 6 символов",
+  "validation_password_max_length": "Пароль должен содержать менее 100 символов",
+  "validation_email_required": "Пожалуйста, введите адрес электронной почты",
+  "validation_email_invalid": "Пожалуйста, введите действительный адрес электронной почты",
+  "signup_label": "Зарегистрироваться"
 }
