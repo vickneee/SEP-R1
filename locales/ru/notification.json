@@ -1,0 +1,14 @@
+{
+  "notification_error_fetch_book_failed": "Не удалось получить книгу",
+  "notification_book_untitled": "Без названия",
+  "notification_book_unknown_title": "Неизвестное название",
+  "notification_title": "Уведомления",
+  "notification_error_loading_failed": "Не удалось загрузить уведомления:",
+  "notification_empty_message": "У вас нет уведомлений.",
+  "notification_book_label": "Книга",
+  "notification_loading": "Загрузка...",
+  "notification_due_date_prefix": "необходимо вернуть до",
+  "dateLocale": "ru-RU",
+  "notification_due_date_suffix": ". Пожалуйста, верните её до этого времени.",
+  "notification_error_user_not_found": "Пользователь не найден"
+}

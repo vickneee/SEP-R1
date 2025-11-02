@@ -1,0 +1,6 @@
+{
+  "private_error_generic": "Error",
+  "private_error_user_not_found": "User profile not found.",
+  "private_error_access_denied": "Access Denied",
+  "private_error_invalid_user_role": "Invalid user role."
+}

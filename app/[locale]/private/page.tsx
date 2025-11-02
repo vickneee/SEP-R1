@@ -1,15 +1,23 @@
 import { getUserProfile } from "./userProfile-action";
 import LibrarianDashboard from "@/app/[locale]/(dashboard)/librarian-dashboard/page";
 import CustomerDashboard from "@/app/[locale]/(dashboard)/customer-dashboard/page";
+import initTranslations from "@/app/i18n"; // Importing the translation initializer
+type Props = {
+  params: { locale?: string };
+};
 
-export default async function PrivatePage() {
+export default async function PrivatePage({ params }: Props) {
+  const locale = params?.locale ?? "en";
+  const { t } = await initTranslations(locale, ["Signin"]);
   const userProfile = await getUserProfile();
 
   if (!userProfile) {
     return (
       <div className="max-w-2xl mx-auto p-6">
-        <h1 className="text-2xl font-bold mb-4">Error</h1>
-        <p>User profile not found.</p>
+        <h1 className="text-2xl font-bold mb-4">
+          {t("private_error_generic")}
+        </h1>
+        <p>{t("private_error_user_not_found")}</p>
       </div>
     );
   }
@@ -23,8 +31,10 @@ export default async function PrivatePage() {
         <CustomerDashboard />
       ) : (
         <div className="max-w-2xl mx-auto p-6">
-          <h1 className="text-2xl font-bold mb-4">Access Denied</h1>
-          <p>Invalid user role.</p>
+          <h1 className="text-2xl font-bold mb-4">
+            {t("private_error_access_denied")}
+          </h1>
+          <p>{t("private_error_invalid_user_role")}</p>
         </div>
       )}
     </div>

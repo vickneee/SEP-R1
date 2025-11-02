@@ -4,6 +4,8 @@ import { createClient } from "@/utils/supabase/client";
 import { useEffect, useState } from "react";
 import { extendReservation } from "@/app/[locale]/books/extendedAction";
 import { useNotification } from "@/context/NotificationContext";
+import initTranslations from "@/app/i18n"; // Importing the translation initializer
+import { useParams } from "next/navigation";
 
 type ReservationWithBook = {
   reservation_id: number;
@@ -25,6 +27,10 @@ interface UserReservationsProps {
 export default function UserReservations({
   onStatusChange,
 }: UserReservationsProps = {}) {
+  const params = useParams() as { locale?: string } | null; // Type assertion for params
+  const locale = params?.locale ?? "en"; // Default to 'en' if locale is not provided
+  const [t, setT] = useState(() => (key: string) => key); // Initial dummy translation function
+
   const [reservations, setReservations] = useState<ReservationWithBook[]>([]);
   const [loading, setLoading] = useState(true);
   const [isReturning, setIsReturning] = useState<Record<number, boolean>>({});
@@ -34,6 +40,17 @@ export default function UserReservations({
   );
   const [feedback, setFeedback] = useState("");
   const { triggerRefresh } = useNotification();
+
+  // Load translations when locale changes
+  useEffect(() => {
+    const loadTranslations = async () => {
+      const translations = await initTranslations(locale, [
+        "customer_dashboard",
+      ]);
+      setT(() => translations.t);
+    };
+    loadTranslations();
+  }, [locale]);
 
   useEffect(() => {
     fetchReservationsAndPenalties();
@@ -96,7 +113,7 @@ export default function UserReservations({
 
       setExtendedReservations([...extendedReservations, reservationId]);
 
-      setFeedback("Book extended successfully!");
+      setFeedback(t("dashboard_success_book_extended"));
 
       // Notify parent component that status might have changed
       if (onStatusChange) {
@@ -106,7 +123,7 @@ export default function UserReservations({
       triggerRefresh();
     } catch (err) {
       console.error(err);
-      setFeedback("Could not extend book");
+      setFeedback(t("dashboard_error_extend_failed"));
     }
   };
 
@@ -129,7 +146,7 @@ export default function UserReservations({
       if (error) {
         console.error("Error updating reservation:", error);
         setIsReturning({ ...isReturning, [reservationId]: false });
-        setFeedback("Failed to return book. Please try again.");
+        setFeedback(t("dashboard_error_return_failed"));
         return;
       }
       const updatedReservations: ReservationWithBook[] = reservations.map(
@@ -139,7 +156,7 @@ export default function UserReservations({
             : res
       );
       setReservations(updatedReservations);
-      setFeedback("Book successfully returned");
+      setFeedback(t("dashboard_success_returned"));
 
       // Notify parent component that status might have changed
       if (onStatusChange) {
@@ -147,7 +164,7 @@ export default function UserReservations({
       }
     } catch (err) {
       console.error("Error returning book:", err);
-      setFeedback("Failed to return book. Please try again");
+      setFeedback(t("dashboard_error_return_failed"));
     } finally {
       setIsReturning({ ...isReturning, [reservationId]: false });
     }
@@ -161,12 +178,14 @@ export default function UserReservations({
   }
 
   if (loading) {
-    return <p className="text-gray-600">Loading reservations...</p>;
+    return (
+      <p className="text-gray-600">{t("dashboard_loading_reservations")}</p>
+    );
   }
 
   if (!reservations || reservations.length === 0) {
     return (
-      <p className="text-gray-600">You don&apos;t have any borrowed books.</p>
+      <p className="text-gray-600">{t("dashboard_empty_borrowed_books")}</p>
     );
   }
 
@@ -180,28 +199,28 @@ export default function UserReservations({
           <thead className="bg-gray-50">
             <tr>
               <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
-                Title
+                {t("dashboard_table_title")}
               </th>
               <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
-                Author
+                {t("dashboard_table_author")}
               </th>
               <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
-                Borrowed
+                {t("dashboard_table_borrowed")}
               </th>
               <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
-                Due
+                {t("dashboard_table_due")}
               </th>
               <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
-                Returned
+                {t("dashboard_table_returned")}
               </th>
               <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
-                Status
+                {t("dashboard_table_status")}
               </th>
               <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
-                Extend
+                {t("dashboard_button_extend")}
               </th>
               <th className="px-6 py-4 text-left text-sm font-semibold text-gray-700">
-                Return
+                {t("dashboard_button_return")}
               </th>
             </tr>
           </thead>
@@ -232,10 +251,10 @@ export default function UserReservations({
                     }`}
                   >
                     {res.status === "returned"
-                      ? "returned"
+                      ? t("dashboard_status_returned")
                       : isOverdue(res)
                       ? "overdue"
-                      : "active"}
+                      : t("dashboard_status_active")}
                   </span>
                 </td>
                 <td className="px-4 py-2 text-center">
@@ -248,10 +267,10 @@ export default function UserReservations({
                                             disabled:cursor-not-allowed disabled:text-gray-600 disabled:bg-neutral-50"
                     >
                       {isExtending[res.reservation_id]
-                        ? "Extending..."
+                        ? t("dashboard_loading_extending")
                         : res.extended
-                        ? "Extended"
-                        : "Extend"}
+                        ? t("dashboard_status_extended_label")
+                        : t("dashboard_button_extend_action")}
                     </button>
                   )}
                 </td>
@@ -266,8 +285,8 @@ export default function UserReservations({
                                 disabled:bg-gray-400 disabled:cursor-not-allowed"
                     >
                       {isReturning[res.reservation_id]
-                        ? "Returning..."
-                        : "Return"}
+                        ? t("dashboard_loading_returning")
+                        : t("dashboard_button_return_action")}
                     </button>
                   )}
                 </td>

@@ -18,6 +18,14 @@ jest.mock("next/headers", () => ({
   })),
 }));
 
+// --- Mock next/navigation ---
+jest.mock("next/navigation", () => ({
+  useParams: jest.fn(() => ({ locale: "en" })),
+  useRouter: jest.fn(() => ({ push: jest.fn() })),
+  useSearchParams: () => new URLSearchParams(),
+  usePathname: () => "/",
+}));
+
 describe("Notification Component", () => {
   it("renders notification component without crashing", async () => {
     await act(async () => {

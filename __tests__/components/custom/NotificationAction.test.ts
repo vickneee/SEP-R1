@@ -4,6 +4,14 @@ import * as notificationModule from "@/components/custom/NotificationAction";
 import * as supabaseModule from "@/utils/supabase/server";
 import { createClient } from "@/utils/supabase/server";
 
+// --- Mock next/navigation ---
+jest.mock("next/navigation", () => ({
+  useParams: jest.fn(() => ({ locale: "en" })),
+  useRouter: jest.fn(() => ({ push: jest.fn() })),
+  useSearchParams: () => new URLSearchParams(),
+  usePathname: () => "/",
+}));
+
 type SupabaseClientType = Awaited<ReturnType<typeof createClient>>;
 
 let mockSupabase: SupabaseClientType;

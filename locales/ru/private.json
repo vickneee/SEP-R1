@@ -1,0 +1,6 @@
+{
+  "private_error_generic": "Ошибка",
+  "private_error_user_not_found": "Профиль пользователя не найден.",
+  "private_error_access_denied": "Доступ запрещён",
+  "private_error_invalid_user_role": "Недопустимая роль пользователя."
+}

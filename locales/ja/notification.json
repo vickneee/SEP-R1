@@ -1,0 +1,14 @@
+{
+  "notification_error_fetch_book_failed": "書籍の取得に失敗しました",
+  "notification_book_untitled": "無題",
+  "notification_book_unknown_title": "タイトル不明",
+  "notification_title": "お知らせ",
+  "notification_error_loading_failed": "お知らせの取得に失敗しました。",
+  "notification_empty_message": "お知らせはありません",
+  "notification_book_label": "書籍",
+  "notification_loading": "読み込み中...",
+  "notification_due_date_prefix": "の返却期限は",
+  "dateLocale": "ja-JP",
+  "notification_due_date_suffix": "です。それまでに返却してください。",
+  "notification_error_user_not_found": "ユーザーが見つかりません。"
+}
