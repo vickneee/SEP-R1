@@ -14,9 +14,18 @@ type InitTranslationsResult =
   | {
       t?: TranslatorFn | Record<string, string>;
       i18n?: { t?: TranslatorFn };
-      resources?: Record<string, any>;
+      resources?: Record<string, unknown>;
     }
   | Record<string, string>;
+
+function isRecord(x: unknown): x is Record<string, unknown> {
+  return typeof x === "object" && x !== null;
+}
+
+function isStringRecord(x: unknown): x is Record<string, string> {
+  if (!isRecord(x)) return false;
+  return Object.values(x).every((v) => typeof v === "string");
+}
 
 interface Book {
   title: string;
@@ -78,48 +87,49 @@ export default function LibrarianDashboardClient({
         return translatorSource(key, vars);
       }
 
-      if (
-        typeof translatorSource === "object" &&
-        translatorSource !== null &&
-        "t" in translatorSource &&
-        typeof (translatorSource as any).t === "function"
-      ) {
-        return (translatorSource as { t: TranslatorFn }).t!(key, vars);
+      if (isRecord(translatorSource) && "t" in translatorSource) {
+        const tField = (translatorSource as { t?: unknown }).t;
+        if (typeof tField === "function") return (tField as TranslatorFn)(key, vars);
+        if (isStringRecord(tField) && key in tField) return tField[key];
       }
 
       if (
-        typeof translatorSource === "object" &&
-        translatorSource !== null &&
-        "t" in translatorSource &&
-        typeof (translatorSource as any).t === "object"
-      ) {
-        const tObj = (translatorSource as { t: Record<string, string> }).t!;
-        if (key in tObj) return tObj[key];
-      }
-
-      if (
-        typeof translatorSource === "object" &&
-        translatorSource !== null &&
+        isRecord(translatorSource) &&
         "i18n" in translatorSource &&
-        (translatorSource as any).i18n &&
-        typeof (translatorSource as any).i18n.t === "function"
+        isRecord((translatorSource as { i18n?: unknown }).i18n)
       ) {
-        return (translatorSource as { i18n: { t: TranslatorFn } }).i18n!.t!(key, vars);
+        const i18n = (translatorSource as { i18n?: unknown }).i18n!;
+        if (isRecord(i18n) && typeof (i18n as { t?: unknown }).t === "function") {
+          return (i18n as { t: TranslatorFn }).t!(key, vars);
+        }
       }
 
       if (
-        typeof translatorSource === "object" &&
-        translatorSource !== null &&
-        (translatorSource as any).resources
+        isRecord(translatorSource) &&
+        "resources" in translatorSource &&
+        isRecord((translatorSource as { resources?: unknown }).resources)
       ) {
-        const ns =
-          (translatorSource as any).resources?.[locale]?.LibrarianDashboardClient ??
-          (translatorSource as any).resources?.LibrarianDashboardClient;
-        if (ns && typeof ns === "object" && key in ns) return ns[key];
+        const resourcesField = (translatorSource as { resources?: unknown }).resources;
+        if (isRecord(resourcesField)) {
+          const resourcesRecord = resourcesField as Record<string, unknown>;
+
+          const localeEntry = resourcesRecord[locale];
+          if (isRecord(localeEntry)) {
+            const ns = (localeEntry as Record<string, unknown>).LibrarianDashboardClient;
+            if (isStringRecord(ns) && key in ns) {
+              return (ns as Record<string, string>)[key];
+            }
+          }
+
+          const nsRoot = resourcesRecord.LibrarianDashboardClient;
+          if (isStringRecord(nsRoot) && key in nsRoot) {
+            return (nsRoot as Record<string, string>)[key];
+          }
+        }
       }
 
-      if (typeof translatorSource === "object" && translatorSource !== null && key in translatorSource) {
-        return (translatorSource as Record<string, string>)[key];
+      if (isStringRecord(translatorSource) && key in translatorSource) {
+        return translatorSource[key];
       }
 
       return key;
