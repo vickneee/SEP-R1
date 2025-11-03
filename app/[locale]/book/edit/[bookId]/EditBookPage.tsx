@@ -1,9 +1,21 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
+import { useRouter, useParams } from "next/navigation";
 import { getBookById, updateBook } from "@/app/[locale]/books/bookActions";
-import {Label} from "@/components/ui/label";
+import { Label } from "@/components/ui/label";
+import initTranslations from "@/app/i18n";
+
+type TranslatorFn = (key: string, vars?: Record<string, unknown>) => string;
+
+type InitTranslationsResult =
+  | TranslatorFn
+  | {
+      t?: TranslatorFn | Record<string, string>;
+      i18n?: { t?: TranslatorFn };
+      resources?: Record<string, Record<string, Record<string, string>> | Record<string, string>>;
+    }
+  | Record<string, string>;
 
 interface Book {
     book_id?: number;
@@ -37,6 +49,91 @@ interface EditBookPageProps {
 
 export default function EditBookPage({ userProfile, userEmail, bookId }: EditBookPageProps) {
     const router = useRouter();
+    const params = useParams();
+    const locale = (params?.locale as string) ?? "en";
+
+    const [translatorSource, setTranslatorSource] = useState<InitTranslationsResult | null>(null);
+
+    useEffect(() => {
+        let mounted = true;
+        (async () => {
+            try {
+                const res: InitTranslationsResult = await initTranslations(locale, ["EditBookPage"]);
+                if (mounted) setTranslatorSource(res);
+            } catch (err) {
+                console.error("Failed to initialize translations:", err);
+            }
+        })();
+        return () => {
+            mounted = false;
+        };
+    }, [locale]);
+
+    const tr = (key: string, vars?: Record<string, unknown>) => {
+        try {
+            if (!translatorSource) return key;
+
+            if (typeof translatorSource === "function") {
+                return translatorSource(key, vars);
+            }
+
+            if (
+                typeof translatorSource === "object" &&
+                translatorSource !== null &&
+                "t" in translatorSource &&
+                typeof (translatorSource as { t?: unknown }).t === "function"
+            ) {
+                return (translatorSource as { t?: TranslatorFn }).t!(key, vars);
+            }
+
+            if (
+                typeof translatorSource === "object" &&
+                translatorSource !== null &&
+                "t" in translatorSource &&
+                typeof (translatorSource as { t?: unknown }).t === "object"
+            ) {
+                const tObj = (translatorSource as { t?: Record<string, string> }).t!;
+                if (tObj && key in tObj) return tObj[key];
+            }
+
+            if (
+                typeof translatorSource === "object" &&
+                translatorSource !== null &&
+                "i18n" in translatorSource &&
+                (translatorSource as { i18n?: unknown }).i18n &&
+                typeof (translatorSource as { i18n?: { t?: unknown } }).i18n!.t === "function"
+            ) {
+                return (translatorSource as { i18n?: { t?: TranslatorFn } }).i18n!.t!(key, vars);
+            }
+
+            if (
+                typeof translatorSource === "object" &&
+                translatorSource !== null &&
+                "resources" in translatorSource &&
+                (translatorSource as { resources?: unknown }).resources
+            ) {
+                const resources = translatorSource as { resources?: Record<string, unknown> };
+                const byLocale = (resources.resources as Record<string, unknown> | undefined)?.[locale] as
+                    | Record<string, string>
+                    | undefined;
+                const ns = (byLocale as Record<string, Record<string, string>> | undefined)?.EditBookPage
+                    ?? (resources.resources as Record<string, Record<string, string>> | undefined)?.EditBookPage;
+                if (ns && typeof ns === "object" && key in ns) {
+                    return (ns as Record<string, string>)[key];
+                }
+            }
+
+            if (typeof translatorSource === "object" && translatorSource !== null && key in translatorSource) {
+                return (translatorSource as Record<string, string>)[key];
+            }
+
+            return key;
+        } catch (err) {
+            console.error("Translation error:", err);
+            return key;
+        }
+    };
+
     const [form, setForm] = useState<Book>({
         title: "",
         author: "",
@@ -51,7 +148,6 @@ export default function EditBookPage({ userProfile, userEmail, bookId }: EditBoo
     const [loading, setLoading] = useState(false);
     const [fetchingBook, setFetchingBook] = useState(true);
 
-    // Fetch the existing book data when component mounts
     useEffect(() => {
         const fetchBook = async () => {
             try {
@@ -62,9 +158,9 @@ export default function EditBookPage({ userProfile, userEmail, bookId }: EditBoo
                 if (book) {
                     setForm(book);
                 }
-            } catch (error) {
-                console.error("Error fetching book:", error);
-                alert("Error fetching book data.");
+            } catch (err) {
+                console.error("Error fetching book:", err);
+                alert(tr("error_fetch_book"));
             } finally {
                 setFetchingBook(false);
             }
@@ -95,12 +191,12 @@ export default function EditBookPage({ userProfile, userEmail, bookId }: EditBoo
         if (
             form.title &&
             form.author &&
-            form.image &&
+            form.image !== undefined &&
             form.category &&
             form.isbn &&
             form.publisher &&
-            form.publication_year &&
-            form.total_copies &&
+            form.publication_year !== undefined &&
+            form.total_copies !== undefined &&
             form.available_copies !== undefined
         ) {
             setLoading(true);
@@ -117,17 +213,15 @@ export default function EditBookPage({ userProfile, userEmail, bookId }: EditBoo
                     available_copies: form.available_copies,
                 });
 
-                console.log(book);
-
                 if (error) {
                     throw new Error(error);
                 }
 
-                alert("Book updated successfully!");
+                alert(tr("book_update_success"));
                 router.push("/books");
-            } catch (error) {
-                console.error("Error updating book:", error);
-                alert("Error updating book.");
+            } catch (err) {
+                console.error("Error updating book:", err);
+                alert(tr("error_update_book"));
             } finally {
                 setLoading(false);
             }
@@ -142,7 +236,7 @@ export default function EditBookPage({ userProfile, userEmail, bookId }: EditBoo
         return (
             <div className="max-w-4xl mx-auto my-8">
                 <div className="text-center">
-                    <p>Loading book data...</p>
+                    <p>{tr("loading_book_data")}</p>
                 </div>
             </div>
         );
@@ -152,27 +246,27 @@ export default function EditBookPage({ userProfile, userEmail, bookId }: EditBoo
         <div className="max-w-4xl mx-auto my-8">
             {/* User Information Section */}
             <div className="bg-gray-100 p-6 rounded-lg shadow-md mb-8 w-full max-w-md mx-auto">
-                <h2 className="text-xl font-bold mb-4 text-gray-800">Librarian Dashboard</h2>
+                <h2 className="text-xl font-bold mb-4 text-gray-800">{tr("dashboard_title")}</h2>
                 <div className="space-y-2 text-left">
-                    <p><strong>Email:</strong> {userEmail}</p>
-                    <p><strong>Name:</strong> {userProfile.first_name} {userProfile.last_name}</p>
-                    <p><strong>Role:</strong> <span className="capitalize font-semibold text-blue-600">{userProfile.role}</span></p>
-                    <p><strong>Status:</strong> <span className={userProfile.is_active ? 'text-green-600' : 'text-red-600'}>{userProfile.is_active ? 'Active' : 'Inactive'}</span></p>
+                    <p><strong>{tr("email_label")}</strong> {userEmail}</p>
+                    <p><strong>{tr("name_label")}</strong> {userProfile.first_name} {userProfile.last_name}</p>
+                    <p><strong>{tr("role_label")}</strong> <span className="capitalize font-semibold text-blue-600">{userProfile.role}</span></p>
+                    <p><strong>{tr("status_label")}</strong> <span className={userProfile.is_active ? 'text-green-600' : 'text-red-600'}>{userProfile.is_active ? tr("status_active") : tr("status_inactive")}</span></p>
                     {userProfile.penalty_count > 0 && (
-                        <p><strong>Penalties:</strong> <span className="text-red-600">{userProfile.penalty_count}</span></p>
+                        <p><strong>{tr("penalties_label")}</strong> <span className="text-red-600">{userProfile.penalty_count}</span></p>
                     )}
                 </div>
             </div>
 
             <div className="max-w-md mx-auto">
-                <h1 className="text-2xl font-bold mb-4">Edit Book</h1>
+                <h1 className="text-2xl font-bold mb-4">{tr("edit_book_title")}</h1>
                 <form
                     onSubmit={handleSubmit}
                     className="flex flex-col gap-3 bg-white p-6 rounded shadow"
                 >
                     <input
                         name="title"
-                        placeholder="Title"
+                        placeholder={tr("book_title_label")}
                         value={form.title}
                         onChange={handleChange}
                         required
@@ -180,7 +274,7 @@ export default function EditBookPage({ userProfile, userEmail, bookId }: EditBoo
                     />
                     <input
                         name="author"
-                        placeholder="Author"
+                        placeholder={tr("book_author_label")}
                         value={form.author}
                         onChange={handleChange}
                         required
@@ -192,10 +286,10 @@ export default function EditBookPage({ userProfile, userEmail, bookId }: EditBoo
                         onChange={handleChange}
                         required
                         className="border rounded px-3 py-2 text-gray-700"
-                        />
+                    />
                     <input
                         name="category"
-                        placeholder="Category"
+                        placeholder={tr("book_category_label")}
                         value={form.category}
                         onChange={handleChange}
                         required
@@ -203,7 +297,7 @@ export default function EditBookPage({ userProfile, userEmail, bookId }: EditBoo
                     />
                     <input
                         name="isbn"
-                        placeholder="ISBN"
+                        placeholder={tr("book_isbn_label")}
                         value={form.isbn}
                         onChange={handleChange}
                         required
@@ -211,38 +305,38 @@ export default function EditBookPage({ userProfile, userEmail, bookId }: EditBoo
                     />
                     <input
                         name="publisher"
-                        placeholder="Publisher"
+                        placeholder={tr("book_publisher_label")}
                         value={form.publisher}
                         onChange={handleChange}
                         required
                         className="border rounded px-3 py-2 text-gray-700"
                     />
-                    <Label className="text-gray-700">Publication Year:</Label>
+                    <Label className="text-gray-700">{tr("book_publication_year_label")}</Label>
                     <input
                         name="publication_year"
                         type="number"
-                        placeholder="Publication Year"
+                        placeholder={tr("book_publication_year_label")}
                         value={form.publication_year}
                         onChange={handleChange}
                         required
                         className="border rounded px-3 py-2 text-gray-700"
                     />
-                    <Label className="text-gray-700">Total Copies:</Label>
+                    <Label className="text-gray-700">{tr("book_total_copies_label")}</Label>
                     <input
                         name="total_copies"
                         type="number"
-                        placeholder="Total Copies"
+                        placeholder={tr("book_total_copies_label")}
                         value={form.total_copies}
                         onChange={handleChange}
                         required
                         min={1}
                         className="border rounded px-3 py-2 text-gray-700"
                     />
-                    <Label className="text-gray-700">Available Copies:</Label>
+                    <Label className="text-gray-700">{tr("book_available_copies_label")}</Label>
                     <input
                         name="available_copies"
                         type="number"
-                        placeholder="Available Copies"
+                        placeholder={tr("book_available_copies_label")}
                         value={form.available_copies}
                         onChange={handleChange}
                         required
@@ -251,7 +345,7 @@ export default function EditBookPage({ userProfile, userEmail, bookId }: EditBoo
                     />
                     <div className="flex gap-3 mt-4">
                         <Button type="submit" className="bg-orange-500 text-white flex-1" disabled={loading}>
-                            {loading ? "Updating..." : "Update Book"}
+                            {loading ? tr("updating_label") : tr("update_book_button")}
                         </Button>
                         <Button
                             type="button"
@@ -259,7 +353,7 @@ export default function EditBookPage({ userProfile, userEmail, bookId }: EditBoo
                             className="bg-gray-500 text-white flex-1"
                             disabled={loading}
                         >
-                            Cancel
+                            {tr("cancel_button")}
                         </Button>
                     </div>
                 </form>

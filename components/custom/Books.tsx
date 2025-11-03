@@ -11,6 +11,17 @@ import Image from "next/image";
 import { useParams } from "next/navigation";
 import initTranslations from "@/app/i18n";
 
+type TranslatorFn = (key: string, vars?: Record<string, unknown>) => string;
+
+type InitTranslationsResult =
+  | TranslatorFn
+  | {
+      t?: TranslatorFn | Record<string, string>;
+      i18n?: { t?: TranslatorFn };
+      resources?: Record<string, unknown>;
+    }
+  | Record<string, string>;
+
 interface Book {
   book_id: number;
   title: string;
@@ -24,18 +35,27 @@ interface BooksProps {
   books: Book[];
 }
 
+function isRecord(x: unknown): x is Record<string, unknown> {
+  return typeof x === "object" && x !== null;
+}
+
+function isStringRecord(x: unknown): x is Record<string, string> {
+  if (!isRecord(x)) return false;
+  return Object.values(x).every((v) => typeof v === "string");
+}
+
 export function Books({ books }: BooksProps) {
   const router = useRouter();
   const params = useParams();
   const locale = (params?.locale as string) ?? "en";
 
-  const [translatorSource, setTranslatorSource] = useState<any>(null);
+  const [translatorSource, setTranslatorSource] = useState<InitTranslationsResult | null>(null);
 
   useEffect(() => {
     let mounted = true;
     (async () => {
       try {
-        const res: any = await initTranslations(locale, ["Books"]);
+        const res = (await initTranslations(locale, ["Books"])) as InitTranslationsResult;
         if (mounted) setTranslatorSource(res);
       } catch (err) {
         console.error("Failed to initialize translations:", err);
@@ -46,7 +66,7 @@ export function Books({ books }: BooksProps) {
     };
   }, [locale]);
 
-  const tr = (key: string, vars?: Record<string, any>) => {
+  const tr = (key: string, vars?: Record<string, unknown>) => {
     try {
       if (!translatorSource) return key;
 
@@ -54,20 +74,42 @@ export function Books({ books }: BooksProps) {
         return translatorSource(key, vars);
       }
 
-      if (translatorSource && typeof translatorSource.t === "function") {
-        return translatorSource.t(key, vars);
+      if (isRecord(translatorSource) && "t" in translatorSource) {
+        const tField = (translatorSource as { t?: unknown }).t;
+        if (typeof tField === "function") return (tField as TranslatorFn)(key, vars);
+        if (isStringRecord(tField) && key in tField) return tField[key];
       }
 
-      if (translatorSource.t && typeof translatorSource.t === "object" && key in translatorSource.t) {
-        return translatorSource.t[key];
+      if (
+        isRecord(translatorSource) &&
+        "i18n" in translatorSource &&
+        isRecord((translatorSource as { i18n?: unknown }).i18n)
+      ) {
+        const i18n = (translatorSource as { i18n?: unknown }).i18n;
+        if (isRecord(i18n) && typeof (i18n as { t?: unknown }).t === "function") {
+          return (i18n as { t: TranslatorFn }).t!(key, vars);
+        }
       }
 
-      const ns =
-        translatorSource.resources?.[locale]?.Books ??
-        translatorSource.resources?.Books;
-      if (ns && typeof ns === "object" && key in ns) return ns[key];
+      {
+        const resourcesField = (translatorSource as { resources?: unknown }).resources;
+        if (isRecord(resourcesField)) {
+          const resourcesRecord = resourcesField as Record<string, unknown>;
 
-      if (typeof translatorSource === "object" && key in translatorSource) return translatorSource[key];
+          const localeEntry = resourcesRecord[locale];
+          if (isRecord(localeEntry)) {
+            const ns = (localeEntry as Record<string, unknown>).Books;
+            if (isStringRecord(ns) && key in ns) return ns[key];
+          }
+
+          const nsRoot = resourcesRecord.Books;
+          if (isStringRecord(nsRoot) && key in nsRoot) return nsRoot[key];
+        }
+      }
+
+      if (isStringRecord(translatorSource) && key in translatorSource) {
+        return translatorSource[key];
+      }
 
       return key;
     } catch (err) {

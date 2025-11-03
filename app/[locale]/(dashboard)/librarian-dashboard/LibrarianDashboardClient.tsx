@@ -7,6 +7,17 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import initTranslations from "@/app/i18n";
 
+type TranslatorFn = (key: string, vars?: Record<string, unknown>) => string;
+
+type InitTranslationsResult =
+  | TranslatorFn
+  | {
+      t?: TranslatorFn | Record<string, string>;
+      i18n?: { t?: TranslatorFn };
+      resources?: Record<string, any>;
+    }
+  | Record<string, string>;
+
 interface Book {
   title: string;
   author: string;
@@ -42,13 +53,13 @@ export default function LibrarianDashboardClient({
   const params = useParams();
   const locale = (params?.locale as string) ?? "en";
 
-  const [translatorSource, setTranslatorSource] = useState<any>(null);
+  const [translatorSource, setTranslatorSource] = useState<InitTranslationsResult | null>(null);
 
   useEffect(() => {
     let mounted = true;
     (async () => {
       try {
-        const res: any = await initTranslations(locale, ["LibrarianDashboardClient"]);
+        const res: InitTranslationsResult = await initTranslations(locale, ["LibrarianDashboardClient"]);
         if (mounted) setTranslatorSource(res);
       } catch (err) {
         console.error("Failed to initialize translations:", err);
@@ -59,7 +70,7 @@ export default function LibrarianDashboardClient({
     };
   }, [locale]);
 
-  const tr = (key: string, vars?: Record<string, any>) => {
+  const tr = (key: string, vars?: Record<string, unknown>) => {
     try {
       if (!translatorSource) return key;
 
@@ -67,20 +78,49 @@ export default function LibrarianDashboardClient({
         return translatorSource(key, vars);
       }
 
-      if (translatorSource && typeof translatorSource.t === "function") {
-        return translatorSource.t(key, vars);
+      if (
+        typeof translatorSource === "object" &&
+        translatorSource !== null &&
+        "t" in translatorSource &&
+        typeof (translatorSource as any).t === "function"
+      ) {
+        return (translatorSource as { t: TranslatorFn }).t!(key, vars);
       }
 
-      if (translatorSource.t && typeof translatorSource.t === "object" && key in translatorSource.t) {
-        return translatorSource.t[key];
+      if (
+        typeof translatorSource === "object" &&
+        translatorSource !== null &&
+        "t" in translatorSource &&
+        typeof (translatorSource as any).t === "object"
+      ) {
+        const tObj = (translatorSource as { t: Record<string, string> }).t!;
+        if (key in tObj) return tObj[key];
       }
 
-      const ns =
-        translatorSource.resources?.[locale]?.LibrarianDashboardClient ??
-        translatorSource.resources?.LibrarianDashboardClient;
-      if (ns && typeof ns === "object" && key in ns) return ns[key];
+      if (
+        typeof translatorSource === "object" &&
+        translatorSource !== null &&
+        "i18n" in translatorSource &&
+        (translatorSource as any).i18n &&
+        typeof (translatorSource as any).i18n.t === "function"
+      ) {
+        return (translatorSource as { i18n: { t: TranslatorFn } }).i18n!.t!(key, vars);
+      }
 
-      if (typeof translatorSource === "object" && key in translatorSource) return translatorSource[key];
+      if (
+        typeof translatorSource === "object" &&
+        translatorSource !== null &&
+        (translatorSource as any).resources
+      ) {
+        const ns =
+          (translatorSource as any).resources?.[locale]?.LibrarianDashboardClient ??
+          (translatorSource as any).resources?.LibrarianDashboardClient;
+        if (ns && typeof ns === "object" && key in ns) return ns[key];
+      }
+
+      if (typeof translatorSource === "object" && translatorSource !== null && key in translatorSource) {
+        return (translatorSource as Record<string, string>)[key];
+      }
 
       return key;
     } catch (err) {
