@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, {useState, useEffect, useCallback} from "react";
 import { Button } from "@/components/ui/button";
 import { useRouter, useParams } from "next/navigation";
 import { getBookById, updateBook } from "@/app/[locale]/books/bookActions";
@@ -69,7 +69,7 @@ export default function EditBookPage({ userProfile, userEmail, bookId }: EditBoo
         };
     }, [locale]);
 
-    const tr = (key: string, vars?: Record<string, unknown>) => {
+    const tr = useCallback((key: string, vars?: Record<string, unknown>) => {
         try {
             if (!translatorSource) return key;
 
@@ -132,7 +132,7 @@ export default function EditBookPage({ userProfile, userEmail, bookId }: EditBoo
             console.error("Translation error:", err);
             return key;
         }
-    };
+    }, [translatorSource, locale]);
 
     const [form, setForm] = useState<Book>({
         title: "",
@@ -169,7 +169,7 @@ export default function EditBookPage({ userProfile, userEmail, bookId }: EditBoo
         if (bookId) {
             fetchBook();
         }
-    }, [bookId]);
+    }, [bookId, tr]);
 
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement>
@@ -201,7 +201,7 @@ export default function EditBookPage({ userProfile, userEmail, bookId }: EditBoo
         ) {
             setLoading(true);
             try {
-                const { book, error } = await updateBook(Number(bookId), {
+                const { error } = await updateBook(Number(bookId), {
                     title: form.title,
                     author: form.author,
                     image: form.image,
