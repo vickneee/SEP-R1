@@ -1,0 +1,20 @@
+{
+  "error_no_available_copies": "予約可能な在庫がありません。",
+  "error_reservations_not_allowed": "現在、予約を行うことはできません。",
+  "success_reservation": "予約が成功しました！",
+  "error_reservation_failed": "予約に失敗しました。",
+  "error_generic": "エラーが発生しました。",
+  "label_book_information": "書籍情報",
+  "label_category": "カテゴリー：",
+  "label_author": "著者：",
+  "label_publication_year": "出版年：",
+  "label_publisher": "出版社：",
+  "label_total_copies": "総冊数：",
+  "label_available_copies": "利用可能な冊数：",
+  "status_checked_out": "貸出中",
+  "status_cannot_reserve": "予約不可",
+  "status_pending_penalties": "未処理のペナルティあり",
+  "status_checking_eligibility": "資格を確認中...",
+  "status_reserving": "予約中...",
+  "action_reserve_book": "この本を予約する"
+}

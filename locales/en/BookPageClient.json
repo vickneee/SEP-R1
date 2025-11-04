@@ -1,0 +1,20 @@
+{
+  "error_no_available_copies": "No available copies to reserve.",
+  "error_reservations_not_allowed": "You cannot make reservations at this time.",
+  "success_reservation": "Reservation successful!",
+  "error_reservation_failed": "Reservation failed.",
+  "error_generic": "An error occurred.",
+  "label_book_information": "Book Information",
+  "label_category": "Category:",
+  "label_author": "Author:",
+  "label_publication_year": "Publication year:",
+  "label_publisher": "Publisher:",
+  "label_total_copies": "Total Copies:",
+  "label_available_copies": "Available Copies:",
+  "status_checked_out": "Checked out",
+  "status_cannot_reserve": "Cannot Reserve",
+  "status_pending_penalties": "Pending Penalties",
+  "status_checking_eligibility": "Checking eligibility...",
+  "status_reserving": "Reserving...",
+  "action_reserve_book": "Reserve this Book"
+}

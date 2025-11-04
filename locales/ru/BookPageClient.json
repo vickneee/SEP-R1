@@ -1,0 +1,20 @@
+{
+  "error_no_available_copies": "Нет доступных экземпляров для бронирования.",
+  "error_reservations_not_allowed": "Вы не можете делать бронирования в данный момент.",
+  "success_reservation": "Бронирование успешно!",
+  "error_reservation_failed": "Не удалось выполнить бронирование.",
+  "error_generic": "Произошла ошибка.",
+  "label_book_information": "Информация о книге",
+  "label_category": "Категория:",
+  "label_author": "Автор:",
+  "label_publication_year": "Год издания:",
+  "label_publisher": "Издатель:",
+  "label_total_copies": "Всего экземпляров:",
+  "label_available_copies": "Доступные экземпляры:",
+  "status_checked_out": "Выдано",
+  "status_cannot_reserve": "Нельзя забронировать",
+  "status_pending_penalties": "Незавершённые штрафы",
+  "status_checking_eligibility": "Проверка возможности...",
+  "status_reserving": "Бронирование...",
+  "action_reserve_book": "Забронировать эту книгу"
+}
