@@ -77,7 +77,17 @@ const getBooksByCategory = async (search: string) => {
 
 const createBook = async (book: Omit<BookInsert, 'book_id' | 'created_at' | 'updated_at' | 'available_copies'> & {
   available_copies: number;
-}) => {
+}, locale = "en") => {
+  let messages = {
+    error_invalid_image_url: "Image must be a valid URL.",
+    error_unknown: "Unknown error"
+  };
+  try {
+    const mod = await import(`../../../locales/${locale}/BookActions.json`);
+    messages = (mod && (mod.default ?? mod)) as typeof messages;
+  } catch {
+  }
+
   try {
     if (
       !book.title ||
@@ -96,7 +106,7 @@ const createBook = async (book: Omit<BookInsert, 'book_id' | 'created_at' | 'upd
       book.image &&
       !/^https?:\/\/.+\..+/.test(book.image)
     ) {
-      return { error: "Image must be a valid URL.", book: null };
+      return { error: messages.error_invalid_image_url, book: null };
     }
 
     const supabase = await createClient();
@@ -124,7 +134,7 @@ const createBook = async (book: Omit<BookInsert, 'book_id' | 'created_at' | 'upd
     return { error: null, book: data };
   } catch (err: unknown) {
     console.error("createBook exception:", err);
-    const errorMessage = err instanceof Error ? err.message : "Unknown error";
+    const errorMessage = err instanceof Error ? err.message : messages.error_unknown;
     return { error: errorMessage, book: null };
   }
 };
@@ -166,7 +176,18 @@ const deleteBook = async (id: number) => {
   return { error: error?.message };
 };
 
-const reserveBook = async (bookId: number, dueDate: string) => {
+const reserveBook = async (bookId: number, dueDate: string, locale = "en") => {
+  let messages = {
+    error_not_authenticated: "User not authenticated",
+    error_reservation_verification_failed: "Failed to verify reservation eligibility",
+    error_reservation_not_allowed: "You cannot make reservations at this time"
+  };
+  try {
+    const mod = await import(`../../../locales/${locale}/BookActions.json`);
+    messages = (mod && (mod.default ?? mod)) as typeof messages;
+  } catch {
+  }
+
   const supabase = await createClient();
   console.log("Reserve book", bookId);
   console.log("Due date", dueDate);
@@ -175,7 +196,7 @@ const reserveBook = async (bookId: number, dueDate: string) => {
   const { data: userData, error: userError } = await supabase.auth.getUser();
   if (userError || !userData.user) {
     console.error("User authentication error:", userError);
-    return { success: false, error: userError || new Error("User not authenticated") };
+    return { success: false, error: userError || new Error(messages.error_not_authenticated) };
   }
 
   // Check if user can make reservations (penalty check)
@@ -185,12 +206,12 @@ const reserveBook = async (bookId: number, dueDate: string) => {
 
   if (reservationError) {
     console.error("Error checking user reservation status:", reservationError);
-    return { success: false, error: new Error("Failed to verify reservation eligibility") };
+    return { success: false, error: new Error(messages.error_reservation_verification_failed) };
   }
 
   const reservationStatus = canReserveData?.[0];
   if (!reservationStatus?.can_reserve) {
-    const message = reservationStatus?.restriction_reason || "You cannot make reservations at this time";
+    const message = reservationStatus?.restriction_reason || messages.error_reservation_not_allowed;
     return { success: false, error: new Error(message) };
   }
 

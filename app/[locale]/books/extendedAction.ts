@@ -15,7 +15,7 @@ export interface ReservationWithBook {
     };
 }
 
-export async function extendReservation(reservationId: string | number) {
+export async function extendReservation(reservationId: string | number, locale = "en") {
 
     const id = typeof reservationId === "string" ? Number(reservationId) : reservationId;
 
@@ -35,6 +35,13 @@ export async function extendReservation(reservationId: string | number) {
     const newDueDate = new Date(reservation.due_date);
     newDueDate.setDate(newDueDate.getDate() + 7);
 
+    let messages = { error_extend_reservation: "Failed to extend reservation" };
+    try {
+        const mod = await import(`../../../locales/${locale}/ExtendedActians.json`);
+        messages = (mod && (mod.default ?? mod)) as typeof messages;
+    } catch {
+    }
+
     const { data: updated, error: updateError } = await supabase
         .from("reservations")
         .update({ due_date: newDueDate.toISOString(),
@@ -47,7 +54,7 @@ export async function extendReservation(reservationId: string | number) {
         `)
         .single();
 
-    if (updateError) throw new Error("Failed to extend reservation");
+    if (updateError) throw new Error(messages.error_extend_reservation);
 
     return updated as ReservationWithBook;
 }

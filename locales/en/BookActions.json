@@ -1,0 +1,7 @@
+{
+  "error_invalid_image_url": "Image must be a valid URL.",
+  "error_unknown": "Unknown error",
+  "error_not_authenticated": "User not authenticated",
+  "error_reservation_verification_failed": "Failed to verify reservation eligibility",
+  "error_reservation_not_allowed": "You cannot make reservations at this time"
+}

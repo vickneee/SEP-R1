@@ -1,0 +1,7 @@
+{
+  "error_invalid_image_url": "画像は有効なURLである必要があります。",
+  "error_unknown": "不明なエラー",
+  "error_not_authenticated": "ユーザーが認証されていません",
+  "error_reservation_verification_failed": "予約資格の確認に失敗しました",
+  "error_reservation_not_allowed": "現在、予約を行うことはできません"
+}

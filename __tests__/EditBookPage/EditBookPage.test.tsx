@@ -6,9 +6,10 @@ const mockPush = jest.fn();
 const mockBack = jest.fn();
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
-    push: mockPush,
-    back: mockBack,
+    push: jest.fn(),
+    back: jest.fn(),
   }),
+  useParams: jest.fn().mockReturnValue({ locale: 'en' })
 }));
 
 jest.mock('@/app/[locale]/books/bookActions', () => ({
@@ -89,7 +90,7 @@ describe('EditBookPage', () => {
       />
     );
 
-    expect(screen.getByText('Loading book data...')).toBeInTheDocument();
+    expect(screen.getByText('loading_book_data')).toBeInTheDocument();
   });
 
   it('shows penalty count when greater than 0', async () => {
@@ -149,53 +150,51 @@ describe('EditBookPage', () => {
 
   it('handles book fetch error', async () => {
     const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-
+    
     (bookActions.getBookById as jest.Mock).mockResolvedValue({
-      book: null,
-      error: 'Book not found',
+        book: null,
+        error: 'Book not found',
     });
 
     await act(async () => {
-      render(
-        <EditBookPage
-          userProfile={mockUserProfile}
-          userEmail={mockUserProfile.email}
-          bookId="1"
-        />
-      );
+        render(
+            <EditBookPage
+                userProfile={mockUserProfile}
+                userEmail={mockUserProfile.email}
+                bookId="1"
+            />
+        );
     });
 
     await waitFor(() => {
-      expect(global.alert).toHaveBeenCalledWith('Error fetching book data.');
+        expect(global.alert).toHaveBeenCalledWith('error_fetch_book');
     });
 
     consoleErrorSpy.mockRestore();
-  });
+});
 
-  it('renders all form fields with correct values', async () => {
+it('renders all form fields with correct values', async () => {
     await act(async () => {
-      render(
-        <EditBookPage
-          userProfile={mockUserProfile}
-          userEmail={mockUserProfile.email}
-          bookId="1"
-        />
-      );
+        render(
+            <EditBookPage
+                userProfile={mockUserProfile}
+                userEmail={mockUserProfile.email}
+                bookId="1"
+            />
+        );
     });
 
     await waitFor(() => {
-      expect(screen.queryByText('Loading book data...')).not.toBeInTheDocument();
+        expect(screen.getByPlaceholderText('Title')).toHaveValue(mockBook.title);
+        expect(screen.getByPlaceholderText('Author')).toHaveValue(mockBook.author);
+        expect(screen.getByPlaceholderText('Category')).toHaveValue(mockBook.category);
+        expect(screen.getByPlaceholderText('ISBN')).toHaveValue(mockBook.isbn);
+        expect(screen.getByPlaceholderText('Publisher')).toHaveValue(mockBook.publisher);
+        expect(screen.getByPlaceholderText('Publication Year:')).toHaveValue(mockBook.publication_year);
+        expect(screen.getByPlaceholderText('Total Copies:')).toHaveValue(mockBook.total_copies);
+        expect(screen.getByPlaceholderText('Available Copies:')).toHaveValue(mockBook.available_copies);
     });
-
-    expect(screen.getByPlaceholderText('Title')).toHaveValue(mockBook.title);
-    expect(screen.getByPlaceholderText('Author')).toHaveValue(mockBook.author);
-    expect(screen.getByPlaceholderText('Category')).toHaveValue(mockBook.category);
-    expect(screen.getByPlaceholderText('ISBN')).toHaveValue(mockBook.isbn);
-    expect(screen.getByPlaceholderText('Publisher')).toHaveValue(mockBook.publisher);
-    expect(screen.getByPlaceholderText('Publication Year')).toHaveValue(mockBook.publication_year);
-    expect(screen.getByPlaceholderText('Total Copies')).toHaveValue(mockBook.total_copies);
-    expect(screen.getByPlaceholderText('Available Copies')).toHaveValue(mockBook.available_copies);
-  });
+});
 
   it('displays form labels', async () => {
     await act(async () => {
