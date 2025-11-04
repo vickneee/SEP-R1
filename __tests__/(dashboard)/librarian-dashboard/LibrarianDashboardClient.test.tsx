@@ -2,7 +2,16 @@ import { render, screen, act, waitFor } from "../../utils/test-utils";
 import LibrarianDashboardClient from "@/app/[locale]/(dashboard)/librarian-dashboard/LibrarianDashboardClient";
 import userEvent from "@testing-library/user-event";
 
-describe("CustomerDashBoardClient", () => {
+jest.mock('next/navigation', () => ({
+    useParams: () => ({ locale: 'en' }),
+    useRouter: () => ({
+        push: jest.fn(),
+        replace: jest.fn(),
+        prefetch: jest.fn(),
+    }),
+}));
+
+describe("LibrarianDashBoardClient", () => {
 
     it("renders with a mock user profile", async () => {
         await act(async () => {
@@ -47,7 +56,7 @@ describe("CustomerDashBoardClient", () => {
             }} userEmail="librarian@example.com" />
         );
         // Only fill in the title
-        await userEvent.type(screen.getByPlaceholderText("Title"), "Test Book");
+        await userEvent.type(screen.getByPlaceholderText("book_title_label"), "Test Book");
 
         await userEvent.click(screen.getByRole("button", { name: /add book/i }));
 
@@ -77,14 +86,14 @@ describe("CustomerDashBoardClient", () => {
         );
 
         // Fill in all required fields
-        await userEvent.type(screen.getByPlaceholderText("Title"), "Test Book");
+        await userEvent.type(screen.getByPlaceholderText("book_title_label"), "Test Book");
         await userEvent.type(screen.getByPlaceholderText("Author"), "Test Author");
         await userEvent.type(screen.getByPlaceholderText("Image URL"), "http://example.com/image.jpg");
         await userEvent.type(screen.getByPlaceholderText("Category"), "Fiction");
         await userEvent.type(screen.getByPlaceholderText("ISBN"), "1234567890");
         await userEvent.type(screen.getByPlaceholderText("Publisher"), "Test Publisher");
-        await userEvent.clear(screen.getByPlaceholderText("Publication Year"));
-        await userEvent.type(screen.getByPlaceholderText("Publication Year"), "2025");
+        // await userEvent.clear(screen.getByLabelText("book_publication_year_label"));
+        // await userEvent.type(screen.getByLabelText("Publication Year:"), "2025");
         await userEvent.clear(screen.getByPlaceholderText("Total Copies"));
         await userEvent.type(screen.getByPlaceholderText("Total Copies"), "1");
         await userEvent.clear(screen.getByPlaceholderText("Available Copies"));

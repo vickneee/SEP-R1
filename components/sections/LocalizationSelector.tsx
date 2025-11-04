@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useLocaleParams } from '@/hooks/useLocaleParams';
+import Image from "next/image";
 
 const LocalizationSelector = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -18,17 +19,17 @@ const LocalizationSelector = () => {
 
   const handleLanguageSelect = (lang: typeof languages[0]) => {
     setIsOpen(false);
-    
+
     const currentPath = window.location.pathname;
     const pathSegments = currentPath.split('/').filter(Boolean);
-    
+
     const locales = ['en', 'ru', 'ja'];
     if (locales.includes(pathSegments[0])) {
       pathSegments[0] = lang.code;
     } else {
       pathSegments.unshift(lang.code);
     }
-    
+
     const newPath = '/' + pathSegments.join('/');
     router.push(newPath);
   };
@@ -48,14 +49,14 @@ const LocalizationSelector = () => {
           }}
           title={lang.name}
         >
-          <img 
-            src={lang.flagUrl} 
-            alt={lang.name}
+          <Image
+            src={lang.flagUrl}
+            alt={lang.name} width={20} height={20}
             className="w-8 h-8 object-cover rounded-full"
           />
         </button>
       ))}
-      
+
       <button
         onClick={() => setIsOpen(!isOpen)}
         className={`w-16 h-16 rounded-full bg-orange-500 hover:bg-orange-600 shadow-xl flex items-center justify-center transition-all duration-300 ${

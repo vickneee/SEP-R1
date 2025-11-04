@@ -2,8 +2,6 @@ import { render, screen, act, waitFor } from '../utils/test-utils';
 import EditBookPage from '@/app/[locale]/book/edit/[bookId]/EditBookPage';
 import * as bookActions from '@/app/[locale]/books/bookActions';
 
-const mockPush = jest.fn();
-const mockBack = jest.fn();
 jest.mock('next/navigation', () => ({
   useRouter: () => ({
     push: jest.fn(),
@@ -150,7 +148,7 @@ describe('EditBookPage', () => {
 
   it('handles book fetch error', async () => {
     const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
-    
+
     (bookActions.getBookById as jest.Mock).mockResolvedValue({
         book: null,
         error: 'Book not found',

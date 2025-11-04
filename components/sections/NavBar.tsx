@@ -10,7 +10,6 @@ import LocalButton from "@/components/ui/localButton";
 import useSupabaseSession from "@/hooks/useSupabaseSession";
 import Notification from "@/components/custom/Notification";
 import {getUserProfile} from "@/app/[locale]/private/userProfile-action";
-import LanguageSwitcher from "@/components/custom/LanguageSwitcher";
 
 import initTranslations from "@/app/i18n"; // Importing the translation initializer
 import {useEffect, useState} from "react"; // Importing useEffect and useState
