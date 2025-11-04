@@ -120,7 +120,6 @@ function NavBar() {
                                 {/*Adding translation key*/}
                                 {t('nav_link_private')}
                             </Link>
-                            <LanguageSwitcher/>
 
                             <div className="ml-[-20] flex-shrink-0">
                                 {!loading &&

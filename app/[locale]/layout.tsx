@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "../globals.css";
 import NavBar from "@/components/sections/NavBar";
+import LocalizationSelector from "@/components/sections/LocalizationSelector";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { Toaster } from "react-hot-toast";
 import { Suspense } from "react";
@@ -41,6 +42,7 @@ export default function RootLayout({
               <Toaster position="bottom-right" />
               {children}
             </main>
+            <LocalizationSelector />
           </NotificationProvider>
         </NuqsAdapter>
       </body>
