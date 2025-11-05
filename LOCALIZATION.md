@@ -89,7 +89,7 @@ Each language directory (e.g., `en`, `ja`, `ru`) contains a `example.json` file 
 
 ### Server component with react-i18next
 
-Create a file in my /app directory called i18n.ts that contains a function to generate an i18next instance:
+Create a file in my /app directory called i18n.js that contains a function to generate an i18next instance:
 
 ```javascript
 import { createInstance } from 'i18next';
