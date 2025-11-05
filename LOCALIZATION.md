@@ -19,8 +19,9 @@ To install the required dependencies, run the following command:
 ```
   npm install i18next react-i18next i18next-resources-to-backend next-i18n-router
 ```
+## Configuration
 
-1. Create a config
+**1. Create a config**
 
 Add a file at the root of your project called i18nConfig.js.
 
@@ -33,7 +34,7 @@ const i18nConfig = {
 module.exports = i18nConfig;
 ```
 
-2. Set up dynamic segment
+**2. Set up dynamic segment**
 
 In your Next.js pages directory, create a folder named [locale] to handle dynamic locale segments in the URL structure.
 
@@ -48,7 +49,7 @@ In your Next.js pages directory, create a folder named [locale] to handle dynami
 i18n.ts
 ```
 
-3. Create Middleware
+**3. Create Middleware**
 
 Finally, at the root of your project, add a middleware.ts file.
 
