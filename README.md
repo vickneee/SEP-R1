@@ -38,6 +38,11 @@ Database schema:
 
 ![Database](public/database_10_10_2025.png)
 
+## Localization
+
+This [document](LOCALIZATION.md) explains how localization is implemented in the project.
+
+
 ## Docker
 
 This [document](https://github.com/vickneee/SEP-R1/blob/main/DOCKER.md) explains how to build and run the library management system using Docker.
