@@ -12,8 +12,9 @@ The following dependencies are used for localization:
 
 - `i18next`: Core internationalization framework.
 - `react-i18next`: React bindings for i18next.
-- `i18next-resources-to-backend`: Backend plugin for loading localization resources.
+
 - `next-i18n-router`: Next.js routing with i18n support.
+- `i18next-resources-to-backend`: Backend plugin for loading localization resources.
 
 To install the required dependencies, run the following command:
 ```
