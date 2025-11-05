@@ -22,6 +22,13 @@ outcomes.
 - **Automated Testing Framework:** Jest + React Testing Library
 - **Testing Coverage:** Jest Coverage Report
 
+### Localization
+- `i18next`: Core internationalization framework.
+- `react-i18next`: React bindings for i18next.
+- `next-i18n-router`: Next.js routing with i18n support.
+- `i18next-resources-to-backend`: Backend plugin for loading localization resources.
+
+
 ### CI/CD
 - Docker
 - GitHub Actions
@@ -37,6 +44,11 @@ This [document](https://github.com/vickneee/SEP-R1/blob/main/supabase/README.md)
 Database schema:
 
 ![Database](public/database_10_10_2025.png)
+
+## Localization
+
+This [document](LOCALIZATION.md) explains how localization is implemented in the project.
+
 
 ## Docker
 
