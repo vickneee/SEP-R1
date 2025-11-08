@@ -11,5 +11,6 @@
   "validation_password_max_length": "Пароль должен содержать менее 100 символов",
   "validation_email_required": "Пожалуйста, введите адрес электронной почты",
   "validation_email_invalid": "Пожалуйста, введите действительный адрес электронной почты",
-  "signup_label": "Зарегистрироваться"
+  "signup_label": "Зарегистрироваться",
+  "signin_placeholder_email": "имя@пример.ком"
 }
