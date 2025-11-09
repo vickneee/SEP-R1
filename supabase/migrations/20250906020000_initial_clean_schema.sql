@@ -37,6 +37,9 @@ CREATE TABLE IF NOT EXISTS public.users (
   language user_language NOT NULL DEFAULT 'en'
 );
 
+ALTER TABLE public.users
+    ADD COLUMN IF NOT EXISTS language user_language NOT NULL DEFAULT 'en';
+
 -- Books catalog
 CREATE TABLE IF NOT EXISTS public.books (
   book_id SERIAL PRIMARY KEY,
