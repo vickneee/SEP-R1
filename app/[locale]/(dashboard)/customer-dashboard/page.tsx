@@ -2,9 +2,16 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import CustomerDashboardClient from "./CustomerDashboardClient";
 
-export default async function CustomerDashboard() {
-    const supabase = await createClient();
+type CustomerDashboardProps = {
+    params: {
+        locale: string };
+};
 
+export default async function CustomerDashboard({ params }: CustomerDashboardProps) {
+    const supabase = await createClient();
+    const routeLocale = params.locale ?? "en"; // use route locale
+
+    // Get authenticated user
     const { data, error } = await supabase.auth.getUser();
     if (error || !data?.user) {
         redirect("/signin");
@@ -21,5 +28,8 @@ export default async function CustomerDashboard() {
         redirect("/private");
     }
 
-    return <CustomerDashboardClient userProfile={userProfile} userEmail={data.user.email || ''} />;
+    // Determine effective locale: user preference first, fallback to route
+    const locale = userProfile.language || routeLocale;
+
+    return <CustomerDashboardClient userProfile={userProfile} userEmail={data.user.email || ''} locale={locale} />;
 }

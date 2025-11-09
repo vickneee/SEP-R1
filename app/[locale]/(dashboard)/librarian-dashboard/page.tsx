@@ -2,8 +2,14 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import LibrarianDashboardClient from "./LibrarianDashboardClient";
 
-export default async function LibrarianDashboard() {
+// Page params type
+type LibrarianDashboardProps = {
+    params: { locale?: string };
+};
+
+export default async function LibrarianDashboard({ params }: LibrarianDashboardProps) {
   const supabase = await createClient();
+  const locale = params?.locale ?? "en"; // use route locale
 
   const { data, error } = await supabase.auth.getUser();
   if (error || !data?.user) {
@@ -21,5 +27,11 @@ export default async function LibrarianDashboard() {
     redirect("/private");
   }
 
-  return <LibrarianDashboardClient userProfile={userProfile} userEmail={data.user.email || ''} />;
+  return (
+    <LibrarianDashboardClient
+      userProfile={userProfile}
+      userEmail={data.user.email || ''}
+      locale={userProfile.language || locale}
+    />
+  );
 }
