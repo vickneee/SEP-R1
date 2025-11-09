@@ -11,8 +11,12 @@ interface CustomerDashboardProps {
 }
 
 export default async function CustomerDashboard({ params }: CustomerDashboardProps) {
+    const resolvedParams = await (params as unknown as Promise<Params>);
+
+    // Use the resolved, synchronous object
+    const routeLocale = resolvedParams.locale ?? "en";
+
     const supabase = await createClient();
-    const routeLocale = params.locale ?? "en"; // use route locale
 
     // Get authenticated user
     const { data, error } = await supabase.auth.getUser();
@@ -31,8 +35,8 @@ export default async function CustomerDashboard({ params }: CustomerDashboardPro
         redirect("/private");
     }
 
-    // Determine effective locale: user preference first, fallback to route
-    const locale = userProfile.language || routeLocale;
+    // Ensure locale is always a string
+    const locale = userProfile?.language ?? routeLocale ?? "en";
 
     return <CustomerDashboardClient userProfile={userProfile} userEmail={data.user.email || ''} locale={locale} />;
 }
