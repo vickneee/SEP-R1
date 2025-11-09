@@ -23,5 +23,6 @@
   "signup_validation_password_max_length": "Password must be under 100 characters",
   "signup_validation_email_required": "Please enter your email address",
   "signup_validation_email_invalid": "Please enter a valid email address",
-  "signup_signin_link": "Sign In"
+  "signup_signin_link": "Sign In",
+  "signup_placeholder_email": "name@example.com"
 }
