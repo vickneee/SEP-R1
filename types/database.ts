@@ -187,7 +187,8 @@ export type Database = {
                     last_name: string
                     penalty_count: number
                     role: Database["public"]["Enums"]["user_role"]
-                    user_id: string
+                    user_id: string,
+                    language?: string
                 }
                 Insert: {
                     created_at?: string
@@ -197,7 +198,8 @@ export type Database = {
                     last_name: string
                     penalty_count?: number
                     role?: Database["public"]["Enums"]["user_role"]
-                    user_id: string
+                    user_id: string,
+                    language?: string
                 }
                 Update: {
                     created_at?: string
@@ -207,7 +209,8 @@ export type Database = {
                     last_name?: string
                     penalty_count?: number
                     role?: Database["public"]["Enums"]["user_role"]
-                    user_id?: string
+                    user_id?: string,
+                    language?: string
                 }
                 Relationships: []
             }

@@ -17,5 +17,10 @@ export const getRegisterSchema = (t: (key: string) => string) =>
     email: z
       .string()
       .min(1, { message: t("signup_validation_email_required") })
-      .email({ message: t("signup_validation_email_invalid") }),
+      // .email({ message: t("signup_validation_email_invalid") })
+      // Simple regex to allow Unicode local and domain parts
+      .regex(
+          /^[^\s@]+@[^\s@]+\.[^\s@]+$/u,
+          t("signup_validation_email_invalid")
+      ),
   });

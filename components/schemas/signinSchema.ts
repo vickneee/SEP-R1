@@ -1,4 +1,4 @@
-import { z } from "zod";
+import {z} from "zod";
 
 export const getSigninSchema = (t: (key: string) => string) =>
   z.object({
@@ -9,7 +9,10 @@ export const getSigninSchema = (t: (key: string) => string) =>
     email: z
       .string()
       .nonempty({ message: t("validation_email_required") })
-      .email({
-        message: t("validation_email_invalid"),
-      }),
+      // .email({message: t("validation_email_invalid")}),
+        // Simple regex to allow Unicode local and domain parts
+        .regex(
+            /^[^\s@]+@[^\s@]+\.[^\s@]+$/u,
+            t("signin_validation_email_invalid")
+        ),
   });

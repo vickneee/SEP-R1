@@ -11,5 +11,6 @@
   "validation_password_max_length": "パスワードは100文字を超えないようにしてください。",
   "validation_email_required": "メールアドレスを入力してください。",
   "validation_email_invalid": "有効なメールアドレスを入力してください。",
-  "signup_label": "サインアップ"
+  "signup_label": "サインアップ",
+  "signin_placeholder_email": "名前@例え.com"
 }

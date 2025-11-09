@@ -33,7 +33,7 @@ describe("getSigninSchema", () => {
 
     expect(result.success).toBe(false);
     expect(result.error?.format().email?._errors[0]).toBe(
-      "translated:validation_email_invalid"
+      "translated:signin_validation_email_invalid"
     );
   });
 

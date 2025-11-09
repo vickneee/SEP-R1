@@ -42,7 +42,7 @@ describe("CustomerDashBoardClient", () => {
   it("renders with a mock user profile", async () => {
     await act(async () => {
       render(
-        <CustomerDashboardClient
+        <CustomerDashboardClient locale={"en"}
           userProfile={{
             created_at: new Date().toISOString(),
             email: "test@example.com",

@@ -53,14 +53,17 @@ interface UserProfile {
 interface LibrarianDashboardClientProps {
   userProfile: UserProfile;
   userEmail: string;
+  locale?: string; // accept optional locale prop from server page
 }
 
 export default function LibrarianDashboardClient({
   userProfile,
   userEmail,
+  locale: propLocale,
 }: LibrarianDashboardClientProps) {
   const params = useParams();
-  const locale = (params?.locale as string) ?? "en";
+  const routeLocale = (params?.locale as string) ?? "en";
+  const locale = routeLocale || propLocale || "en";
 
   const [translatorSource, setTranslatorSource] = useState<InitTranslationsResult | null>(null);
 
@@ -225,8 +228,8 @@ export default function LibrarianDashboardClient({
             <strong>{tr("email_label")}:</strong> {userEmail}
           </p>
           <p>
-            <strong>{tr("name_label")}</strong>{" "}
-            {userProfile.first_name} {userProfile.last_name}
+            <strong>{tr("name_label")}</strong> {userProfile.first_name}{" "}
+            {userProfile.last_name}
           </p>
           <p>
             <strong>{tr("role_label")}</strong>{" "}
@@ -237,9 +240,13 @@ export default function LibrarianDashboardClient({
           <p>
             <strong>{tr("status_label")}</strong>{" "}
             <span
-              className={userProfile.is_active ? "text-green-600" : "text-red-600"}
+              className={
+                userProfile.is_active ? "text-green-600" : "text-red-600"
+              }
             >
-              {userProfile.is_active ? tr("status_active") : tr("status_inactive")}
+              {userProfile.is_active
+                ? tr("status_active")
+                : tr("status_inactive")}
             </span>
           </p>
           <p>
@@ -317,7 +324,9 @@ export default function LibrarianDashboardClient({
             required
             className="border rounded px-3 py-2"
           />
-          <Label className="text-gray-700">{tr("book_publication_year_label")}</Label>
+          <Label className="text-gray-700">
+            {tr("book_publication_year_label")}
+          </Label>
           <input
             name="publication_year"
             type="number"
@@ -338,7 +347,9 @@ export default function LibrarianDashboardClient({
             min={1}
             className="border rounded px-3 py-2 text-gray-600"
           />
-          <Label className="text-gray-700">{tr("book_available_copies_label")}</Label>
+          <Label className="text-gray-700">
+            {tr("book_available_copies_label")}
+          </Label>
           <input
             name="available_copies"
             type="number"
@@ -357,7 +368,9 @@ export default function LibrarianDashboardClient({
             {loading ? "Adding..." : tr("book_add_button")}
           </Button>
         </form>
-        <h2 className="text-xl font-semibold mt-8 mb-2">{tr("added_books_section")}</h2>
+        <h2 className="text-xl font-semibold mt-8 mb-2">
+          {tr("added_books_section")}
+        </h2>
         <ul>
           {books.map((book, idx) => (
             <li key={idx} className="flex items-center mb-4">

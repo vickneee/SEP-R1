@@ -23,6 +23,7 @@ export async function registerUserAction(
     last_name: (formData.get("last_name") ?? "") as string,
     password: (formData.get("password") ?? "") as string,
     email: (formData.get("email") ?? "") as string,
+    language: formData.get("language")
   });
 
   if (!validatedFields.success) {
@@ -60,6 +61,7 @@ export async function registerUserAction(
           first_name,
           last_name,
           role: "customer",
+            language: formData.get("language")?.toString() || "en",
         },
       },
     });

@@ -42,7 +42,7 @@ describe("LibrarianDashboard server component", () => {
       }),
     });
 
-    const result = await LibrarianDashboard();
+    const result = await LibrarianDashboard({ params: { locale: "en" } });
 
     expect(result.type.name).toBe("LibrarianDashboardClient");
     expect(result.props.userEmail).toBe("test@example.com");
