@@ -130,7 +130,7 @@ function NavBar() {
                                             {userRole && userRole == "customer" && <Notification/>}
                                         </div>
                                     ) : (
-                                        <Link href="/signin" passHref>
+                                        <Link href={`/${locale}/signin`}>
                                             <LocalButton>
                                                 {/*Adding translation key*/}
                                                 {t('nav_btn_sign_in')}</LocalButton>
