@@ -138,7 +138,7 @@ export function SignupForm() {
                 id="email"
                 name="email"
                 type="email"
-                placeholder={t("signup_placeholder_email")}
+                placeholder="name@example.com"
               />
               <ZodErrors error={formState?.zodErrors?.email} />
             </div>

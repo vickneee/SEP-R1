@@ -97,7 +97,7 @@ export function SigninForm() {
                 id="email"
                 name="email"
                 type="text"
-                placeholder={t("signin_placeholder_email")}
+                placeholder="name@example.com"
                 required
               />
               <ZodErrors error={formState?.zodErrors?.email} />
