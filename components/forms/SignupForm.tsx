@@ -132,6 +132,7 @@ export function SignupForm() {
                 {/*Adding translation key*/}
                 {t("signup_label_email")}
               </Label>
+                {/* Email must be ASCII for Supabase */}
               <Input
                 className={styles.input}
                 id="email"
