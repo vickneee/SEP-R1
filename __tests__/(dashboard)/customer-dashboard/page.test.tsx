@@ -30,7 +30,7 @@ describe("CustomerDashboard server component", () => {
             }),
         });
 
-        const result = await CustomerDashboard();
+        const result = await CustomerDashboard({ params: { locale: "en" } });
 
         expect(result.type.name).toBe("CustomerDashboardClient");
         expect(result.props.userEmail).toBe("test@example.com");
