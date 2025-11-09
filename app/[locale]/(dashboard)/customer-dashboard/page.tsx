@@ -2,11 +2,7 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import CustomerDashboardClient from "./CustomerDashboardClient";
 
-type CustomerDashboardProps = {
-    params: { locale: string };
-};
-
-export default async function CustomerDashboard({ params }: CustomerDashboardProps) {
+export default async function CustomerDashboard({ params }: { params: { locale?: string } }) {
     const supabase = await createClient();
     const routeLocale = params.locale ?? "en"; // use route locale
 
