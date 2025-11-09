@@ -16,6 +16,7 @@ interface UserProfile {
     penalty_count: number;
     role: "customer" | "librarian";
     user_id: string;
+    language?: string;
 }
 
 interface CustomerDashboardClientProps {
@@ -29,7 +30,8 @@ export default function CustomerDashboardClient({
                                                     userEmail
                                                 }: CustomerDashboardClientProps) {
     const params = useParams() as { locale?: string } | null; // Type assertion for params
-    const locale = params?.locale ?? "en"; // Default to 'en' if locale is not provided
+    const locale = userProfile?.language ?? params?.locale ?? "en"; // Default to 'en' if locale is not provided
+
     const [t, setT] = useState(() => (key: string) => key); // Initial dummy translation function
     // State to trigger penalty status refresh when reservation status changes
     const [penaltyRefreshTrigger, setPenaltyRefreshTrigger] = useState<number>(0);
