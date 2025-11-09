@@ -64,8 +64,7 @@ export function SigninForm() {
     if (formState.message === t("signin_success_message")) {
       setTimeout(() => {
         // Force full reload so NavBar picks up the session
-        window.location.href = "/private";
-      }, 1000); // 1000 ms = 1 seconds
+          window.location.href = `/${locale}/private`;      }, 1000); // 1000 ms = 1 seconds
       toast.success(t("signin_success_message"));
     } else if (
       formState.message &&
@@ -73,7 +72,7 @@ export function SigninForm() {
     ) {
       toast.error(formState.message);
     }
-  }, [formState, t]);
+  }, [formState, locale, t]);
 
   // console.log(formState, "client");
   return (
@@ -97,8 +96,9 @@ export function SigninForm() {
                 className={styles.input}
                 id="email"
                 name="email"
-                type="email"
+                type="text"
                 placeholder={t("signin_placeholder_email")}
+                required
               />
               <ZodErrors error={formState?.zodErrors?.email} />
             </div>
@@ -124,7 +124,7 @@ export function SigninForm() {
         </Card>
         <div className={styles.prompt}>
           {t("signin_text_no_account")}
-          <Link className={styles.link} href="/signup">
+            <Link className={styles.link} href={`/${locale}/signup`}>
             {t("signup_label")}
           </Link>
         </div>
