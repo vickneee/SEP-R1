@@ -16,6 +16,9 @@ BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'penalty_status') THEN
     CREATE TYPE penalty_status AS ENUM ('pending', 'paid', 'waived');
   END IF;
+  IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'user_language') THEN
+    CREATE TYPE user_language AS ENUM ('en', 'ja', 'ru');
+  END IF;
 END $$;
 
 -----------------------------
@@ -30,7 +33,8 @@ CREATE TABLE IF NOT EXISTS public.users (
   role user_role NOT NULL DEFAULT 'customer',
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   is_active BOOLEAN NOT NULL DEFAULT true,
-  penalty_count INTEGER NOT NULL DEFAULT 0 CHECK (penalty_count >= 0)
+  penalty_count INTEGER NOT NULL DEFAULT 0 CHECK (penalty_count >= 0),
+  language user_language NOT NULL DEFAULT 'en'
 );
 
 -- Books catalog
@@ -185,18 +189,30 @@ DECLARE
   v_first TEXT;
   v_last TEXT;
   v_role user_role;
+  v_language user_language;
+
+-- Extract and sanitize user metadata
 BEGIN
   v_first := COALESCE(NULLIF(trim(NEW.raw_user_meta_data->>'first_name'), ''), 'Unknown');
   v_last  := COALESCE(NULLIF(trim(NEW.raw_user_meta_data->>'last_name'), ''),  'User');
+
+  -- Role
   BEGIN
     v_role := COALESCE((NEW.raw_user_meta_data->>'role')::user_role, 'customer');
   EXCEPTION WHEN invalid_text_representation THEN
     v_role := 'customer';
   END;
 
+  -- Language
   BEGIN
-    INSERT INTO public.users (user_id, email, first_name, last_name, role, created_at, is_active, penalty_count)
-    VALUES (NEW.id, NEW.email, v_first, v_last, v_role, NEW.created_at, true, 0);
+    v_language := COALESCE((NEW.raw_user_meta_data->>'language')::user_language, 'en');
+  EXCEPTION WHEN invalid_text_representation THEN
+    v_language := 'en';
+  END;
+
+  BEGIN
+    INSERT INTO public.users (user_id, email, first_name, last_name, role, created_at, is_active, penalty_count, language)
+    VALUES (NEW.id, NEW.email, v_first, v_last, v_role, NEW.created_at, true, 0, v_language);
   EXCEPTION WHEN OTHERS THEN
     -- Do not break auth.users insert; just log
     RAISE LOG 'handle_new_user failed for %: %', NEW.id, SQLERRM;
