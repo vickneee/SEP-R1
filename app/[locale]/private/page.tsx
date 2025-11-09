@@ -1,5 +1,3 @@
-export const runtime = "edge";
-
 import {getUserProfile} from "./userProfile-action";
 import initTranslations from "@/app/i18n";
 import {redirect} from "next/navigation";
