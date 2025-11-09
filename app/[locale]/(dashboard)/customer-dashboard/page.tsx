@@ -3,8 +3,7 @@ import { createClient } from "@/utils/supabase/server";
 import CustomerDashboardClient from "./CustomerDashboardClient";
 
 type CustomerDashboardProps = {
-    params: {
-        locale: string };
+    params: { locale: string };
 };
 
 export default async function CustomerDashboard({ params }: CustomerDashboardProps) {
