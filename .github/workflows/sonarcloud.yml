@@ -25,8 +25,12 @@ jobs:
         run: npm run test -- --coverage
 
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@main
+        uses: SonarSource/sonarcloud-github-action@master
         with:
-          organization: vickneee-SEP-R1
-          projectKey: sep-r1
+          args: >
+            -Dsonar.organization=sep-r1
+            -Dsonar.projectKey=vickneee_SEP-R1
+            -Dsonar.sources=.
+            -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
+        env:
           token: ${{ secrets.SONAR_TOKEN }}
