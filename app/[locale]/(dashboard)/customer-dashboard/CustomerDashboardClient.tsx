@@ -1,11 +1,9 @@
 "use client";
-import {Suspense, useState} from "react";
+import {Suspense, useEffect, useState} from "react";
 import UserReservations from "@/app/[locale]/(dashboard)/customer-dashboard/UserReservations";
 import UserAccountOperations from "./UserAccountOperations";
 import PenaltyStatus from "@/components/custom/PenaltyStatus";
-import {useEffect} from "react";
 import initTranslations from "@/app/i18n"; // Importing the translation initializer
-import {useParams} from "next/navigation";
 
 interface UserProfile {
     created_at: string;
@@ -22,16 +20,15 @@ interface UserProfile {
 interface CustomerDashboardClientProps {
     userProfile: UserProfile;
     userEmail: string;
-    locale: string;
+    locale: string; // initial locale from server
 }
 
 export default function CustomerDashboardClient({
                                                     userProfile,
-                                                    userEmail
+                                                    userEmail, locale: initialLocale
                                                 }: CustomerDashboardClientProps) {
-    const params = useParams() as { locale?: string } | null; // Type assertion for params
-    const locale = userProfile?.language ?? params?.locale ?? "en"; // Default to 'en' if locale is not provided
 
+    const [locale, setLocale] = useState(initialLocale);
     const [t, setT] = useState(() => (key: string) => key); // Initial dummy translation function
     // State to trigger penalty status refresh when reservation status changes
     const [penaltyRefreshTrigger, setPenaltyRefreshTrigger] = useState<number>(0);
@@ -40,6 +37,10 @@ export default function CustomerDashboardClient({
     const handleStatusChange = () => {
         setPenaltyRefreshTrigger((prev) => prev + 1);
     };
+
+    useEffect(() => {
+        setLocale(initialLocale);
+    }, [initialLocale]);
 
     // Load translations when locale changes
     useEffect(() => {
