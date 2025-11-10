@@ -2,19 +2,12 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import CustomerDashboardClient from "./CustomerDashboardClient";
 
-interface Params {
-    locale: string;
-}
-
 interface CustomerDashboardProps {
-    params: Params;
+    params: { locale?: string };
 }
 
 export default async function CustomerDashboard({ params }: CustomerDashboardProps) {
-    const resolvedParams = await (params as unknown as Promise<Params>);
-
-    // Use the resolved, synchronous object
-    const routeLocale = resolvedParams.locale ?? "en";
+    const { locale: routeLocale = "en" } = await params;
 
     const supabase = await createClient();
 
@@ -36,7 +29,7 @@ export default async function CustomerDashboard({ params }: CustomerDashboardPro
     }
 
     // Ensure locale is always a string
-    const locale = userProfile?.language ?? routeLocale ?? "en";
+    const locale = routeLocale ?? userProfile?.language ?? "en";
 
     return <CustomerDashboardClient userProfile={userProfile} userEmail={data.user.email || ''} locale={locale} />;
 }
