@@ -1,16 +1,13 @@
 "use client";
 import { createClient } from "@/utils/supabase/client";
-import { useRouter, usePathname } from "next/navigation";
-import { useState } from "react";
+import { useRouter, usePathname, useParams } from "next/navigation";
+import { useState, useActionState, useEffect } from "react";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input";
 import { ZodErrors } from "@/components/custom/ZodErrors";
-import { useActionState } from "react";
 import { updateUserAction } from "@/app/[locale]/(dashboard)/customer-dashboard/update-user-action";
-import { useEffect } from "react";
 import { toast } from "react-hot-toast";
 import initTranslations from "@/app/i18n"; // Importing the translation initializer
-import { useParams } from "next/navigation";
 
 const INITIAL_STATE: FormState = {
   data: null,
@@ -37,7 +34,8 @@ export default function UserAccountOperations() {
   );
 
   const handleDelete = async () => {
-    const confirmed = window.confirm(t("dashboard_confirm_delete_account"));
+    // Prompt the user for account deletion confirmation using the global confirm dialog.
+    const confirmed = globalThis.confirm(t("dashboard_confirm_delete_account"));
     if (!confirmed) return;
     const res = await fetch("/api/delete-user", { method: "POST" });
     const { success } = await res.json();
@@ -52,11 +50,7 @@ export default function UserAccountOperations() {
   };
 
   const toggleShowForm = () => {
-    if (showForm == true) {
-      setShowForm(false);
-    } else {
-      setShowForm(true);
-    }
+    setShowForm((prev) => !prev);
   };
 
   // Load translations when locale changes
