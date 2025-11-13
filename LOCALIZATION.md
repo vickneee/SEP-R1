@@ -6,6 +6,14 @@ This document explains how localization is implemented in the project.
 
 The project uses a localization framework [react-i18next](https://www.npmjs.com/package/react-i18next) to support 3 languages and provide a seamless experience for users from English, Japanese, and Russia n-speaking backgrounds. The localization files are stored in JSON format, with each language having its own directory containing the translation files pointed to the file structure location.
 
+## Database Layer
+
+In the application user default language is stored in the database as part of the user profile. This allows the application to load the appropriate localization files based on the user's language preference when they log in.
+
+User language added to the users table as follows:
+
+<img src="./public/users_table.png" width="300" alt="BMI Calculator JavaFX preview">
+
 ## Dependencies
 
 The following dependencies are used for localization:
