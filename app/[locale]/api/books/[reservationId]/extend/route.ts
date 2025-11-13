@@ -7,7 +7,7 @@ export async function POST(request: NextRequest,
     const {reservationId} = await context.params
     const id = Number(reservationId);
 
-    if (isNaN(id)) {
+    if (Number.isNaN(id)) {
         return NextResponse.json({ error: "Invalid reservation ID" }, { status: 400 });
     }
 
