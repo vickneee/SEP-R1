@@ -3,7 +3,7 @@
 # --- SonarCloud local scanner runner ---
 
 # Load environment variables from .env if you have one
-if [ -f .env.local ]; then
+if [[ -f .env.local ]]; then
   export $(grep -v '^#' .env.local | xargs)
 fi
 
