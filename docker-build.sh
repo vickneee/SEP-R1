@@ -6,7 +6,7 @@
 set -e
 
 # Check if .env.docker exists
-if [ ! -f ".env.docker" ]; then
+if [[ ! -f ".env.docker" ]]; then
     echo "Error: .env.docker file not found!"
     echo "Please create .env.docker with your Docker environment variables"
     exit 1
