@@ -13,7 +13,8 @@ export const createServerClient = jest.fn(() => ({
           error: null
         })),
         // Or to get multiple items
-        then: jest.fn(() => ({
+        promise: jest.fn(() =>
+          Promise.resolve({
           data: [],
           error: null
         })),

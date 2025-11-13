@@ -48,3 +48,6 @@ next-env.d.ts
 !.vscode/settings.default.json
 .vscode/
 package-lock.json
+
+# Scanner files
+.scannerwork/

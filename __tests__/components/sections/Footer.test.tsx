@@ -8,20 +8,6 @@ jest.mock('next/navigation', () => ({
     useRouter: jest.fn(() => ({push: jest.fn()})),
 }));
 
-// jest.mock("next/navigation", () => ({
-//     useRouter: () => ({
-//         push: jest.fn(),
-//         replace: jest.fn(),
-//         prefetch: jest.fn(),
-//         back: jest.fn(),
-//         forward: jest.fn(),
-//         refresh: jest.fn(),
-//     }),
-//     useSearchParams: () => new URLSearchParams(),
-//     usePathname: () => "/",
-//     useParams: () => ({ locale: "en" }),
-// }));
-
 describe('Footer Component', () => {
 
     it ('renders without crashing', async () => {
