@@ -8,7 +8,7 @@ if [[ -f .env.local ]]; then
 fi
 
 # Check if SONAR_TOKEN is set
-if [ -z "$SONAR_TOKEN" ]; then
+if [[ -z "$SONAR_TOKEN" ]]; then
   echo "❌ SONAR_TOKEN is missing!"
   echo "Add it to your .env file or export it manually:"
   echo "  export SONAR_TOKEN=your_token_here"
