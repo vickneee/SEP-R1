@@ -20,36 +20,34 @@ const createClientMock = supabaseModule.createClient as jest.MockedFunction<
   typeof supabaseModule.createClient
 >;
 
-type MockQueryBuilder = {
-  select: jest.Mock;
-  eq: jest.Mock;
-  single?: jest.Mock;
-  then: (
-    onResolve: (value: { data: unknown; error: unknown }) => unknown
-  ) => Promise<unknown>;
+type QueryResult<T = unknown> = {
+    data: T;
+    error: unknown;
 };
 
-const createMockQueryBuilder = (resolveValue: {
-  data: unknown;
-  error: unknown;
-}) => {
-  const mockBuilder: Partial<MockQueryBuilder> = {
-    select: jest.fn(),
-    eq: jest.fn(),
-    single: jest.fn(),
-  };
+type MockQueryBuilder<T = unknown> = {
+    select: jest.Mock<MockQueryBuilder<T>, [string]>;
+    eq: jest.Mock<MockQueryBuilder<T>, [string, unknown]>;
+    single: jest.Mock<Promise<QueryResult<T>>, []>;
+    promise: jest.Mock<Promise<QueryResult<T>>, []>;
+};
 
-  Object.keys(mockBuilder).forEach((key) => {
-    (mockBuilder[key as keyof typeof mockBuilder] as jest.Mock).mockReturnValue(
-      mockBuilder
-    );
-  });
+const createMockQueryBuilder = <T = unknown>(
+    resolveValue: QueryResult<T>
+): MockQueryBuilder<T> => {
+    const builder: Partial<MockQueryBuilder<T>> = {
+        select: jest.fn(),
+        eq: jest.fn(),
+        single: jest.fn().mockResolvedValue(resolveValue),
+        promise: jest.fn().mockResolvedValue(resolveValue),
+    };
 
-  mockBuilder.then = jest.fn((onResolve) =>
-    Promise.resolve(onResolve(resolveValue))
-  );
+    // Make chainable methods return builder
+    ['select', 'eq'].forEach((key) => {
+        (builder[key as keyof typeof builder] as jest.Mock).mockReturnValue(builder);
+    });
 
-  return mockBuilder;
+    return builder as MockQueryBuilder<T>;
 };
 
 let currentMockQueryBuilder: ReturnType<typeof createMockQueryBuilder>;

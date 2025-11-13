@@ -56,10 +56,10 @@ const createMockQueryBuilder = (resolveValue: { data: unknown; error: unknown } 
     // single() should return the actual data
     mockBuilder.single.mockResolvedValue(resolveValue);
 
-    // Make the builder itself thenable for direct awaiting
-    (mockBuilder as unknown as { then: jest.Mock }).then = jest.fn((onResolve) => {
-        return Promise.resolve(onResolve(resolveValue));
-    });
+    // // Make the builder itself thenable for direct awaiting
+    // (mockBuilder as unknown as { then: jest.Mock }).then = jest.fn((onResolve) => {
+    //     return Promise.resolve(onResolve(resolveValue));
+    // });
 
     return mockBuilder;
 };
