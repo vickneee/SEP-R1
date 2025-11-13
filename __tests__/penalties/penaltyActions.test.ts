@@ -35,8 +35,12 @@ const mockOverdueBooks = [
     },
 ];
 
+const defaultResolveValue = { data: null, error: null };
+
 // Create mock query builder
-const createMockQueryBuilder = (resolveValue: { data: unknown; error: unknown } = { data: null, error: null }) => {
+const createMockQueryBuilder = (resolveValue?: { data: unknown; error: unknown }) =>
+{
+    const finalResolveValue = resolveValue ?? defaultResolveValue;
     const mockBuilder = {
         select: jest.fn(),
         eq: jest.fn(),
@@ -54,12 +58,7 @@ const createMockQueryBuilder = (resolveValue: { data: unknown; error: unknown } 
     });
 
     // single() should return the actual data
-    mockBuilder.single.mockResolvedValue(resolveValue);
-
-    // // Make the builder itself thenable for direct awaiting
-    // (mockBuilder as unknown as { then: jest.Mock }).then = jest.fn((onResolve) => {
-    //     return Promise.resolve(onResolve(resolveValue));
-    // });
+    mockBuilder.single.mockResolvedValue(finalResolveValue);
 
     return mockBuilder;
 };
