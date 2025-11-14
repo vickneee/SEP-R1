@@ -28,11 +28,14 @@ outcomes.
 - `next-i18n-router`: Next.js routing with i18n support.
 - `i18next-resources-to-backend`: Backend plugin for loading localization resources.
 
-
 ### CI/CD
 - Docker
 - GitHub Actions
 - Vercel
+
+## Code Quality and Analysis
+- **Linting Tool:** ESLint
+- **Code Quality Tool:** SonarQube / SonarCloud
 
 ### Project Management
 - **Project Management Software:** Jira
@@ -49,10 +52,13 @@ Database schema:
 
 This [document](LOCALIZATION.md) explains how localization is implemented in the project.
 
-
 ## Docker
 
 This [document](https://github.com/vickneee/SEP-R1/blob/main/DOCKER.md) explains how to build and run the library management system using Docker.
+
+## SonarQube / SonarCloud Integration
+
+This [document](SONARQUBE.md) provides instructions on how to integrate SonarQube or SonarCloud into your project for continuous code quality inspection.
 
 ## Members
 - Monami Kirjavainen
