@@ -9,7 +9,7 @@ export async function signinAction(
   prevState: { message?: string; zodErrors?: Record<string, string[]> },
   formData: FormData
 ) {
-  const locale = formData.get("locale")?.toString() || "en";
+  const locale = (formData.get("locale") as string) || "en";
   const { t } = await initTranslations(locale, ["Signin"]);
   const schemaSignin = getSigninSchema(t);
   console.log("signinAction called with:", {
@@ -24,9 +24,19 @@ export async function signinAction(
   });
 
   if (!validatedFields.success) {
+    // Convert issues into a fieldErrors object manually
+    const fieldErrors: Record<string, string[]> = {};
+
+    for (const issue of validatedFields.error.issues) {
+      const field = issue.path[0] as string;
+      if (!fieldErrors[field]) {
+        fieldErrors[field] = [];
+      }
+      fieldErrors[field].push(issue.message);
+    }
     const errorResponse = {
       data: null,
-      zodErrors: validatedFields.error.flatten().fieldErrors,
+      zodErrors: fieldErrors,
       message: t("signup_error_missing_fields"),
     };
     console.log("Validation failed, returning:", errorResponse);

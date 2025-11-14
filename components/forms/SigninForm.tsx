@@ -1,8 +1,7 @@
 "use client";
 import Link from "next/link";
-import { useActionState, useState } from "react";
+import { useActionState, useState, useEffect } from "react";
 import { signinAction } from "@/app/[locale]/(auth)/signin/auth-actions";
-import { useEffect } from "react";
 import initTranslations from "@/app/i18n"; // Importing the translation initializer
 
 import {
@@ -64,7 +63,8 @@ export function SigninForm() {
     if (formState.message === t("signin_success_message")) {
       setTimeout(() => {
         // Force full reload so NavBar picks up the session
-          window.location.href = `/${locale}/private`;      }, 1000); // 1000 ms = 1 seconds
+        globalThis.location.href = `/${locale}/private`;
+      }, 1000); // 1000 ms = 1 seconds
       toast.success(t("signin_success_message"));
     } else if (
       formState.message &&
@@ -74,7 +74,6 @@ export function SigninForm() {
     }
   }, [formState, locale, t]);
 
-  // console.log(formState, "client");
   return (
     <div className={styles.container}>
       <form action={formAction}>
@@ -124,7 +123,7 @@ export function SigninForm() {
         </Card>
         <div className={styles.prompt}>
           {t("signin_text_no_account")}
-            <Link className={styles.link} href={`/${locale}/signup`}>
+          <Link className={styles.link} href={`/${locale}/signup`}>
             {t("signup_label")}
           </Link>
         </div>

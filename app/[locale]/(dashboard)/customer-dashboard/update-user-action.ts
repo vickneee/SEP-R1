@@ -22,9 +22,19 @@ export async function updateUserAction(
   });
 
   if (!validatedField.success) {
+    // Convert issues into a fieldErrors object manually
+    const fieldErrors: Record<string, string[]> = {};
+
+    for (const issue of validatedField.error.issues) {
+      const field = issue.path[0] as string;
+      if (!fieldErrors[field]) {
+        fieldErrors[field] = [];
+      }
+      fieldErrors[field].push(issue.message);
+    }
     return {
       data: null,
-      zodErrors: validatedField.error.flatten().fieldErrors,
+      zodErrors: fieldErrors,
       message: t("dashboard_error_missing_email"),
     };
   }
