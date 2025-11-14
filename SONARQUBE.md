@@ -26,7 +26,7 @@ To install SonarScanner, follow the instructions for your operating system from 
 ## Configuration
 
 1. Obtain your SonarQube or SonarCloud token:
-   - For SonarQube: Go to your user account settings and generate a new token.
+   - For SonarQube: Go to your user account security settings and generate a new token.
    - For SonarCloud: Navigate to your account security settings and create a new token.
 
 2. Create a `sonar-project.properties` file in the root directory of your project with the following content:
@@ -34,9 +34,9 @@ To install SonarScanner, follow the instructions for your operating system from 
    ```properties
    sonar.projectKey=your_project_key
    sonar.organization=your_organization_key (for SonarCloud)
-   sonar.host.url=https://sonarcloud.io (for SonarCloud 
+   sonar.host.url=https://sonarcloud.io (for SonarCloud) 
    or your SonarQube server URL http://localhost:9000 (for SonarQube)
-   sonar.token=your_sonar_token
+   sonar.login=your_sonar_token directly or use environment variable SONAR_TOKEN
    sonar.sources=.
    sonar.language=ts (or your project's primary language)
    sonar.sourceEncoding=UTF-8
@@ -52,7 +52,7 @@ To install SonarScanner, follow the instructions for your operating system from 
        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
    ```
    
-## Running the Analysis
+## Running the Analysis (Locally example with SonarScanner)
 
 To run the SonarQube or SonarCloud analysis, execute the following command in your project's root directory:
 
