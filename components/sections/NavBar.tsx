@@ -90,13 +90,9 @@ function NavBar() {
                         {/* Search Bar */}
                         <div className="text-2xl flex gap-12">
                             <label htmlFor="search" className="sr-only">
-                                {/*Adding translation key*/}
                                 {t('nav_search_label')}
                             </label>
                             <div className="relative ml-[40] text-gray-400 focus-within:text-gray-600 w-[310px]">
-                                {/*<div className="absolute inset-y-0 left-0 pl-3 flex items-center">*/}
-                                {/*  /!*<MagnifyingGlassIcon className="h-5 w-5" />*!/*/}
-                                {/*</div>*/}
                                 <div className="flex items-center">
                                     <input id="search" name="search"
                                            className="relative block w-full border border-gray-300 rounded-md py-2 pl-4 pr-4 leading-5 bg-white placeholder-gray-400 focus:ring-1 focus:ring-orange-500 focus:outline-none focus:border-orange-500 text-xs"
@@ -112,11 +108,7 @@ function NavBar() {
                         </div>
                         {/* Links + Auth */}
                         <div className="flex row-auto items-center-safe space-x-12">
-                            {/*<Link href="/" className="hover:underline hover:text-orange-500">*/}
-                            {/*  Home*/}
-                            {/*</Link>*/}
                             <Link href="/private" className="hover:underline hover:text-orange-500">
-                                {/*Adding translation key*/}
                                 {t('nav_link_private')}
                             </Link>
 
@@ -125,14 +117,12 @@ function NavBar() {
                                     (session?.user ? (
                                         <div className="flex item-center gap-4">
                                             <LocalButton onClick={handleLogout}>
-                                                {/*Adding translation key*/}
                                                 {t('nav_btn_log_out')}</LocalButton>
                                             {userRole && userRole == "customer" && <Notification/>}
                                         </div>
                                     ) : (
                                         <Link href={`/${locale}/signin`}>
                                             <LocalButton>
-                                                {/*Adding translation key*/}
                                                 {t('nav_btn_sign_in')}</LocalButton>
                                         </Link>
                                     ))}
