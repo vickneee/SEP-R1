@@ -137,37 +137,6 @@ describe("OverdueBooksPage", () => {
         });
     });
 
-    // it("should remove book from list after successful return", async () => {
-    //     (penaltyActions.getAllOverdueBooks as jest.Mock).mockResolvedValue({
-    //         overdueBooks: mockOverdueBooks,
-    //         error: null,
-    //     });
-    //     (penaltyActions.markBookReturned as jest.Mock).mockResolvedValue({
-    //         success: true,
-    //         error: null,
-    //     });
-    //
-    //     render(<OverdueBooksPage />);
-    //
-    //     await waitFor(() => {
-    //         expect(screen.getByText("John Doe")).toBeInTheDocument();
-    //     });
-    //
-    //     const markReturnedButtons = screen.getAllByText(/mark as returned/i);
-    //
-    //     fireEvent.click(markReturnedButtons[0]);
-    //
-    //     // Wait for the success message first
-    //     await screen.findByText("Book marked as returned successfully");
-    //
-    //     await waitFor(() => {
-    //         // expect(screen.findByText("Book marked as returned successfully")).toBeInTheDocument();
-    //         expect(screen.queryByText("John Doe")).not.toBeInTheDocument();
-    //         // Sanity check that Jane Smith is still there
-    //         expect(screen.getByText("Jane Smith")).toBeInTheDocument();
-    //     });
-    // });
-
     it("should display error when marking book as returned fails", async () => {
         (penaltyActions.getAllOverdueBooks as jest.Mock).mockResolvedValue({
             overdueBooks: mockOverdueBooks,
