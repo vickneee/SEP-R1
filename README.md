@@ -56,7 +56,7 @@ This [document](LOCALIZATION.md) explains how localization is implemented in the
 
 This [document](https://github.com/vickneee/SEP-R1/blob/main/DOCKER.md) explains how to build and run the library management system using Docker.
 
-## SonarQube / SonarCloud Integration
+## SonarQube / SonarCloud
 
 This [document](SONARQUBE.md) provides instructions on how to integrate SonarQube or SonarCloud into your project for continuous code quality inspection.
 
