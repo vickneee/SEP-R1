@@ -28,7 +28,7 @@ jest.mock("next/navigation", () => ({
   usePathname: () => "/",
 }));
 
-global.fetch = jest.fn(() =>
+globalThis.fetch = jest.fn(() =>
   Promise.resolve({
     json: () => Promise.resolve({ success: true }),
   })
@@ -65,7 +65,7 @@ describe("UserAccountOperations Component", () => {
   it("calls delete API and redirects on success", async () => {
     render(<UserAccountOperations />);
 
-    jest.spyOn(window, "confirm").mockReturnValueOnce(true);
+    jest.spyOn(globalThis, "confirm").mockReturnValueOnce(true);
 
     const deleteButton = screen.getByTestId("delete-button");
 
@@ -73,7 +73,7 @@ describe("UserAccountOperations Component", () => {
       fireEvent.click(deleteButton);
     });
 
-    expect(global.fetch).toHaveBeenCalledWith("/api/delete-user", {
+    expect(globalThis.fetch).toHaveBeenCalledWith("/api/delete-user", {
       method: "POST",
     });
   });
