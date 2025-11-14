@@ -7,9 +7,9 @@ import {useCallback, useEffect, useState} from "react"; // Importing useEffect a
 import {useLocaleParams} from "@/hooks/useLocaleParams"; // Importing useLocaleParams
 
 interface OverdueBadgeProps {
-  userId?: string;
-  className?: string;
-  compact?: boolean;
+  readonly userId?: string;
+  readonly className?: string;
+  readonly compact?: boolean;
 }
 
 export default function OverdueBadge({ userId, className = "", compact = false }: OverdueBadgeProps) {
@@ -57,7 +57,7 @@ export default function OverdueBadge({ userId, className = "", compact = false }
   if (compact) {
     return (
       <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-700 ${className}`}>
-        {overdueCount} {t("overdueBook")} {overdueCount !== 1 ? 's' : ''}
+        {overdueCount} {t("overdueBook")} {overdueCount === 1 ? '' : 's'}
       </span>
     );
   }
@@ -66,7 +66,7 @@ export default function OverdueBadge({ userId, className = "", compact = false }
     <div className={`bg-red-50 border border-red-200 rounded p-2 text-red-700 text-sm ${className}`}>
       <div className="flex items-center gap-1">
         <span className="font-semibold">{t("restrictedNotice")}</span>
-        <span>{overdueCount} {t("overdueBook")} {overdueCount !== 1 ? 's' : ''}</span>
+        <span>{overdueCount} {t("overdueBook")} {overdueCount === 1 ? '' : 's'}</span>
       </div>
       <div className="mt-1 text-xs">
           {t("returnOverdueToContinue")}
