@@ -34,7 +34,8 @@ To install SonarScanner, follow the instructions for your operating system from 
    ```properties
    sonar.projectKey=your_project_key
    sonar.organization=your_organization_key (for SonarCloud)
-   sonar.host.url=https://sonarcloud.io (for SonarCloud) or your SonarQube server URL http://localhost:9000 (for SonarQube)
+   sonar.host.url=https://sonarcloud.io (for SonarCloud 
+   or your SonarQube server URL http://localhost:9000 (for SonarQube)
    sonar.token=your_sonar_token
    sonar.sources=.
    sonar.language=ts (or your project's primary language)
@@ -69,7 +70,7 @@ You can also add a script to your `package.json` to run the SonarScanner. Add th
 
 ```json
 "scripts": {
-  "sonar:run": "sonar-scanner"
+  "sonar:run": "bash run_sonar.sh"
 }
 ``` 
 
