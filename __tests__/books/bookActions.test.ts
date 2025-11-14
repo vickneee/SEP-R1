@@ -40,37 +40,30 @@ const mockBooks: Book[] = [
 
 const defaultResolveValue = {data: mockBooks, error: null};
 
-// Create a proper mock query builder that tracks method calls and resolves correctly
-const createMockQueryBuilder = (resolveValue?: { data: unknown; error: unknown }) => {
-    const finalResolveValue = resolveValue ?? defaultResolveValue;
+class MockQueryBuilderPromise extends Promise<{ data: unknown; error: unknown }> {
+    select = jest.fn(() => this);
+    order = jest.fn(() => this);
+    ilike = jest.fn(() => this);
+    insert = jest.fn(() => this);
+    update = jest.fn(() => this);
+    delete = jest.fn(() => this);
+    eq     = jest.fn(() => this);
 
-    const mockBuilder = {
-        select: jest.fn(),
-        order: jest.fn(),
-        ilike: jest.fn(),
-        insert: jest.fn(),
-        update: jest.fn(),
-        delete: jest.fn(),
-        eq: jest.fn(),
-        single: jest.fn(),
-    };
+    single = jest.fn();
+}
 
-    // Make all methods chainable and return the builder itself
-    Object.keys(mockBuilder).forEach(key => {
-        if (key !== 'single') {
-            mockBuilder[key as keyof typeof mockBuilder].mockReturnValue(mockBuilder);
-        }
-    });
+const createMockQueryBuilder = (
+    resolveValue?: { data: unknown; error: unknown }
+) => {
+    const finalValue = resolveValue ?? defaultResolveValue;
 
-    // single() and the final promise resolution should return the actual data
-    mockBuilder.single.mockResolvedValue(finalResolveValue);
+    // Create a real Promise instance (no .then override)
+    const instance = new MockQueryBuilderPromise((resolve) => resolve(finalValue));
 
-    // Make the builder itself a thenable (promise-like) for direct awaiting
-    (mockBuilder as unknown as { then: jest.Mock }).then = jest.fn((onResolve) => {
-        return Promise.resolve(onResolve(resolveValue));
-    });
+    // single() should behave like Supabase: return a resolved object
+    instance.single.mockResolvedValue(finalValue);
 
-    return mockBuilder;
+    return instance;
 };
 
 // Global variables to hold current mock instances

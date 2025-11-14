@@ -34,20 +34,19 @@ type MockQueryBuilder<T = unknown> = {
 
 const createMockQueryBuilder = <T = unknown>(
     resolveValue: QueryResult<T>
-): MockQueryBuilder<T> => {
-    const builder: Partial<MockQueryBuilder<T>> = {
+): MockQueryBuilder<T> & Promise<QueryResult<T>> => {
+    const builder = {
         select: jest.fn(),
         eq: jest.fn(),
         single: jest.fn().mockResolvedValue(resolveValue),
         promise: jest.fn().mockResolvedValue(resolveValue),
-    };
+    } as MockQueryBuilder<T> & Promise<QueryResult<T>>;
 
     // Make chainable methods return builder
-    ['select', 'eq'].forEach((key) => {
-        (builder[key as keyof typeof builder] as jest.Mock).mockReturnValue(builder);
-    });
+    (builder.select as jest.Mock).mockReturnValue(builder);
+    (builder.eq as jest.Mock).mockReturnValue(builder);
 
-    return builder as MockQueryBuilder<T>;
+    return builder;
 };
 
 let currentMockQueryBuilder: ReturnType<typeof createMockQueryBuilder>;

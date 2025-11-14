@@ -39,7 +39,7 @@ describe('NavBar Component', () => {
         });
 
         // Test search input
-            const searchInput = await screen.getByPlaceholderText(/Search by title, author, or categories.../)
+            const searchInput = screen.getByPlaceholderText(/Search by title, author, or categories.../)
             expect(searchInput).toBeInTheDocument()
             expect(searchInput).toHaveAttribute('type', 'text')
     });

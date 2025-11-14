@@ -35,13 +35,24 @@ const mockOverdueBooks = [
     },
 ];
 
-const defaultResolveValue = { data: null, error: null };
+type QueryResult<T = unknown> = { data: T; error: unknown };
+
+type MockQueryBuilder<T = unknown> = {
+    select: jest.Mock<MockQueryBuilder<T>, [string]>;
+    eq: jest.Mock<MockQueryBuilder<T>, [string , unknown]>;
+    single: jest.Mock<Promise<QueryResult<T>>, []>;
+    insert: jest.Mock<MockQueryBuilder<T>, [Partial<T>]>;
+    update: jest.Mock<MockQueryBuilder<T>, [Partial<T>]>;
+    delete: jest.Mock<MockQueryBuilder<T>, []>;
+};
 
 // Create mock query builder
-const createMockQueryBuilder = (resolveValue?: { data: unknown; error: unknown }) =>
-{
-    const finalResolveValue = resolveValue ?? defaultResolveValue;
-    const mockBuilder = {
+const createMockQueryBuilder = <T = unknown>(
+    resolveValue?: QueryResult<T>
+): MockQueryBuilder<T> => {
+    const finalResolveValue = resolveValue ?? { data: null as T, error: null };
+
+    const mockBuilder: MockQueryBuilder<T> = {
         select: jest.fn(),
         eq: jest.fn(),
         single: jest.fn(),
@@ -51,13 +62,14 @@ const createMockQueryBuilder = (resolveValue?: { data: unknown; error: unknown }
     };
 
     // Make all methods chainable
-    Object.keys(mockBuilder).forEach(key => {
-        if (key !== 'single') {
-            mockBuilder[key as keyof typeof mockBuilder].mockReturnValue(mockBuilder);
+    for (const key of Object.keys(mockBuilder) as (keyof MockQueryBuilder<T>)[]) {
+        const fn = mockBuilder[key];
+        if (typeof fn === 'function' && key !== 'single') {
+            (fn as jest.Mock).mockReturnValue(mockBuilder);
         }
-    });
+    }
 
-    // single() should return the actual data
+    // single() should resolve with finalResolveValue
     mockBuilder.single.mockResolvedValue(finalResolveValue);
 
     return mockBuilder;

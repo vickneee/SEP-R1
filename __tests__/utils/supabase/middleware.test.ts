@@ -44,7 +44,7 @@ describe("updateSession", () => {
 
     (createServerClient as jest.Mock).mockReturnValue(mockSupabase);
 
-    const response = await updateSession(mockRequest as NextRequest);
+    const response = await updateSession(mockRequest);
 
     expect(createServerClient).toHaveBeenCalled();
     expect(mockSupabase.auth.getUser).toHaveBeenCalled();
@@ -63,7 +63,7 @@ describe("updateSession", () => {
 
     (createServerClient as jest.Mock).mockReturnValue(mockSupabase);
 
-    const response = await updateSession(mockRequest as NextRequest);
+    const response = await updateSession(mockRequest);
 
     expect(createServerClient).toHaveBeenCalled();
     expect(mockSupabase.auth.getUser).toHaveBeenCalled();

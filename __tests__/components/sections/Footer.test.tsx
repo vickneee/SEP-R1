@@ -14,7 +14,7 @@ describe('Footer Component', () => {
         render(<Footer/>);
 
         // Test footer element exists
-        const footerElement = await screen.getByRole('contentinfo')
+        const footerElement = screen.getByRole('contentinfo')
         expect(footerElement).toBeInTheDocument()
     })
 
