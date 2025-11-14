@@ -9,12 +9,22 @@ type PageProps = {
 
 export default async function BookPage({ searchParams }: PageProps) {
   const { search } = await loadSearchParams(searchParams);
-  const { books } = await getBooksByTitle(search);
+  const { error, books } = await getBooksByTitle(search);
 
-  const safeBooks = (books || []).map(book => ({
+  const safeBooks = (books || []).map((book) => ({
     ...book,
     image: book.image ?? "",
   }));
 
+  // display an error message when data fetching fails
+  if (error) {
+    return (
+      <div className="text-red-600 bg-red-100 border border-red-400 rounded p-3">
+        {error}
+      </div>
+    );
+  }
+
+  // render the list og books when no error occurs
   return <Books books={safeBooks} />;
 }
