@@ -47,26 +47,30 @@ export default function NotificationSection() {
     }
   };
 
-  const fetchBookTitles = useCallback(async (bookIds: number[]) => {
-    const results = await Promise.all(
-      bookIds.map(async (id) => {
-        try {
-          const res = await getBookById(id);
-          if (res.error)
-            throw new Error(t("notification_error_fetch_book_failed"));
-          return {
-            id,
-            title: res.book.title || t("notification_book_untitled"),
-          };
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        } catch (error) {
-          return { id, title: t("notification_book_unknown_title") };
-        }
-      })
-    );
+  const fetchBookTitles = useCallback(
+    async (bookIds: number[]) => {
+      const results = await Promise.all(
+        bookIds.map(async (id) => {
+          try {
+            const res = await getBookById(id);
+            if (res.error)
+              throw new Error(t("notification_error_fetch_book_failed"));
+            return {
+              id,
+              title: res.book.title || t("notification_book_untitled"),
+            };
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+          } catch (error) {
+            console.error("Failed to fetch book:", error);
+            return { id, title: t("notification_book_unknown_title") };
+          }
+        })
+      );
 
-    return Object.fromEntries(results.map(({ id, title }) => [id, title]));
-  }, [t]);
+      return Object.fromEntries(results.map(({ id, title }) => [id, title]));
+    },
+    [t]
+  );
 
   const loadBookTitles = useCallback(
     async (
