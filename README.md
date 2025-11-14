@@ -33,7 +33,7 @@ outcomes.
 - GitHub Actions
 - Vercel
 
-## Code Quality and Analysis
+### Code Quality and Analysis
 - **Linting Tool:** ESLint
 - **Code Quality Tool:** SonarQube / SonarCloud
 
