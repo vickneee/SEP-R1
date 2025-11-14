@@ -22,6 +22,7 @@ SonarQube is an open-source platform for continuous inspection of code quality, 
 To install SonarQube, you can either set up a local server or use a Docker container. Follow the instructions in the [official SonarQube documentation](https://www.sonarsource.com/products/sonarqube/downloads/?_gl=1*1cb3ncb*_gcl_aw*R0NMLjE3NTY4MTY4NTAuQ2p3S0NBandxOXJGQmhBSUVpd0FHVkFaUDhpSnpMWFFYOFM0U1NYN1h6YUlEVkxqYWpaVzBENFoyaFZfNFlRMnU5ejVlZ2xkdE43dnd4b0M5ZFFRQXZEX0J3RQ..*_gcl_au*MTUyODQxMjM2OC4xNzU3OTQwNjA3LjIwNDk1NTUzMjIuMTc1OTkxNTc4Ny4xNzU5OTE1Nzg2*_ga*MzU0MTY0OTcwLjE3MjY2NzExODc.*_ga_9JZ0GZ5TC6*czE3NjA2MTUyNDkkbzEyMSRnMSR0MTc2MDYxNzkwOCRqNjAkbDAkaDA.).
 
 ``` bash
+
 # Example using Docker (Community Edition) in Mac(M1) or Linux:
 docker run -d --name sonarqube \ 
 -p 9000:9000 \ 
