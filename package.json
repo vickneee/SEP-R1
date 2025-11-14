@@ -13,7 +13,7 @@
     "test:coverage:open": "open-cli coverage/lcov-report/index.html",
     "docker:build": "bash docker-build.sh",
     "docker:run": "docker run -p 3001:3001 --env-file .env.docker library-app",
-    "sonar:run": "bash run_solar.sh"
+    "sonar:run": "bash run_sonar.sh"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
