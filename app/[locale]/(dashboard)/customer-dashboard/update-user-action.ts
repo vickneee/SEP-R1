@@ -14,7 +14,7 @@ export async function updateUserAction(
   prevState: FormState,
   formData: FormData
 ): Promise<FormState> {
-  const locale = formData.get("locale")?.toString() || "en";
+  const locale = (formData.get("locale") as string) || "en";
   const { t } = await initTranslations(locale, ["customer_dashboard"]);
   const schemaUpdateEmail = getUpdateEmailSchema(t);
   const validatedField = schemaUpdateEmail.safeParse({
