@@ -25,7 +25,7 @@ sonar-scanner \
   -Dsonar.host.url=https://sonarcloud.io \
   -Dsonar.login=$SONAR_TOKEN \
   -Dsonar.sourceEncoding=UTF-8 \
-  -Dsonar.exclusions="**/node_modules/**, .next/**"
+  -Dsonar.exclusions="**/node_modules/**, .next/**, documents/**"
 
 echo "✅ Analysis complete. Check your project at:"
 echo "   https://sonarcloud.io/project/overview?id=vickneee_SEP-R1"
