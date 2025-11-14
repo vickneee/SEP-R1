@@ -14,7 +14,7 @@ export async function registerUserAction(
   prevState: FormState,
   formData: FormData
 ) {
-  const locale = formData.get("locale")?.toString() || "en";
+  const locale = (formData.get("locale") as string) || "en";
   const { t } = await initTranslations(locale, ["signup"]);
   const schemaRegister = getRegisterSchema(t);
 
@@ -23,13 +23,23 @@ export async function registerUserAction(
     last_name: (formData.get("last_name") ?? "") as string,
     password: (formData.get("password") ?? "") as string,
     email: (formData.get("email") ?? "") as string,
-    language: formData.get("language")
+    language: formData.get("language"),
   });
 
   if (!validatedFields.success) {
+    // Build fieldErrors manually from Zod issues
+    const fieldErrors: Record<string, string[]> = {};
+
+    for (const issue of validatedFields.error.issues) {
+      const field = issue.path[0] as string;
+      if (!fieldErrors[field]) {
+        fieldErrors[field] = [];
+      }
+      fieldErrors[field].push(issue.message);
+    }
     return {
       ...prevState,
-      zodErrors: validatedFields.error.flatten().fieldErrors,
+      zodErrors: fieldErrors,
       message: t("signup_error_missing_fields"),
     };
   }
@@ -61,7 +71,7 @@ export async function registerUserAction(
           first_name,
           last_name,
           role: "customer",
-            language: formData.get("language")?.toString() || "en",
+          language: (formData.get("language") as string) || "en",
         },
       },
     });

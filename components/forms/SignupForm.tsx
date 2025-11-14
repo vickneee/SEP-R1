@@ -1,10 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState, useState } from "react";
+import { useActionState, useState, useEffect } from "react";
 import { registerUserAction } from "@/app/[locale]/(auth)/signup/auth-actions";
 import { toast } from "react-hot-toast";
-import { useEffect } from "react";
 import initTranslations from "@/app/i18n"; // Importing the translation initializer
 
 import {
@@ -132,7 +131,7 @@ export function SignupForm() {
                 {/*Adding translation key*/}
                 {t("signup_label_email")}
               </Label>
-                {/* Email must be ASCII for Supabase */}
+              {/* Email must be ASCII for Supabase */}
               <Input
                 className={styles.input}
                 id="email"

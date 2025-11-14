@@ -26,7 +26,14 @@ describe("getRegisterSchema", () => {
     });
 
     expect(result.success).toBe(false);
-    expect(result.error?.format().first_name?._errors[0]).toBe(
+
+    // Find the validation error related to the "first_name" field
+    // and retrieve its error message if it exists
+    const firstNameError = result.error?.issues.find(
+      (issue) => issue.path[0] === "first_name"
+    )?.message;
+
+    expect(firstNameError).toBe(
       "translated:signup_validation_first_name_required"
     );
   });
@@ -40,7 +47,14 @@ describe("getRegisterSchema", () => {
     });
 
     expect(result.success).toBe(false);
-    expect(result.error?.format().password?._errors[0]).toBe(
+
+    // Find the validation error related to the "password" field
+    // and retrieve its error message if it exists
+    const passwordError = result.error?.issues.find(
+      (issue) => issue.path[0] === "password"
+    )?.message;
+
+    expect(passwordError).toBe(
       "translated:signup_validation_password_min_length"
     );
   });
@@ -54,8 +68,12 @@ describe("getRegisterSchema", () => {
     });
 
     expect(result.success).toBe(false);
-    expect(result.error?.format().email?._errors[0]).toBe(
-      "translated:signup_validation_email_invalid"
-    );
+
+    // Find the validation error related to the "email" field
+    // and retrieve its error message if it exists
+    const emailError = result.error?.issues.find(
+      (issue) => issue.path[0] === "email"
+    )?.message;
+    expect(emailError).toBe("translated:signup_validation_email_invalid");
   });
 });

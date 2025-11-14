@@ -20,9 +20,13 @@ describe("getSigninSchema", () => {
     });
 
     expect(result.success).toBe(false);
-    expect(result.error?.format().email?._errors[0]).toBe(
-      "translated:validation_email_required"
-    );
+
+    // Find the validation error related to the "email" field
+    // and retrieve its error message if it exists
+    const emailError = result?.error?.issues.find(
+      (issue) => issue.path[0] === "email"
+    )?.message;
+    expect(emailError).toBe("translated:validation_email_required");
   });
 
   it("should fail when email is invalid", () => {
@@ -32,9 +36,13 @@ describe("getSigninSchema", () => {
     });
 
     expect(result.success).toBe(false);
-    expect(result.error?.format().email?._errors[0]).toBe(
-      "translated:signin_validation_email_invalid"
-    );
+
+    // Find the validation error related to the "email" field
+    // and retrieve its error message if it exists
+    const emailError = result?.error?.issues.find(
+      (issue) => issue.path[0] === "email"
+    )?.message;
+    expect(emailError).toBe("translated:signin_validation_email_invalid");
   });
 
   it("should fail when password is too short", () => {
@@ -44,9 +52,13 @@ describe("getSigninSchema", () => {
     });
 
     expect(result.success).toBe(false);
-    expect(result.error?.format().password?._errors[0]).toBe(
-      "translated:validation_password_min_length"
-    );
+
+    // Find the validation error related to the "password" field
+    // and retrieve its error message if it exists
+    const passwordError = result?.error?.issues.find(
+      (issue) => issue.path[0] === "password"
+    )?.message;
+    expect(passwordError).toBe("translated:validation_password_min_length");
   });
 
   it("should fail when password is too long", () => {
@@ -57,8 +69,12 @@ describe("getSigninSchema", () => {
     });
 
     expect(result.success).toBe(false);
-    expect(result.error?.format().password?._errors[0]).toBe(
-      "translated:validation_password_max_length"
-    );
+
+    // Find the validation error related to the "password" field
+    // and retrieve its error message if it exists
+    const passwordError = result?.error?.issues.find(
+      (issue) => issue.path[0] === "password"
+    )?.message;
+    expect(passwordError).toBe("translated:validation_password_max_length");
   });
 });
