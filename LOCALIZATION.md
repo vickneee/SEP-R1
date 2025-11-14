@@ -12,7 +12,7 @@ In the application user default language is stored in the database as part of th
 
 User language added to the users table as follows:
 
-<img src="./public/users_table.png" width="300" alt="BMI Calculator JavaFX preview">
+<img src="./public/users_table.png" width="150" alt="BMI Calculator JavaFX preview">
 
 ## Dependencies
 
