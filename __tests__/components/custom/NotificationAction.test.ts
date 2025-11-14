@@ -41,7 +41,7 @@ const createMockQueryBuilder = (resolveValue: { data: unknown; error: unknown })
         (qb as Record<Method, jest.Mock>)[m] = fn;
     }
 
-    return qb as QueryBuilderPromise;
+    return qb;
 };
 
 let currentMockQueryBuilder: ReturnType<typeof createMockQueryBuilder>;
