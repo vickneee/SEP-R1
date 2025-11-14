@@ -7,10 +7,10 @@ import {useCallback, useEffect, useState} from "react"; // Importing useEffect a
 import {useLocaleParams} from "@/hooks/useLocaleParams"; // Importing useLocaleParams
 
 interface OverdueStatusProps {
-  userId?: string;
-  showDetails?: boolean;
-  className?: string;
-  refreshTrigger?: number; // Optional prop to trigger refresh from parent
+  readonly userId?: string;
+  readonly showDetails?: boolean;
+  readonly className?: string;
+  readonly refreshTrigger?: number; // Optional prop to trigger refresh from parent
 }
 
 export default function OverdueStatus({ userId, showDetails = false, className = "", refreshTrigger }: OverdueStatusProps) {
@@ -97,7 +97,7 @@ export default function OverdueStatus({ userId, showDetails = false, className =
       <div className="flex items-center gap-2">
         <div className="bg-red-100 text-red-700 px-2 py-1 rounded text-sm flex items-center gap-1">
           <span className="font-semibold">{overdueCount}</span>
-          <span> {error}{t("processedSuffix_2")} {overdueCount !== 1 ? t("s") : ''}</span>
+          <span> {error}{t("processedSuffix_2")} {overdueCount === 1 ? '' : t("s")}</span>
         </div>
       </div>
 
