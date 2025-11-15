@@ -59,7 +59,6 @@ export default function NotificationSection() {
               id,
               title: res.book.title || t("notification_book_untitled"),
             };
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
           } catch (error) {
             console.error("Failed to fetch book:", error);
             return { id, title: t("notification_book_unknown_title") };
