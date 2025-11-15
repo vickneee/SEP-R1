@@ -33,7 +33,7 @@ export default async function CustomerDashboard({
   }
 
   // Ensure locale is always a string
-  const locale = routeLocale ?? userProfile?.language ?? "en";
+  const locale = userProfile?.language ?? routeLocale ??  "en";
 
   return (
     <CustomerDashboardClient
