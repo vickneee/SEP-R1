@@ -8,12 +8,13 @@ interface Params {
   readonly locale?: string;
 }
 
-export default async function PrivatePage({
-  params,
-}: {
-  params: Promise<Params>;
-}) {
-  const { locale: routeLocale = "en" } = await params;
+// Mark the whole props object as read-only
+type PrivatePageProps = Readonly<{
+    params: Params;
+}>;
+
+export default async function PrivatePage({ params }: PrivatePageProps) {
+  const { locale: routeLocale = "en" } = params;
 
   const userProfile = await getUserProfile();
 
