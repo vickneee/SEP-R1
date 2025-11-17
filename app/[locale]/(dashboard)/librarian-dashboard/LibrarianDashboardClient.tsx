@@ -51,9 +51,9 @@ interface UserProfile {
 }
 
 interface LibrarianDashboardClientProps {
-  userProfile: UserProfile;
-  userEmail: string;
-  locale?: string; // accept optional locale prop from server page
+  readonly userProfile: UserProfile;
+  readonly userEmail: string;
+  readonly locale?: string;
 }
 
 export default function LibrarianDashboardClient({

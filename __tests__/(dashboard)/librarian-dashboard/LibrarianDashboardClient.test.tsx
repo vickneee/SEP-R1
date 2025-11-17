@@ -38,11 +38,11 @@ describe("LibrarianDashBoardClient", () => {
             expect(screen.getByText(/Test\s+User/i)).toBeInTheDocument();
             expect(screen.getAllByText(/librarian/i).length).toBeGreaterThan(0);
             expect(screen.getByText(/Active/i)).toBeInTheDocument();
-        });
+        }); 
     });
 
     it("does not submit the form if required fields are missing", async () => {
-        const fetchSpy = jest.spyOn(global, "fetch");
+        const fetchSpy = jest.spyOn(globalThis, "fetch");
         render(
             <LibrarianDashboardClient userProfile={{
                 created_at: "2025-10-05T00:00:00.000Z",
