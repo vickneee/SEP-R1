@@ -2,9 +2,8 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
 import LibrarianDashboardClient from "./LibrarianDashboardClient";
 
-// Page params type
 type LibrarianDashboardProps = {
-    params: { locale?: string };
+  readonly params: { readonly locale?: string };
 };
 
 export default async function LibrarianDashboard({ params }: LibrarianDashboardProps) {
@@ -30,8 +29,8 @@ export default async function LibrarianDashboard({ params }: LibrarianDashboardP
   return (
     <LibrarianDashboardClient
       userProfile={userProfile}
-      userEmail={data.user.email || ''}
-      locale={userProfile.language || locale}
+      userEmail={data.user.email ?? ''}
+      locale={userProfile?.language ?? locale}
     />
   );
 }
