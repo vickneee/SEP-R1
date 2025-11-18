@@ -15,7 +15,7 @@ jest.mock('@/app/[locale]/books/bookActions', () => ({
   updateBook: jest.fn(),
 }));
 
-global.alert = jest.fn();
+globalThis.alert = jest.fn();
 
 const mockUserProfile = {
   created_at: '2024-01-01T00:00:00Z',
@@ -165,7 +165,7 @@ describe('EditBookPage', () => {
     });
 
     await waitFor(() => {
-        expect(global.alert).toHaveBeenCalledWith('error_fetch_book');
+        expect(globalThis.alert).toHaveBeenCalledWith('error_fetch_book');
     });
 
     consoleErrorSpy.mockRestore();

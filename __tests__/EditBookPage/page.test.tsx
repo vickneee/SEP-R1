@@ -18,6 +18,21 @@ jest.mock('@/app/[locale]/book/edit/[bookId]/EditBookPage', () => ({
   default: jest.fn(() => <div>Edit Book Page</div>),
 }));
 
+const createUserProfileMock = (profileData: any) => ({
+  single: jest.fn().mockResolvedValue({
+    data: profileData,
+    error: profileData ? null : { message: 'Not found' },
+  }),
+});
+
+const createSelectMock = (profileData: any) => ({
+  eq: jest.fn().mockReturnValue(createUserProfileMock(profileData)),
+});
+
+const createFromMock = (profileData: any) => ({
+  select: jest.fn().mockReturnValue(createSelectMock(profileData)),
+});
+
 describe('EditBookRoute', () => {
   const mockCreateClient = createClient as jest.MockedFunction<typeof createClient>;
   const mockRedirect = redirect as jest.MockedFunction<typeof redirect>;
@@ -38,13 +53,7 @@ describe('EditBookRoute', () => {
       auth: {
         getUser: jest.fn(),
       },
-      from: jest.fn(() => ({
-        select: jest.fn(() => ({
-          eq: jest.fn(() => ({
-            single: jest.fn(),
-          })),
-        })),
-      })),
+      from: jest.fn(),
     } as MockSupabaseClient;
 
     mockCreateClient.mockResolvedValue(mockSupabase as unknown as ReturnType<typeof createClient>);
@@ -79,16 +88,7 @@ describe('EditBookRoute', () => {
         error: null,
       });
 
-      mockSupabase.from.mockReturnValue({
-        select: jest.fn().mockReturnValue({
-          eq: jest.fn().mockReturnValue({
-            single: jest.fn().mockResolvedValue({
-              data: mockUserProfile,
-              error: null,
-            }),
-          }),
-        }),
-      });
+      mockSupabase.from.mockReturnValue(createFromMock(mockUserProfile));
 
       const props = { params: Promise.resolve({ bookId: '123' }) };
 
@@ -96,7 +96,6 @@ describe('EditBookRoute', () => {
 
       expect(mockRedirect).not.toHaveBeenCalled();
       expect(result).toBeDefined();
-
       expect(result.type).toBe(EditBookPage);
       expect(result.props.bookId).toBe('123');
     });
@@ -114,16 +113,7 @@ describe('EditBookRoute', () => {
         error: null,
       });
 
-      mockSupabase.from.mockReturnValue({
-        select: jest.fn().mockReturnValue({
-          eq: jest.fn().mockReturnValue({
-            single: jest.fn().mockResolvedValue({
-              data: null,
-              error: { message: 'Not found' },
-            }),
-          }),
-        }),
-      });
+      mockSupabase.from.mockReturnValue(createFromMock(null));
 
       const props = { params: Promise.resolve({ bookId: '123' }) };
 
@@ -147,16 +137,7 @@ describe('EditBookRoute', () => {
         error: null,
       });
 
-      mockSupabase.from.mockReturnValue({
-        select: jest.fn().mockReturnValue({
-          eq: jest.fn().mockReturnValue({
-            single: jest.fn().mockResolvedValue({
-              data: mockUserProfile,
-              error: null,
-            }),
-          }),
-        }),
-      });
+      mockSupabase.from.mockReturnValue(createFromMock(mockUserProfile));
 
       const props = { params: Promise.resolve({ bookId: '123' }) };
 
@@ -180,16 +161,7 @@ describe('EditBookRoute', () => {
         error: null,
       });
 
-      mockSupabase.from.mockReturnValue({
-        select: jest.fn().mockReturnValue({
-          eq: jest.fn().mockReturnValue({
-            single: jest.fn().mockResolvedValue({
-              data: mockUserProfile,
-              error: null,
-            }),
-          }),
-        }),
-      });
+      mockSupabase.from.mockReturnValue(createFromMock(mockUserProfile));
 
       const props = { params: Promise.resolve({ bookId: '123' }) };
 
@@ -219,16 +191,7 @@ describe('EditBookRoute', () => {
         error: null,
       });
 
-      mockSupabase.from.mockReturnValue({
-        select: jest.fn().mockReturnValue({
-          eq: jest.fn().mockReturnValue({
-            single: jest.fn().mockResolvedValue({
-              data: mockUserProfile,
-              error: null,
-            }),
-          }),
-        }),
-      });
+      mockSupabase.from.mockReturnValue(createFromMock(mockUserProfile));
 
       const props = { params: Promise.resolve({ bookId: '456' }) };
 
@@ -258,16 +221,7 @@ describe('EditBookRoute', () => {
         error: null,
       });
 
-      mockSupabase.from.mockReturnValue({
-        select: jest.fn().mockReturnValue({
-          eq: jest.fn().mockReturnValue({
-            single: jest.fn().mockResolvedValue({
-              data: mockUserProfile,
-              error: null,
-            }),
-          }),
-        }),
-      });
+      mockSupabase.from.mockReturnValue(createFromMock(mockUserProfile));
 
       const props = { params: Promise.resolve({ bookId: '789' }) };
 
@@ -299,20 +253,9 @@ describe('EditBookRoute', () => {
         error: null,
       });
 
-      const mockEq = jest.fn().mockReturnValue({
-        single: jest.fn().mockResolvedValue({
-          data: mockUserProfile,
-          error: null,
-        }),
-      });
-
-      const mockSelect = jest.fn().mockReturnValue({
-        eq: mockEq,
-      });
-
-      const mockFrom = jest.fn().mockReturnValue({
-        select: mockSelect,
-      });
+      const mockEq = jest.fn().mockReturnValue(createUserProfileMock(mockUserProfile));
+      const mockSelect = jest.fn().mockReturnValue({ eq: mockEq });
+      const mockFrom = jest.fn().mockReturnValue({ select: mockSelect });
 
       mockSupabase.from = mockFrom;
 
@@ -336,16 +279,7 @@ describe('EditBookRoute', () => {
         error: null,
       });
 
-      mockSupabase.from.mockReturnValue({
-        select: jest.fn().mockReturnValue({
-          eq: jest.fn().mockReturnValue({
-            single: jest.fn().mockResolvedValue({
-              data: mockUserProfile,
-              error: null,
-            }),
-          }),
-        }),
-      });
+      mockSupabase.from.mockReturnValue(createFromMock(mockUserProfile));
 
       const props = { params: Promise.resolve({ bookId: 'book-abc-123' }) };
 

@@ -11,7 +11,11 @@ import type { Database } from "@/types/database";
 
 type Book = Database['public']['Tables']['books']['Row'];
 
-export default function BookPageClient({ book: initialBook }: { book: Book }) {
+interface BookPageClientProps {
+  readonly book: Book;
+}
+
+export default function BookPageClient({ book: initialBook }: BookPageClientProps) {
     const router = useRouter();
     const params = useParams() as { locale?: string } | null;
     const locale = params?.locale ?? "en";
@@ -72,7 +76,6 @@ export default function BookPageClient({ book: initialBook }: { book: Book }) {
                 return;
             }
 
-            // Check for penalty restrictions
             if (reservationStatus && !reservationStatus.can_reserve) {
                 setMessage(reservationStatus.restriction_reason || translations?.error_reservations_not_allowed || "");
                 setIsSuccess(false);
@@ -97,6 +100,42 @@ export default function BookPageClient({ book: initialBook }: { book: Book }) {
             setIsSuccess(false);
         }
         setLoading(false);
+    };
+
+    const getReserveButtonElement = () => {
+        if (initialBook.available_copies === 0) {
+            return (
+                <button className="w-auto px-6 py-2 bg-gray-500 text-white rounded cursor-not-allowed">
+                    {translations?.status_checked_out}
+                </button>
+            );
+        }
+
+        if (reservationStatus && !reservationStatus.can_reserve) {
+            return (
+                <button className="w-auto px-6 py-2 bg-red-500 text-white rounded cursor-not-allowed" disabled>
+                    {translations?.status_cannot_reserve} ({translations?.status_pending_penalties})
+                </button>
+            );
+        }
+
+        if (statusLoading) {
+            return (
+                <button className="w-auto px-6 py-2 bg-gray-400 text-white rounded cursor-not-allowed" disabled>
+                    {translations?.status_checking_eligibility}
+                </button>
+            );
+        }
+
+        return (
+            <button
+                className="w-auto px-6 py-2 bg-[#552A1B] text-white rounded hover:bg-[#E46A07] transition-colors duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                onClick={handleReserve}
+                disabled={loading}
+            >
+                {loading ? translations?.status_reserving : translations?.action_reserve_book}
+            </button>
+        );
     };
 
     return (
@@ -135,7 +174,6 @@ export default function BookPageClient({ book: initialBook }: { book: Book }) {
                         <p>{translations?.label_available_copies} {initialBook.available_copies}</p>
                     </div>
 
-                    {/* Penalty Status Display */}
                     {reservationStatus && !reservationStatus.can_reserve && (
                         <div className="mb-4">
                             <PenaltyBadge className="w-full" />
@@ -143,27 +181,7 @@ export default function BookPageClient({ book: initialBook }: { book: Book }) {
                     )}
 
                     <div className="py-7 flex justify-center">
-                        {initialBook.available_copies === 0 ? (
-                            <button className="w-auto px-6 py-2 bg-gray-500 text-white rounded cursor-not-allowed">
-                                {translations?.status_checked_out}
-                            </button>
-                        ) : reservationStatus && !reservationStatus.can_reserve ? (
-                            <button className="w-auto px-6 py-2 bg-red-500 text-white rounded cursor-not-allowed" disabled>
-                                {translations?.status_cannot_reserve} ({translations?.status_pending_penalties})
-                            </button>
-                        ) : statusLoading ? (
-                            <button className="w-auto px-6 py-2 bg-gray-400 text-white rounded cursor-not-allowed" disabled>
-                                {translations?.status_checking_eligibility}
-                            </button>
-                        ) : (
-                            <button
-                                className="w-auto px-6 py-2 bg-[#552A1B] text-white rounded hover:bg-[#E46A07] transition-colors duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed"
-                                onClick={handleReserve}
-                                disabled={loading}
-                            >
-                                {loading ? translations?.status_reserving : translations?.action_reserve_book}
-                            </button>
-                        )}
+                        {getReserveButtonElement()}
                     </div>
                     {message && <p className={`mb-6 text-center text-sm ${isSuccess ? "text-green-600" : "text-red-600"}`}>{message}</p>}
                 </div>
