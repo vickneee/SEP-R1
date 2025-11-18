@@ -188,6 +188,10 @@ export default function ExtendReturnBooksPage() {
                 const isExtendAllowed = book.status === "active" || book.status === "overdue";
                 const isExtending = Boolean(actionLoading[book.reservation_id]);
                 const isExtendDisabled = isExtending || !isExtendAllowed;
+                const extendButtonText = isExtending ? t("borrowed_status_extending") : t("borrowed_btn_extend");
+                const returnButtonText = actionLoading[book.reservation_id]
+                  ? t("borrowed_status_returning")
+                  : t("borrowed_btn_return");
 
                 return (
                   <tr key={book.reservation_id} className="hover:bg-gray-50">
@@ -228,7 +232,7 @@ export default function ExtendReturnBooksPage() {
                                 : "bg-green-600 hover:bg-green-700"
                             }`}
                           >
-                            {isExtending ? t("borrowed_status_extending") : t("borrowed_btn_extend")}
+                            {extendButtonText}
                           </button>
                         )
                       )}
@@ -239,9 +243,7 @@ export default function ExtendReturnBooksPage() {
                         disabled={actionLoading[book.reservation_id]}
                         className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs disabled:bg-gray-400"
                       >
-                        {actionLoading[book.reservation_id]
-                          ? t("borrowed_status_returning")
-                          : t("borrowed_btn_return")}
+                        {returnButtonText}
                       </button>
                     </td>
                   </tr>

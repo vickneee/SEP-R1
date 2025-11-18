@@ -24,14 +24,14 @@ export default async function EditBookRoute({
     .eq('user_id', user.id)
     .single();
 
-  if (!userProfile || userProfile.role !== 'librarian') {
+  if (userProfile?.role !== 'librarian') {
     redirect('/');
   }
 
   return (
     <EditBookPage 
       userProfile={userProfile}
-      userEmail={user?.email ?? ''}
+      userEmail={user.email ?? ''}
       bookId={bookId}
     />
   );

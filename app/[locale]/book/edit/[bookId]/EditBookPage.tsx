@@ -89,7 +89,7 @@ const tryGetFromResources = (source: unknown, key: string, locale: string): stri
     const resources = obj.resources as Record<string, unknown>;
     const byLocale = resources[locale];
 
-    let nsCandidate: unknown | undefined;
+    let nsCandidate: unknown;
 
     if (byLocale && typeof byLocale === "object" && "EditBookPage" in (byLocale as Record<string, unknown>)) {
       nsCandidate = (byLocale as Record<string, unknown>)["EditBookPage"];

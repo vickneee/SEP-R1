@@ -60,7 +60,7 @@ const tryResourcesNs = (src: InitTranslationsResult | null, key: string, locale:
 
   const localeEntry = resourcesRecord[locale];
   if (isRecord(localeEntry)) {
-    const ns = (localeEntry as Record<string, unknown>).LibrarianDashboardClient;
+    const ns = localeEntry.LibrarianDashboardClient;
     if (isStringRecord(ns) && key in ns) return (ns)[key];
   }
 
@@ -388,7 +388,7 @@ export default function LibrarianDashboardClient({
         </h2>
         <ul>
           {books.map((book, idx) => (
-            <li key={idx} className="flex items-center mb-4">
+            <li key={book.isbn} className="flex items-center mb-4">
               <Image
                 src={book.image}
                 alt={book.title}
