@@ -27,6 +27,54 @@ function isStringRecord(x: unknown): x is Record<string, string> {
   return Object.values(x).every((v) => typeof v === "string");
 }
 
+const isTranslatorFunction = (src: InitTranslationsResult | null): src is TranslatorFn =>
+  typeof src === "function";
+
+const tryTranslatorFunc = (src: InitTranslationsResult | null, key: string, vars?: Record<string, unknown>): string | null => {
+  if (isTranslatorFunction(src)) return src(key, vars);
+  return null;
+};
+
+const tryTField = (src: InitTranslationsResult | null, key: string, vars?: Record<string, unknown>): string | null => {
+  if (!isRecord(src) || !("t" in src)) return null;
+  const tField = (src as { t?: unknown }).t;
+  if (typeof tField === "function") return (tField as TranslatorFn)(key, vars);
+  if (isStringRecord(tField) && key in tField) return (tField as Record<string, string>)[key];
+  return null;
+};
+
+const tryI18nT = (src: InitTranslationsResult | null, key: string, vars?: Record<string, unknown>): string | null => {
+  if (!isRecord(src) || !("i18n" in src)) return null;
+  const i18n = (src as { i18n?: unknown }).i18n;
+  if (!isRecord(i18n)) return null;
+  const t = (i18n as { t?: unknown }).t;
+  if (typeof t === "function") return (t as TranslatorFn)(key, vars);
+  return null;
+};
+
+const tryResourcesNs = (src: InitTranslationsResult | null, key: string, locale: string): string | null => {
+  if (!isRecord(src) || !("resources" in src)) return null;
+  const resources = (src as { resources?: unknown }).resources;
+  if (!isRecord(resources)) return null;
+  const resourcesRecord = resources as Record<string, unknown>;
+
+  const localeEntry = resourcesRecord[locale];
+  if (isRecord(localeEntry)) {
+    const ns = (localeEntry as Record<string, unknown>).LibrarianDashboardClient;
+    if (isStringRecord(ns) && key in ns) return (ns as Record<string, string>)[key];
+  }
+
+  const nsRoot = resourcesRecord.LibrarianDashboardClient;
+  if (isStringRecord(nsRoot) && key in nsRoot) return (nsRoot as Record<string, string>)[key];
+
+  return null;
+};
+
+const tryPlainRecord = (src: InitTranslationsResult | null, key: string): string | null => {
+  if (isStringRecord(src) && key in src) return (src as Record<string, string>)[key];
+  return null;
+};
+
 interface Book {
   title: string;
   author: string;
@@ -86,54 +134,21 @@ export default function LibrarianDashboardClient({
     try {
       if (!translatorSource) return key;
 
-      if (typeof translatorSource === "function") {
-        return translatorSource(key, vars);
-      }
+      // try in order of precedence, early returns keep complexity low
+      const fromTranslatorFunc = tryTranslatorFunc(translatorSource, key, vars);
+      if (fromTranslatorFunc) return fromTranslatorFunc;
 
-      if (isRecord(translatorSource) && "t" in translatorSource) {
-        const tField = (translatorSource as { t?: unknown }).t;
-        if (typeof tField === "function") return (tField as TranslatorFn)(key, vars);
-        if (isStringRecord(tField) && key in tField) return tField[key];
-      }
+      const fromTField = tryTField(translatorSource, key, vars);
+      if (fromTField) return fromTField;
 
-      if (
-        isRecord(translatorSource) &&
-        "i18n" in translatorSource &&
-        isRecord((translatorSource as { i18n?: unknown }).i18n)
-      ) {
-        const i18n = (translatorSource as { i18n?: unknown }).i18n!;
-        if (isRecord(i18n) && typeof (i18n as { t?: unknown }).t === "function") {
-          return (i18n as { t: TranslatorFn }).t!(key, vars);
-        }
-      }
+      const fromI18n = tryI18nT(translatorSource, key, vars);
+      if (fromI18n) return fromI18n;
 
-      if (
-        isRecord(translatorSource) &&
-        "resources" in translatorSource &&
-        isRecord((translatorSource as { resources?: unknown }).resources)
-      ) {
-        const resourcesField = (translatorSource as { resources?: unknown }).resources;
-        if (isRecord(resourcesField)) {
-          const resourcesRecord = resourcesField as Record<string, unknown>;
+      const fromResources = tryResourcesNs(translatorSource, key, locale);
+      if (fromResources) return fromResources;
 
-          const localeEntry = resourcesRecord[locale];
-          if (isRecord(localeEntry)) {
-            const ns = (localeEntry as Record<string, unknown>).LibrarianDashboardClient;
-            if (isStringRecord(ns) && key in ns) {
-              return (ns as Record<string, string>)[key];
-            }
-          }
-
-          const nsRoot = resourcesRecord.LibrarianDashboardClient;
-          if (isStringRecord(nsRoot) && key in nsRoot) {
-            return (nsRoot as Record<string, string>)[key];
-          }
-        }
-      }
-
-      if (isStringRecord(translatorSource) && key in translatorSource) {
-        return translatorSource[key];
-      }
+      const fromPlain = tryPlainRecord(translatorSource, key);
+      if (fromPlain) return fromPlain;
 
       return key;
     } catch (err) {

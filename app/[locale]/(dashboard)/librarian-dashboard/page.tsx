@@ -29,7 +29,7 @@ export default async function LibrarianDashboard({ params }: LibrarianDashboardP
   return (
     <LibrarianDashboardClient
       userProfile={userProfile}
-      userEmail={data.user.email ?? ''}
+      userEmail={data?.user?.email ?? ''}
       locale={userProfile?.language ?? locale}
     />
   );

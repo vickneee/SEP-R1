@@ -88,11 +88,20 @@ const tryGetFromResources = (source: unknown, key: string, locale: string): stri
   if ("resources" in obj && obj.resources && typeof obj.resources === "object") {
     const resources = obj.resources as Record<string, unknown>;
     const byLocale = resources[locale];
-    const ns = (byLocale && typeof byLocale === "object" && "EditBookPage" in byLocale 
-      ? (byLocale as Record<string, Record<string, string>>).EditBookPage 
-      : null) ?? (resources as Record<string, Record<string, string>>).EditBookPage;
-    if (ns && typeof ns === "object" && key in ns) {
-      return (ns as Record<string, string>)[key];
+
+    let nsCandidate: unknown | undefined;
+
+    if (byLocale && typeof byLocale === "object" && "EditBookPage" in (byLocale as Record<string, unknown>)) {
+      nsCandidate = (byLocale as Record<string, unknown>)["EditBookPage"];
+    } else if ("EditBookPage" in resources) {
+      nsCandidate = resources["EditBookPage"];
+    }
+
+    if (nsCandidate && typeof nsCandidate === "object") {
+      const ns = nsCandidate as Record<string, string>;
+      if (key in ns) {
+        return ns[key];
+      }
     }
   }
   return null;

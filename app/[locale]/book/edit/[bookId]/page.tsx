@@ -31,7 +31,7 @@ export default async function EditBookRoute({
   return (
     <EditBookPage 
       userProfile={userProfile}
-      userEmail={user.email ?? ''}
+      userEmail={user?.email ?? ''}
       bookId={bookId}
     />
   );
