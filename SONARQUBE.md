@@ -51,7 +51,7 @@ To install SonarScanner, follow the instructions for your operating system from 
    sonar.sourceEncoding=UTF-8
    ```
    
-3. Replace `your_project_key`, `your_organization_key`, and `your_sonar_token` with your actual project key, organization key (if using SonarCloud), and token.
+3. Replace `your_project_key`, `your_organization_key`, and `your_sonar_token` with your actual project key, organization key (if using SonarCloud), and token. If you prefer not to store the token in the properties file (.env), you can set it as an environment variable named `SONAR_TOKEN`.
 4. If you're using a CI/CD pipeline, add the SonarScanner execution command to your pipeline configuration. For example, in a GitHub Actions workflow:
 
    ```yaml
