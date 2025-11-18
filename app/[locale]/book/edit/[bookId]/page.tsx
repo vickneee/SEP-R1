@@ -2,11 +2,13 @@ import EditBookPage from './EditBookPage';
 import { createClient } from '@/utils/supabase/server';
 import { redirect } from 'next/navigation';
 
+interface EditBookRouteProps {
+  readonly params: Promise<{ readonly bookId: string }>;
+}
+
 export default async function EditBookRoute({ 
   params 
-}: { 
-  params: Promise<{ bookId: string }> 
-}) {
+}: EditBookRouteProps) {
   const { bookId } = await params;
   
   const supabase = await createClient();
@@ -22,14 +24,14 @@ export default async function EditBookRoute({
     .eq('user_id', user.id)
     .single();
 
-  if (!userProfile || userProfile.role !== 'librarian') {
+  if (userProfile?.role !== 'librarian') {
     redirect('/');
   }
 
   return (
     <EditBookPage 
       userProfile={userProfile}
-      userEmail={user.email || ''}
+      userEmail={user.email ?? ''}
       bookId={bookId}
     />
   );

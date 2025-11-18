@@ -67,7 +67,7 @@ describe("LibrarianDashBoardClient", () => {
     });
 
     it("submits the form when all required fields are filled", async () => {
-        const fetchSpy = jest.spyOn(global, "fetch").mockResolvedValue({
+        const fetchSpy = jest.spyOn(globalThis, "fetch").mockResolvedValue({
             ok: true,
             json: async () => ({ message: "Book added successfully" }),
         } as Response);
@@ -92,8 +92,6 @@ describe("LibrarianDashBoardClient", () => {
         await userEvent.type(screen.getByPlaceholderText("Category"), "Fiction");
         await userEvent.type(screen.getByPlaceholderText("ISBN"), "1234567890");
         await userEvent.type(screen.getByPlaceholderText("Publisher"), "Test Publisher");
-        // await userEvent.clear(screen.getByLabelText("book_publication_year_label"));
-        // await userEvent.type(screen.getByLabelText("Publication Year:"), "2025");
         await userEvent.clear(screen.getByPlaceholderText("Total Copies"));
         await userEvent.type(screen.getByPlaceholderText("Total Copies"), "1");
         await userEvent.clear(screen.getByPlaceholderText("Available Copies"));

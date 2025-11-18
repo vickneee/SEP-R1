@@ -22,14 +22,14 @@ export default async function LibrarianDashboard({ params }: LibrarianDashboardP
     .eq('user_id', data.user.id)
     .single();
 
-  if (!userProfile || userProfile.role !== 'librarian') {
+  if (userProfile?.role !== 'librarian') {
     redirect("/private");
   }
 
   return (
     <LibrarianDashboardClient
       userProfile={userProfile}
-      userEmail={data.user.email ?? ''}
+      userEmail={data?.user?.email ?? ''}
       locale={userProfile?.language ?? locale}
     />
   );

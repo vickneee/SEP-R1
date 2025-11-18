@@ -6,6 +6,9 @@ import { extendReservation } from "@/app/[locale]/books/extendedAction";
 import { createClient } from "@/utils/supabase/client";
 import userEvent from "@testing-library/user-event";
 
+const delayedResolve = <T,>(value: T, ms = 0): Promise<T> =>
+  new Promise((resolve) => setTimeout(() => resolve(value), ms));
+
 // --- Mocks ---
 const mockRpc = jest.fn();
 
@@ -63,9 +66,9 @@ describe('Extend Return Books Management Component', () => {
 
     it('shows loading state initially', async () => {
         // Mock getAllBorrowedBooks to return empty data after a delay
-        mockedGetAllBorrowedBooks.mockImplementation(() => new Promise(resolve => {
-            setTimeout(() => resolve({ borrowedBooks: [], error: null }), 100);
-        }));
+        mockedGetAllBorrowedBooks.mockImplementation(() =>
+          delayedResolve({ borrowedBooks: [], error: null }, 100)
+        );
         const { getByText } = render(<ExtendReturnBookPage/>);
 
         expect(getByText('borrowed_loading')).toBeInTheDocument();

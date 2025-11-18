@@ -42,10 +42,77 @@ interface UserProfile {
 }
 
 interface EditBookPageProps {
-    userProfile: UserProfile;
-    userEmail: string;
-    bookId: string;
+    readonly userProfile: UserProfile;
+    readonly userEmail: string;
+    readonly bookId: string;
 }
+
+const isTranslatorFunction = (source: unknown): source is TranslatorFn => {
+  return typeof source === "function";
+};
+
+const tryGetFromTranslatorObject = (source: unknown, key: string, vars?: Record<string, unknown>): string | null => {
+  if (typeof source !== "object" || source === null) return null;
+  const obj = source as { t?: unknown };
+  if ("t" in obj && typeof obj.t === "function") {
+    return (obj.t as TranslatorFn)(key, vars);
+  }
+  return null;
+};
+
+const tryGetFromTranslatorRecord = (source: unknown, key: string): string | null => {
+  if (typeof source !== "object" || source === null) return null;
+  const obj = source as { t?: unknown };
+  if ("t" in obj && typeof obj.t === "object" && obj.t !== null) {
+    const tObj = obj.t as Record<string, string>;
+    return key in tObj ? tObj[key] : null;
+  }
+  return null;
+};
+
+const tryGetFromI18n = (source: unknown, key: string, vars?: Record<string, unknown>): string | null => {
+  if (typeof source !== "object" || source === null) return null;
+  const obj = source as { i18n?: unknown };
+  if ("i18n" in obj && obj.i18n && typeof obj.i18n === "object") {
+    const i18nObj = obj.i18n as { t?: unknown };
+    if (typeof i18nObj.t === "function") {
+      return (i18nObj.t as TranslatorFn)(key, vars);
+    }
+  }
+  return null;
+};
+
+const tryGetFromResources = (source: unknown, key: string, locale: string): string | null => {
+  if (typeof source !== "object" || source === null) return null;
+  const obj = source as { resources?: unknown };
+  if ("resources" in obj && obj.resources && typeof obj.resources === "object") {
+    const resources = obj.resources as Record<string, unknown>;
+    const byLocale = resources[locale];
+
+    let nsCandidate: unknown;
+
+    if (byLocale && typeof byLocale === "object" && "EditBookPage" in (byLocale as Record<string, unknown>)) {
+      nsCandidate = (byLocale as Record<string, unknown>)["EditBookPage"];
+    } else if ("EditBookPage" in resources) {
+      nsCandidate = resources["EditBookPage"];
+    }
+
+    if (nsCandidate && typeof nsCandidate === "object") {
+      const ns = nsCandidate as Record<string, string>;
+      if (key in ns) {
+        return ns[key];
+      }
+    }
+  }
+  return null;
+};
+
+const tryGetFromPlainObject = (source: unknown, key: string): string | null => {
+  if (typeof source === "object" && source !== null && key in source) {
+    return (source as Record<string, string>)[key];
+  }
+  return null;
+};
 
 export default function EditBookPage({ userProfile, userEmail, bookId }: EditBookPageProps) {
     const router = useRouter();
@@ -73,59 +140,24 @@ export default function EditBookPage({ userProfile, userEmail, bookId }: EditBoo
         try {
             if (!translatorSource) return key;
 
-            if (typeof translatorSource === "function") {
+            if (isTranslatorFunction(translatorSource)) {
                 return translatorSource(key, vars);
             }
 
-            if (
-                typeof translatorSource === "object" &&
-                translatorSource !== null &&
-                "t" in translatorSource &&
-                typeof (translatorSource as { t?: unknown }).t === "function"
-            ) {
-                return (translatorSource as { t?: TranslatorFn }).t!(key, vars);
-            }
+            const fromTranslatorObj = tryGetFromTranslatorObject(translatorSource, key, vars);
+            if (fromTranslatorObj) return fromTranslatorObj;
 
-            if (
-                typeof translatorSource === "object" &&
-                translatorSource !== null &&
-                "t" in translatorSource &&
-                typeof (translatorSource as { t?: unknown }).t === "object"
-            ) {
-                const tObj = (translatorSource as { t?: Record<string, string> }).t!;
-                if (tObj && key in tObj) return tObj[key];
-            }
+            const fromTranslatorRecord = tryGetFromTranslatorRecord(translatorSource, key);
+            if (fromTranslatorRecord) return fromTranslatorRecord;
 
-            if (
-                typeof translatorSource === "object" &&
-                translatorSource !== null &&
-                "i18n" in translatorSource &&
-                (translatorSource as { i18n?: unknown }).i18n &&
-                typeof (translatorSource as { i18n?: { t?: unknown } }).i18n!.t === "function"
-            ) {
-                return (translatorSource as { i18n?: { t?: TranslatorFn } }).i18n!.t!(key, vars);
-            }
+            const fromI18n = tryGetFromI18n(translatorSource, key, vars);
+            if (fromI18n) return fromI18n;
 
-            if (
-                typeof translatorSource === "object" &&
-                translatorSource !== null &&
-                "resources" in translatorSource &&
-                (translatorSource as { resources?: unknown }).resources
-            ) {
-                const resources = translatorSource as { resources?: Record<string, unknown> };
-                const byLocale = (resources.resources as Record<string, unknown> | undefined)?.[locale] as
-                    | Record<string, string>
-                    | undefined;
-                const ns = (byLocale as Record<string, Record<string, string>> | undefined)?.EditBookPage
-                    ?? (resources.resources as Record<string, Record<string, string>> | undefined)?.EditBookPage;
-                if (ns && typeof ns === "object" && key in ns) {
-                    return (ns as Record<string, string>)[key];
-                }
-            }
+            const fromResources = tryGetFromResources(translatorSource, key, locale);
+            if (fromResources) return fromResources;
 
-            if (typeof translatorSource === "object" && translatorSource !== null && key in translatorSource) {
-                return (translatorSource as Record<string, string>)[key];
-            }
+            const fromPlainObj = tryGetFromPlainObject(translatorSource, key);
+            if (fromPlainObj) return fromPlainObj;
 
             return key;
         } catch (err) {

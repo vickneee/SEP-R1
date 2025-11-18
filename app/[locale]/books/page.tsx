@@ -4,7 +4,7 @@ import type { SearchParams } from "nuqs/server";
 import { getBooksByTitle } from "@/app/[locale]/books/bookActions";
 
 type PageProps = {
-  searchParams: Promise<SearchParams>;
+  readonly searchParams: Promise<SearchParams>;
 };
 
 export default async function BookPage({ searchParams }: PageProps) {

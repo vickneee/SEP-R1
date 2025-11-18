@@ -184,72 +184,71 @@ export default function ExtendReturnBooksPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {books.map((book) => (
-                <tr key={book.reservation_id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4">
-                    <div>
-                      <div className="font-medium text-gray-900">
-                        {book.user_name}
+              {books.map((book) => {
+                const isExtendAllowed = book.status === "active" || book.status === "overdue";
+                const isExtending = Boolean(actionLoading[book.reservation_id]);
+                const isExtendDisabled = isExtending || !isExtendAllowed;
+                const extendButtonText = isExtending ? t("borrowed_status_extending") : t("borrowed_btn_extend");
+                const returnButtonText = actionLoading[book.reservation_id]
+                  ? t("borrowed_status_returning")
+                  : t("borrowed_btn_return");
+
+                return (
+                  <tr key={book.reservation_id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4">
+                      <div>
+                        <div className="font-medium text-gray-900">
+                          {book.user_name}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {book.user_email}
+                        </div>
                       </div>
-                      <div className="text-sm text-gray-500">
-                        {book.user_email}
+                    </td>
+                    <td className="px-6 py-4">
+                      <div>
+                        <div className="font-medium text-gray-900">
+                          {book.book_title}
+                        </div>
+                        <div className="text-sm text-gray-500">
+                          {book.book_author}
+                        </div>
                       </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4">
-                    <div>
-                      <div className="font-medium text-gray-900">
-                        {book.book_title}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {book.book_author}
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-gray-600">
-                    {new Date(book.due_date).toLocaleDateString(locale)}
-                  </td>
-                  <td className="px-6 py-4">
-                    {book.extended ? (
-                      <span className="text-sm">{t("borrowed_status_extended")}</span>
-                    ) : (
-                      (book.status === "active" ||
-                        book.status === "overdue") && (
-                        <button
-                          onClick={() => handleExtend(book.reservation_id)}
-                          disabled={
-                            actionLoading[book.reservation_id] ||
-                            (book.status !== "active" &&
-                              book.status !== "overdue")
-                          }
-                          className={`px-3 py-1 rounded text-xs text-white ${
-                            actionLoading[book.reservation_id] ||
-                            (book.status !== "active" &&
-                              book.status !== "overdue")
-                              ? "bg-neutral-100 text-gray-400 cursor-not-allowed"
-                              : "bg-green-600 hover:bg-green-700"
-                          }`}
-                        >
-                          {actionLoading[book.reservation_id]
-                            ? t("borrowed_status_extending")
-                            : t("borrowed_btn_extend")}
-                        </button>
-                      )
-                    )}
-                  </td>
-                  <td className="px-6 py-4">
-                    <button
-                      onClick={() => handleReturn(book.reservation_id)}
-                      disabled={actionLoading[book.reservation_id]}
-                      className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs disabled:bg-gray-400"
-                    >
-                      {actionLoading[book.reservation_id]
-                        ? t("borrowed_status_returning")
-                        : t("borrowed_btn_return")}
-                    </button>
-                  </td>
-                </tr>
-              ))}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-600">
+                      {new Date(book.due_date).toLocaleDateString(locale)}
+                    </td>
+                    <td className="px-6 py-4">
+                      {book.extended ? (
+                        <span className="text-sm">{t("borrowed_status_extended")}</span>
+                      ) : (
+                        isExtendAllowed && (
+                          <button
+                            onClick={() => handleExtend(book.reservation_id)}
+                            disabled={isExtendDisabled}
+                            className={`px-3 py-1 rounded text-xs text-white ${
+                              isExtendDisabled
+                                ? "bg-neutral-100 text-gray-400 cursor-not-allowed"
+                                : "bg-green-600 hover:bg-green-700"
+                            }`}
+                          >
+                            {extendButtonText}
+                          </button>
+                        )
+                      )}
+                    </td>
+                    <td className="px-6 py-4">
+                      <button
+                        onClick={() => handleReturn(book.reservation_id)}
+                        disabled={actionLoading[book.reservation_id]}
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs disabled:bg-gray-400"
+                      >
+                        {returnButtonText}
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
