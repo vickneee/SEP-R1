@@ -18,18 +18,24 @@ jest.mock('@/app/[locale]/book/edit/[bookId]/EditBookPage', () => ({
   default: jest.fn(() => <div>Edit Book Page</div>),
 }));
 
-const createUserProfileMock = (profileData: any) => ({
+interface UserProfile {
+  user_id: string;
+  role: string;
+  name?: string;
+}
+
+const createUserProfileMock = (profileData: UserProfile | null) => ({
   single: jest.fn().mockResolvedValue({
     data: profileData,
     error: profileData ? null : { message: 'Not found' },
   }),
 });
 
-const createSelectMock = (profileData: any) => ({
+const createSelectMock = (profileData: UserProfile | null) => ({
   eq: jest.fn().mockReturnValue(createUserProfileMock(profileData)),
 });
 
-const createFromMock = (profileData: any) => ({
+const createFromMock = (profileData: UserProfile | null) => ({
   select: jest.fn().mockReturnValue(createSelectMock(profileData)),
 });
 
@@ -78,7 +84,7 @@ describe('EditBookRoute', () => {
         email: 'librarian@example.com',
       };
 
-      const mockUserProfile = {
+      const mockUserProfile: UserProfile = {
         user_id: 'user-123',
         role: 'librarian',
       };
@@ -127,7 +133,7 @@ describe('EditBookRoute', () => {
         email: 'user@example.com',
       };
 
-      const mockUserProfile = {
+      const mockUserProfile: UserProfile = {
         user_id: 'user-123',
         role: 'member',
       };
@@ -151,7 +157,7 @@ describe('EditBookRoute', () => {
         email: 'librarian@example.com',
       };
 
-      const mockUserProfile = {
+      const mockUserProfile: UserProfile = {
         user_id: 'user-123',
         role: 'librarian',
       };
@@ -180,7 +186,7 @@ describe('EditBookRoute', () => {
         email: 'librarian@example.com',
       };
 
-      const mockUserProfile = {
+      const mockUserProfile: UserProfile = {
         user_id: 'user-123',
         role: 'librarian',
         name: 'Test Librarian',
@@ -211,7 +217,7 @@ describe('EditBookRoute', () => {
         email: undefined,
       };
 
-      const mockUserProfile = {
+      const mockUserProfile: UserProfile = {
         user_id: 'user-123',
         role: 'librarian',
       };
@@ -243,7 +249,7 @@ describe('EditBookRoute', () => {
         email: 'librarian@example.com',
       };
 
-      const mockUserProfile = {
+      const mockUserProfile: UserProfile = {
         user_id: 'user-xyz',
         role: 'librarian',
       };
@@ -272,7 +278,7 @@ describe('EditBookRoute', () => {
   describe('Params Handling', () => {
     it('should correctly extract bookId from params', async () => {
       const mockUser = { id: 'user-123', email: 'librarian@example.com' };
-      const mockUserProfile = { user_id: 'user-123', role: 'librarian' };
+      const mockUserProfile: UserProfile = { user_id: 'user-123', role: 'librarian' };
 
       mockSupabase.auth.getUser.mockResolvedValue({
         data: { user: mockUser },

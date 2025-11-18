@@ -387,7 +387,7 @@ export default function LibrarianDashboardClient({
           {tr("added_books_section")}
         </h2>
         <ul>
-          {books.map((book, idx) => (
+          {books.map((book) => (
             <li key={book.isbn} className="flex items-center mb-4">
               <Image
                 src={book.image}
