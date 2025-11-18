@@ -39,7 +39,7 @@ const tryTField = (src: InitTranslationsResult | null, key: string, vars?: Recor
   if (!isRecord(src) || !("t" in src)) return null;
   const tField = (src as { t?: unknown }).t;
   if (typeof tField === "function") return (tField as TranslatorFn)(key, vars);
-  if (isStringRecord(tField) && key in tField) return (tField as Record<string, string>)[key];
+  if (isStringRecord(tField) && key in tField) return (tField)[key];
   return null;
 };
 
@@ -48,7 +48,7 @@ const tryI18nT = (src: InitTranslationsResult | null, key: string, vars?: Record
   const i18n = (src as { i18n?: unknown }).i18n;
   if (!isRecord(i18n)) return null;
   const t = (i18n as { t?: unknown }).t;
-  if (typeof t === "function") return (t as TranslatorFn)(key, vars);
+  if (typeof t === "function") return (t)(key, vars);
   return null;
 };
 
@@ -56,22 +56,22 @@ const tryResourcesNs = (src: InitTranslationsResult | null, key: string, locale:
   if (!isRecord(src) || !("resources" in src)) return null;
   const resources = (src as { resources?: unknown }).resources;
   if (!isRecord(resources)) return null;
-  const resourcesRecord = resources as Record<string, unknown>;
+  const resourcesRecord = resources;
 
   const localeEntry = resourcesRecord[locale];
   if (isRecord(localeEntry)) {
     const ns = (localeEntry as Record<string, unknown>).LibrarianDashboardClient;
-    if (isStringRecord(ns) && key in ns) return (ns as Record<string, string>)[key];
+    if (isStringRecord(ns) && key in ns) return (ns)[key];
   }
 
   const nsRoot = resourcesRecord.LibrarianDashboardClient;
-  if (isStringRecord(nsRoot) && key in nsRoot) return (nsRoot as Record<string, string>)[key];
+  if (isStringRecord(nsRoot) && key in nsRoot) return (nsRoot)[key];
 
   return null;
 };
 
 const tryPlainRecord = (src: InitTranslationsResult | null, key: string): string | null => {
-  if (isStringRecord(src) && key in src) return (src as Record<string, string>)[key];
+  if (isStringRecord(src) && key in src) return (src)[key];
   return null;
 };
 
