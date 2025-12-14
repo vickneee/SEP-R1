@@ -28,9 +28,6 @@ outcomes.
 - **Feature:** Users can read content in their own language.
 
 - **Feature:** When the user logs in, the content is shown in their preferred language, which is stored in the database.
-- 
-## Demo Video
-[Watch the demo on YouTube](https://youtu.be/JHYGC7uMR9U)
 
 ## Technology Stack
 
