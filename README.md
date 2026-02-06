@@ -87,6 +87,9 @@ This [document](https://github.com/vickneee/SEP-R1/blob/main/DOCKER.md) explains
 
 This [document](SONARQUBE.md) provides instructions on how to integrate SonarQube or SonarCloud into your project for continuous code quality inspection.
 
+## Demo Video
+[Watch the demo on YouTube](https://youtu.be/JHYGC7uMR9U)
+
 ## Members
 - Monami Kirjavainen
 - Victoria Vavulina
