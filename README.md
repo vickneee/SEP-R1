@@ -29,6 +29,9 @@ outcomes.
 
 - **Feature:** When the user logs in, the content is shown in their preferred language, which is stored in the database.
 
+## Demo Video
+[Watch the demo on YouTube](https://youtu.be/JHYGC7uMR9U)
+
 ## Technology Stack
 
 ### Development Tools
@@ -86,9 +89,6 @@ This [document](https://github.com/vickneee/SEP-R1/blob/main/DOCKER.md) explains
 ## SonarQube / SonarCloud
 
 This [document](SONARQUBE.md) provides instructions on how to integrate SonarQube or SonarCloud into your project for continuous code quality inspection.
-
-## Demo Video
-[Watch the demo on YouTube](https://youtu.be/JHYGC7uMR9U)
 
 ## Members
 - Monami Kirjavainen
