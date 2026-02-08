@@ -56,6 +56,7 @@ const config: Config.InitialOptions = {
     // Directories to ignore
     testPathIgnorePatterns: [
         "<rootDir>/.next/",
+        "<rootDir>/.next/standalone/",
         "<rootDir>/node_modules/",
         "<rootDir>/tests/",
     ],

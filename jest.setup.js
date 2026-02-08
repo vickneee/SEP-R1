@@ -1,6 +1,9 @@
 import "@testing-library/jest-dom";
 import { TextEncoder, TextDecoder } from "util";
 
+// Silence i18next logs
+jest.spyOn(console, "info").mockImplementation(() => {});
+
 // Mock Next.js router
 jest.mock("next/navigation", () => ({
   useRouter() {
@@ -37,7 +40,7 @@ jest.mock("next/image", () => ({
   __esModule: true,
   default: (props) => {
     // eslint-disable-next-line @next/next/no-img-element, jsx-a11y/alt-text
-    return <img {...props} />;
+    return <img {...props}  alt={}/>;
   },
 }));
 
