@@ -5,19 +5,23 @@ import { createMockClient } from "@/utils/supabase/mock";
 import initTranslations from "@/app/i18n";
 import { getSigninSchema } from "@/components/schemas/signinSchema";
 
+// Server action for handling user sign-in
 export async function signinAction(
   prevState: { message?: string; zodErrors?: Record<string, string[]> },
   formData: FormData
 ) {
+  // Determine locale from form data (default to English)
   const locale = (formData.get("locale") as string) || "en";
   const { t } = await initTranslations(locale, ["Signin"]);
+  // Load validation schema for sign-in form
   const schemaSignin = getSigninSchema(t);
+
   console.log("signinAction called with:", {
     email: formData.get("email"),
     hasPassword: !!formData.get("password"),
     prevState,
   });
-
+  // Validate form fields using Zod schema
   const validatedFields = schemaSignin.safeParse({
     password: (formData.get("password") ?? "") as string,
     email: (formData.get("email") ?? "") as string,
@@ -42,7 +46,7 @@ export async function signinAction(
     console.log("Validation failed, returning:", errorResponse);
     return errorResponse;
   }
-
+  // Choose Supabase client: mock client for tests, real client otherwise
   const isTest = process.env.NODE_ENV === "test";
   let supabase;
   if (isTest) {
@@ -55,7 +59,7 @@ export async function signinAction(
   const { error } = await supabase.auth.signInWithPassword(
     validatedFields.data
   );
-
+  // If sign-in fails, return error response
   if (error) {
     const errorResponse = {
       data: null,
@@ -70,7 +74,7 @@ export async function signinAction(
   if (process.env.NODE_ENV !== "test") {
     revalidatePath("/private", "layout");
   }
-
+  // Return success response with translated message
   const successResponse = {
     data: null,
     zodErrors: null,

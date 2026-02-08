@@ -9,15 +9,17 @@ type FormState = {
   zodErrors: Record<string, string[]> | null;
   message: string | null;
 };
-
+// Server action for handling user registration
 export async function registerUserAction(
   prevState: FormState,
   formData: FormData
 ) {
+  // Determine locale from form data (default to English)
   const locale = (formData.get("locale") as string) || "en";
   const { t } = await initTranslations(locale, ["signup"]);
+  // Load validation schema for registration form
   const schemaRegister = getRegisterSchema(t);
-
+  // Validate form fields using Zod schema
   const validatedFields = schemaRegister.safeParse({
     first_name: (formData.get("first_name") ?? "") as string,
     last_name: (formData.get("last_name") ?? "") as string,
@@ -43,7 +45,7 @@ export async function registerUserAction(
       message: t("signup_error_missing_fields"),
     };
   }
-
+  // Extract validated fields
   const { first_name, last_name, email, password } = validatedFields.data;
 
   console.log("🚀 Starting user registration:", {
@@ -53,6 +55,7 @@ export async function registerUserAction(
   });
 
   try {
+    // Choose Supabase client: mock client for tests, real client otherwise
     const isTest = process.env.NODE_ENV === "test";
     let supabase;
     if (isTest) {
@@ -62,7 +65,7 @@ export async function registerUserAction(
     }
 
     console.log("🔄 Step 1: Creating user with signup and metadata...");
-
+    // Attempt to sign up user with provided credentials and metadata
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -75,7 +78,7 @@ export async function registerUserAction(
         },
       },
     });
-
+    // Handle signup error
     if (error) {
       console.error("❌ Signup failed:", error);
       return {
@@ -85,14 +88,14 @@ export async function registerUserAction(
         }${t("signup_error_generic_suffix")}`,
       };
     }
-
+    // If user exists but identities array is empty, email is already registered
     if (data.user && data.user.identities?.length === 0) {
       return {
         ...prevState,
         message: t("signup_error_email_exists"),
       };
     }
-
+    // If no user object is returned, handle as error
     if (!data.user) {
       console.error("❌ No user returned from signUp");
       return {
@@ -100,7 +103,7 @@ export async function registerUserAction(
         message: t("signup_error_no_user_data"),
       };
     }
-
+    // Successful signup
     console.log("✅ User created successfully:", data.user.id);
 
     return {

@@ -16,13 +16,13 @@ import { getBookById } from "@/app/[locale]/books/bookActions";
 import { useNotification } from "@/context/NotificationContext";
 import initTranslations from "@/app/i18n"; // Importing the translation initializer
 import { useParams } from "next/navigation";
-
+// Notification type definition
 type notification = {
   reservation_id: number;
   book_id: number;
   due_date: string;
 };
-
+// Component for displaying due date notifications in a popover
 export default function NotificationSection() {
   const params = useParams() as { locale?: string } | null; // Type assertion for params
   const locale = params?.locale ?? "en"; // Default to 'en' if locale is not provided
@@ -30,14 +30,14 @@ export default function NotificationSection() {
   const { refreshKey } = useNotification();
   const [dueDateNotifications, setDueDateNotifications] = useState<
     notification[]
-  >([]);
+  >([]); // List of notifications
 
-  const [dueDateError, setDueDateError] = useState<string | null>(null);
+  const [dueDateError, setDueDateError] = useState<string | null>(null); // Error state for notifications
 
   const [dueDateBookTitles, setDueDateBookTitles] = useState<
     Record<number, string>
-  >({});
-
+  >({}); // Map book IDs to titles
+  // Fetch notifications from backend
   const fetchDueDateNotifications = async () => {
     const result = await getDueDateNotification();
     if (result?.error) {
@@ -46,7 +46,7 @@ export default function NotificationSection() {
       setDueDateNotifications(result.notifications || []);
     }
   };
-
+  // Fetch book titles for given IDs
   const fetchBookTitles = useCallback(
     async (bookIds: number[]) => {
       const results = await Promise.all(
@@ -70,7 +70,7 @@ export default function NotificationSection() {
     },
     [t]
   );
-
+  // Load book titles into state
   const loadBookTitles = useCallback(
     async (
       bookIds: number[],
@@ -90,11 +90,11 @@ export default function NotificationSection() {
     };
     loadTranslations();
   }, [locale]);
-
+  // Refresh notifications when refreshKey changes
   useEffect(() => {
     fetchDueDateNotifications();
   }, [refreshKey]);
-
+  // Load book titles when notifications are available
   useEffect(() => {
     if (dueDateNotifications.length > 0) {
       const bookIds = dueDateNotifications.map((n) => n.book_id);
@@ -104,7 +104,7 @@ export default function NotificationSection() {
   }, [dueDateNotifications, loadBookTitles, fetchBookTitles]);
 
   const hasNotifications = dueDateNotifications.length > 0;
-
+  // Mark notification as read and refresh list
   const markAsRead = async (reservationId: number) => {
     const result = await markReminderSentAsTrue(reservationId);
     if (result?.error) {
@@ -115,6 +115,7 @@ export default function NotificationSection() {
 
   return (
     <Popover>
+      {/* Notification bell icon with badge */}
       <PopoverTrigger asChild>
         <Button variant="ghost" size="icon" className="p-2 relative">
           <Bell width={16} data-testid="bell-icon" />
@@ -125,6 +126,7 @@ export default function NotificationSection() {
           )}
         </Button>
       </PopoverTrigger>
+      {/* Popover content showing notifications */}
       <PopoverContent className="w-[400px]" sideOffset={37}>
         <div className="flex p-4">
           <h3 className="text-lg font-medium">{t("notification_title")}</h3>
@@ -137,8 +139,9 @@ export default function NotificationSection() {
                 {t("notification_error_loading_failed")} {dueDateError}
               </p>
             )}
+            {/* Empty state */}
             {!hasNotifications && <p>{t("notification_empty_message")}</p>}
-
+            {/* Notification list */}
             {hasNotifications &&
               dueDateNotifications?.map(
                 ({ reservation_id, book_id, due_date }) => (
@@ -165,6 +168,7 @@ export default function NotificationSection() {
                       </strong>
                       {t("notification_due_date_suffix")}
                     </p>
+                    {/* Mark as read button */}
                     <Button
                       onClick={() => markAsRead(reservation_id)}
                       variant="ghost"

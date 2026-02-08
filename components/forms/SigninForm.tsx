@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { ZodErrors } from "@/components/custom/ZodErrors";
 import { toast } from "react-hot-toast";
 import { useParams } from "next/navigation";
-
+// Style definitions for the form components
 const styles = {
   container: "flex justify-center items-center w-full min-h-[750px]",
   card: "w-112 py-8",
@@ -35,13 +35,13 @@ const styles = {
   prompt: "mt-4 text-center text-md",
   link: "ml-2 font-extrabold text-orange-500",
 };
-
+// Initial state for the form
 const INITIAL_STATE = {
   data: null,
   zodErrors: null,
   message: null,
 };
-
+// SigninForm component: renders the sign-in form with validation and translations
 export function SigninForm() {
   const params = useParams() as { locale?: string } | null; // Type assertion for params
   const locale = params?.locale ?? "en"; // Default to 'en' if locale is not provided
@@ -58,7 +58,7 @@ export function SigninForm() {
 
   // @ts-expect-error - useActionState type inference is incorrect
   const [formState, formAction] = useActionState(signinAction, INITIAL_STATE);
-
+  // Handle success and error messages after form submission
   useEffect(() => {
     if (formState.message === t("signin_success_message")) {
       setTimeout(() => {
@@ -87,6 +87,7 @@ export function SigninForm() {
             </CardDescription>
           </CardHeader>
           <CardContent className={styles.content}>
+            {/* Email field */}
             <div className={styles.fieldGroup}>
               <Label className={styles.label} htmlFor="email">
                 {t("signin_label_email")}
@@ -98,8 +99,10 @@ export function SigninForm() {
                 type="text"
                 placeholder="name@example.com"
               />
+              {/* Display validation errors for email */}
               <ZodErrors error={formState?.zodErrors?.email} />
             </div>
+            {/* Password field */}
             <div className={styles.fieldGroup}>
               <Label className={styles.label} htmlFor="password">
                 {t("signin_label_password")}
@@ -111,6 +114,7 @@ export function SigninForm() {
                 type="password"
                 placeholder={t("signin_label_password")}
               />
+              {/* Display validation errors for password */}
               <ZodErrors error={formState?.zodErrors?.password} />
             </div>
           </CardContent>
@@ -120,6 +124,7 @@ export function SigninForm() {
             </button>
           </CardFooter>
         </Card>
+        {/* Prompt for users without an account */}
         <div className={styles.prompt}>
           {t("signin_text_no_account")}
           <Link className={styles.link} href={`/${locale}/signup`}>

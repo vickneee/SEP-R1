@@ -10,9 +10,9 @@ import { deleteBook } from "@/app/[locale]/books/bookActions";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import initTranslations from "@/app/i18n";
-
+// Type definition for translation function
 type TranslatorFn = (key: string, vars?: Record<string, unknown>) => string;
-
+// Possible return types from initTranslations
 type InitTranslationsResult =
   | TranslatorFn
   | {
@@ -21,7 +21,7 @@ type InitTranslationsResult =
       resources?: Record<string, unknown>;
     }
   | Record<string, string>;
-
+// Book interface representing a single book record
 interface Book {
   book_id: number;
   title: string;
@@ -30,11 +30,11 @@ interface Book {
   image?: string;
   available_copies: number;
 }
-
+// Props for Books component
 interface BooksProps {
   books: Book[];
 }
-
+// Utility type guards for translation handling
 function isRecord(x: unknown): x is Record<string, unknown> {
   return typeof x === "object" && x !== null;
 }
@@ -43,19 +43,22 @@ function isStringRecord(x: unknown): x is Record<string, string> {
   if (!isRecord(x)) return false;
   return Object.values(x).every((v) => typeof v === "string");
 }
-
+// Main Books component: displays a grid of book cards with actions
 export function Books({ books }: BooksProps) {
   const router = useRouter();
   const params = useParams();
   const locale = (params?.locale as string) ?? "en";
 
-  const [translatorSource, setTranslatorSource] = useState<InitTranslationsResult | null>(null);
-
+  const [translatorSource, setTranslatorSource] =
+    useState<InitTranslationsResult | null>(null);
+  // Load translations when locale changes
   useEffect(() => {
     let mounted = true;
     (async () => {
       try {
-        const res = (await initTranslations(locale, ["Books"])) as InitTranslationsResult;
+        const res = (await initTranslations(locale, [
+          "Books",
+        ])) as InitTranslationsResult;
         if (mounted) setTranslatorSource(res);
       } catch (err) {
         console.error("Failed to initialize translations:", err);
@@ -65,7 +68,7 @@ export function Books({ books }: BooksProps) {
       mounted = false;
     };
   }, [locale]);
-
+  // Translation helper function
   const tr = (key: string, vars?: Record<string, unknown>) => {
     try {
       if (!translatorSource) return key;
@@ -76,7 +79,8 @@ export function Books({ books }: BooksProps) {
 
       if (isRecord(translatorSource) && "t" in translatorSource) {
         const tField = (translatorSource as { t?: unknown }).t;
-        if (typeof tField === "function") return (tField as TranslatorFn)(key, vars);
+        if (typeof tField === "function")
+          return (tField as TranslatorFn)(key, vars);
         if (isStringRecord(tField) && key in tField) return tField[key];
       }
 
@@ -86,13 +90,17 @@ export function Books({ books }: BooksProps) {
         isRecord((translatorSource as { i18n?: unknown }).i18n)
       ) {
         const i18n = (translatorSource as { i18n?: unknown }).i18n;
-        if (isRecord(i18n) && typeof (i18n as { t?: unknown }).t === "function") {
+        if (
+          isRecord(i18n) &&
+          typeof (i18n as { t?: unknown }).t === "function"
+        ) {
           return (i18n as { t: TranslatorFn }).t!(key, vars);
         }
       }
 
       {
-        const resourcesField = (translatorSource as { resources?: unknown }).resources;
+        const resourcesField = (translatorSource as { resources?: unknown })
+          .resources;
         if (isRecord(resourcesField)) {
           const resourcesRecord = resourcesField as Record<string, unknown>;
 
@@ -117,16 +125,16 @@ export function Books({ books }: BooksProps) {
       return key;
     }
   };
-
+  // Navigate to book details page
   const handleClick = (id: Key) => {
     router.push(`/book/${id}`);
   };
-
+  // Navigate to book edit page
   const handleEdit = (e: React.MouseEvent, bookId: Key) => {
     e.stopPropagation();
     router.push(`/book/edit/${bookId}`);
   };
-
+  // Delete book and reload page
   const handleDelete = async (e: React.MouseEvent, bookId: Key) => {
     e.stopPropagation();
     try {
@@ -144,9 +152,11 @@ export function Books({ books }: BooksProps) {
 
   return (
     <div className="flex flex-col gap-10 max-w-3xl mx-auto">
+      {/* Page title */}
       <h1 className="mt-12 text-orange-500 text-2xl sm:text-3xl lg:text-4xl font-bold mb-4 text-center">
         {tr("library_collection")}
       </h1>
+      {/* Grid of book cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5 mb-16">
         {books.map((book) => (
           <Card

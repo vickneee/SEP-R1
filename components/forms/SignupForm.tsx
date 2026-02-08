@@ -19,7 +19,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { ZodErrors } from "@/components/custom/ZodErrors";
 import { useParams } from "next/navigation";
-
+// Style definitions for form layout and components
 const styles = {
   container: "flex justify-center items-center w-full max-w-4xl min-h-[850px]",
   card: "w-112 py-8",
@@ -36,23 +36,24 @@ const styles = {
   prompt: "mt-4 text-center text-md",
   link: "ml-2 font-extrabold text-orange-500",
 };
-
+// Initial form state
 const INITIAL_STATE: FormState = {
   data: null,
   zodErrors: null,
   message: null,
 };
-
+// Type definition for form state
 type FormState = {
   data: unknown;
   zodErrors: Record<string, string[]> | null;
   message: string | null;
 };
-
+// SignupForm component: renders the user registration form
 export function SignupForm() {
   const params = useParams() as { locale?: string } | null; // Type assertion for params
   const locale = params?.locale ?? "en"; // Default to 'en' if locale is not provided
   const [t, setT] = useState(() => (key: string) => key); // Initial dummy translation function
+  // useActionState hook to handle form submission state
   const [formState, formAction] = useActionState(
     registerUserAction,
     INITIAL_STATE
@@ -67,7 +68,7 @@ export function SignupForm() {
     };
     loadTranslations();
   }, [locale]);
-
+  // Display toast notifications when formState.message changes
   useEffect(() => {
     if (formState.message) {
       toast((t) => {
@@ -98,6 +99,7 @@ export function SignupForm() {
             </CardDescription>
           </CardHeader>
           <CardContent className={styles.content}>
+            {/* First name field */}
             <div className={styles.fieldGroup}>
               <Label className={styles.label} htmlFor="first_name">
                 {/*Adding translation key*/}
@@ -112,6 +114,7 @@ export function SignupForm() {
               />
               <ZodErrors error={formState?.zodErrors?.first_name} />
             </div>
+            {/* Last name field */}
             <div className={styles.fieldGroup}>
               <Label className={styles.label} htmlFor="last_name">
                 {/*Adding translation key*/}
@@ -126,6 +129,7 @@ export function SignupForm() {
               />
               <ZodErrors error={formState?.zodErrors?.last_name} />
             </div>
+            {/* Email field */}
             <div className={styles.fieldGroup}>
               <Label className={styles.label} htmlFor="email">
                 {/*Adding translation key*/}
@@ -141,6 +145,7 @@ export function SignupForm() {
               />
               <ZodErrors error={formState?.zodErrors?.email} />
             </div>
+            {/* Password field */}
             <div className={styles.fieldGroup}>
               <Label className={styles.label} htmlFor="password">
                 {/*Adding translation key*/}
@@ -157,12 +162,14 @@ export function SignupForm() {
             </div>
           </CardContent>
           <CardFooter className={styles.footer}>
+            {/* Submit button */}
             <button type="submit" className={styles.button}>
               {/*Adding translation key*/}
               {t("signup_title")}
             </button>
           </CardFooter>
         </Card>
+        {/* Prompt for users who already have an account */}
         <div className={styles.prompt}>
           {/*Adding translation key*/}
           {t("signup_text_have_account")}
