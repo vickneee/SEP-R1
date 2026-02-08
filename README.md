@@ -1,5 +1,6 @@
-# SEP-R1
-## Software Engineering Project - Group 1
+# LibraryHub
+
+## Software Engineering Project
 
 ### Overview
 Library Hub is an accessible, user-friendly, and efficient digital library catalogue
