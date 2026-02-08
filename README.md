@@ -1,8 +1,8 @@
-# Library Hub
+# LibraryHub
 ## Software Engineering Project
 
 ### Overview
-Library Hub is an accessible, user-friendly, and efficient digital library catalogue
+LibraryHub is an accessible, user-friendly, and efficient digital library catalogue
 system that simplifies the process of searching, borrowing, and returning books. The project aims to increase the efficiency of the library system by automating routine operations and
 providing real-time updates on book availability, which supports user engagement and positive
 outcomes.
