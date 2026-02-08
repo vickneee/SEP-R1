@@ -96,7 +96,6 @@ describe("LibrarianDashBoardClient", () => {
         await userEvent.type(screen.getByPlaceholderText("Total Copies"), "1");
         await userEvent.clear(screen.getByPlaceholderText("Available Copies"));
         await userEvent.type(screen.getByPlaceholderText("Available Copies"), "1");
-
         await userEvent.click(screen.getByRole("button", { name: /add book/i }));
 
         const currentYear = new Date().getFullYear();
