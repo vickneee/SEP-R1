@@ -98,7 +98,9 @@ describe("LibrarianDashBoardClient", () => {
         await userEvent.type(screen.getByPlaceholderText("Available Copies"), "1");
 
         await userEvent.click(screen.getByRole("button", { name: /add book/i }));
+
         const currentYear = new Date().getFullYear();
+
         // Wait for any asynchronous actions to complete
         await waitFor(() => {
             expect(fetchSpy).toHaveBeenCalledTimes(1);
