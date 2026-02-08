@@ -98,7 +98,7 @@ describe("LibrarianDashBoardClient", () => {
         await userEvent.type(screen.getByPlaceholderText("Available Copies"), "1");
         await userEvent.click(screen.getByRole("button", { name: /add book/i }));
 
-        // Update the expected publication year to the current year
+        // Update publication year to the current year
         const currentYear = new Date().getFullYear();
 
         // Wait for any asynchronous actions to complete
