@@ -98,7 +98,7 @@ describe("LibrarianDashBoardClient", () => {
         await userEvent.type(screen.getByPlaceholderText("Available Copies"), "1");
 
         await userEvent.click(screen.getByRole("button", { name: /add book/i }));
-
+        const currentYear = new Date().getFullYear();
         // Wait for any asynchronous actions to complete
         await waitFor(() => {
             expect(fetchSpy).toHaveBeenCalledTimes(1);
@@ -112,7 +112,7 @@ describe("LibrarianDashBoardClient", () => {
                     category: "Fiction",
                     isbn: "1234567890",
                     publisher: "Test Publisher",
-                    publication_year: 2025,
+                    publication_year: currentYear,
                     total_copies: 1,
                     available_copies: 1,
                 }),
