@@ -29,7 +29,7 @@ outcomes.
 - **Feature:** When the user logs in, the content is shown in their preferred language, which is stored in the database.
 
 ## Demo Video
-[Watch the demo on YouTube](https://youtu.be/JHYGC7uMR9U)
+[Watch the demo on YouTube](https://www.youtube.com/watch?v=jrJ7c9MOsFE)
 
 ## Technology Stack
 
