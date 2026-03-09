@@ -1,7 +1,7 @@
 # LibraryHub
 ## Software Engineering Project
 
-LibraryHub is an accessible, user-friendly, and efficient digital library catalogue
+Library Hub is an accessible, user-friendly, and efficient digital library catalogue
 system that simplifies the process of searching, borrowing, and returning books. The project aims to increase the efficiency of the library system by automating routine operations and
 providing real-time updates on book availability, which supports user engagement and positive
 outcomes.
@@ -69,6 +69,7 @@ outcomes.
 
 ## Sequence Diagrams
 ![Sequence Diagram](public/LibraryHub-SequenceDiagram.png)
+
 ## Database 
 
 This [document](https://github.com/vickneee/SEP-R1/blob/main/supabase/README.md) is Supabase CLI Guide.
