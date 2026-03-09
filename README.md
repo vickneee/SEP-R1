@@ -1,4 +1,4 @@
-# LibraryHub
+# Library Hub
 ## Software Engineering Project
 
 Library Hub is an accessible, user-friendly, and efficient digital library catalogue
